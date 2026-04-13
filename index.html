@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>CoinDrop – TikTok Live Auctions</title>
 <link href="https://fonts.googleapis.com/css2?family=Russo+One&family=Exo+2:wght@400;600;700;900&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
-<!-- Firebase MUST load before main script -->
+<!-- Firebase loads first -->
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 <script>
@@ -720,12 +720,6 @@ input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none}
     <div class="pricing-section">
       <div class="section-lbl">Pricing</div>
 
-      <!-- Email input -->
-      <div style="margin-bottom:16px">
-        <input id="landing-buy-email" type="email" placeholder="Enter your email to get started..." class="key-input" style="width:100%;font-family:'Exo 2',sans-serif;letter-spacing:0;font-size:.85rem;padding:14px 16px;border-radius:12px;box-sizing:border-box" />
-        <div style="font-size:.6rem;color:var(--muted);margin-top:5px;text-align:center">Required before checkout — your board link will be tied to this</div>
-      </div>
-
       <!-- Monthly card -->
       <div style="background:var(--bg2);border:1px solid rgba(0,242,234,.2);border-radius:20px;overflow:hidden;margin-bottom:14px">
         <div style="padding:20px 22px">
@@ -813,12 +807,6 @@ input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none}
       <div style="font-size:.7rem;letter-spacing:4px;color:var(--cyan);text-transform:uppercase;font-weight:700;margin-bottom:12px">Choose Your Plan</div>
       <h1 style="font-family:'Russo One',sans-serif;font-size:2rem;color:#fff;margin-bottom:10px">Get Full Access to <span style="background:linear-gradient(135deg,var(--pink),var(--gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">CoinDrop</span></h1>
       <p style="color:var(--muted);font-size:.9rem">Everything you need to run pro coin auctions on TikTok LIVE</p>
-    </div>
-
-    <!-- Email input shared between both plans -->
-    <div style="max-width:460px;margin:0 auto 20px">
-      <input id="buyPageEmail" type="email" placeholder="Enter your email first..." class="key-input" style="width:100%;font-family:'Exo 2',sans-serif;letter-spacing:0;font-size:.85rem;padding:14px 16px;border-radius:12px" />
-      <div style="font-size:.6rem;color:var(--muted);margin-top:5px;text-align:center">Your board link will be tied to this email — required before checkout</div>
     </div>
 
     <!-- Two plan cards -->
@@ -1308,11 +1296,7 @@ const DASH_PAGES = ['dashboard','board','settings','account'];
 
 function goPage(id) {
   if (PROTECTED.includes(id) && !appState.authed) { goPage('auth'); return; }
-  if (PAID_ONLY.includes(id) && !appState.paid) {
-    toast('🔒', 'Purchase required', 'Get access to use the dashboard');
-    goPage('pricing');
-    return;
-  }
+  if (PAID_ONLY.includes(id) && !appState.paid) { toast('🔒','Purchase required','Get access to use the dashboard'); goPage('pricing'); return; }
   document.querySelectorAll('.page').forEach(p => {
     p.classList.remove('active');
     p.style.display = 'none';
@@ -1537,7 +1521,7 @@ function applyLandingPromo() {
   if (!code) { toast('⚠️', 'Enter a promo code', ''); return; }
   if (code === 'THRU10' || code === 'TACO' || code === 'PRINCEXVX3') {
     if (!appState.authed) {
-      toast('👤', 'Sign in first', 'Sign in with Google to claim free access');
+      toast('👤', 'Sign in first', 'Sign in to claim free access');
       localStorage.setItem('pendingPromo', code);
       setTimeout(() => goPage('auth'), 400);
       return;
@@ -1555,11 +1539,8 @@ function grantFreeAccess(code) {
   appState.paid = true;
   appState.generatedBoardLink = link;
   const fbUser = firebase.auth().currentUser;
-  if (fbUser) {
-    localStorage.setItem('boardLink_' + fbUser.uid, link);
-  } else {
-    localStorage.setItem('pendingBoardLink', link);
-  }
+  if (fbUser) localStorage.setItem('boardLink_' + fbUser.uid, link);
+  else localStorage.setItem('pendingBoardLink', link);
   const inputEl = document.getElementById('boardLinkInput');
   if (inputEl) inputEl.value = link;
   showBoardLinkScreen(link, appState.user ? appState.user.name : 'CoinDrop User');
@@ -1575,6 +1556,10 @@ function grantFreeAccess(code) {
       step2.appendChild(btn);
     }
   }, 300);
+}
+
+function handlePlanClick(e, plan) {
+  handleLandingPlanClick(e, plan);
 }
 
 function handleBuyPageClick(e) {
@@ -1615,7 +1600,7 @@ function handleGoogleSignIn() {
   firebase.auth().signInWithPopup(provider)
     .then(result => {
       const user = result.user;
-      onFirebaseUserSignedIn(user, true);
+      onFirebaseUserSignedIn(user);
     })
     .catch(err => {
       btn.style.display = 'flex';
@@ -1626,27 +1611,16 @@ function handleGoogleSignIn() {
 
 function onFirebaseUserSignedIn(user, freshLogin = false) {
   appState.authed = true;
-  appState.user = {
-    name: user.displayName || 'User',
-    email: user.email || '',
-    avatar: user.photoURL || '👤',
-    uid: user.uid
-  };
-
-  // Update UI avatars
+  appState.user = { name: user.displayName || 'User', email: user.email || '', avatar: user.photoURL || '👤', uid: user.uid };
   const avatarEl = document.getElementById('userAvatar');
   const bigAv = document.getElementById('bigAvatar');
   if (user.photoURL) {
     avatarEl.innerHTML = `<img src="${user.photoURL}" style="width:32px;height:32px;border-radius:50%;object-fit:cover">`;
     bigAv.innerHTML = `<img src="${user.photoURL}" style="width:64px;height:64px;border-radius:50%;object-fit:cover">`;
-  } else {
-    avatarEl.textContent = '👤';
-    bigAv.textContent = '👤';
-  }
+  } else { avatarEl.textContent = '👤'; bigAv.textContent = '👤'; }
   document.getElementById('accName').textContent = user.displayName || 'User';
   document.getElementById('accEmail').textContent = user.email || '';
-
-  // Update landing page nav to show profile pic
+  // Update landing nav to show profile pic
   const landingNav = document.getElementById('landingNavLinks');
   if (landingNav) {
     if (user.photoURL) {
@@ -1655,44 +1629,20 @@ function onFirebaseUserSignedIn(user, freshLogin = false) {
       landingNav.innerHTML = `<div class="nav-avatar" onclick="goPage('account')" style="cursor:pointer">👤</div><button class="nav-btn primary" onclick="goPage('pricing')">Get Access</button>`;
     }
   }
-
-  // Handle pending board link from payment
   const pendingLink = localStorage.getItem('pendingBoardLink');
-  if (pendingLink) {
-    localStorage.setItem('boardLink_' + user.uid, pendingLink);
-    localStorage.removeItem('pendingBoardLink');
-  }
-
-  // Check if already paid
+  if (pendingLink) { localStorage.setItem('boardLink_' + user.uid, pendingLink); localStorage.removeItem('pendingBoardLink'); }
   const savedLink = localStorage.getItem('boardLink_' + user.uid);
   if (savedLink) {
     appState.paid = true;
     appState.generatedBoardLink = savedLink;
     const inputEl = document.getElementById('boardLinkInput');
     if (inputEl) inputEl.value = savedLink;
-    if (freshLogin) {
-      toast('👋', 'Welcome back!', user.displayName || 'User');
-      setTimeout(() => goPage('dashboard'), 500);
-    }
+    if (freshLogin) { toast('👋', 'Welcome back!', user.displayName || 'User'); setTimeout(() => goPage('dashboard'), 500); }
   } else if (freshLogin) {
-    // Check for pending promo code
     const pendingPromo = localStorage.getItem('pendingPromo');
-    if (pendingPromo) {
-      localStorage.removeItem('pendingPromo');
-      setTimeout(() => grantFreeAccess(pendingPromo), 500);
-      return;
-    }
-    // Check for pending plan
+    if (pendingPromo) { localStorage.removeItem('pendingPromo'); setTimeout(() => grantFreeAccess(pendingPromo), 500); return; }
     const pendingPlan = localStorage.getItem('pendingPlan');
-    if (pendingPlan) {
-      localStorage.removeItem('pendingPlan');
-      setTimeout(() => {
-        const fakeEvent = { preventDefault: () => {} };
-        handleLandingPlanClick(fakeEvent, pendingPlan);
-      }, 500);
-      return;
-    }
-    // Just stay on landing — show signed in toast only
+    if (pendingPlan) { localStorage.removeItem('pendingPlan'); setTimeout(() => { handleLandingPlanClick({preventDefault:()=>{}}, pendingPlan); }, 500); return; }
     toast('✅', 'Signed in!', 'Pick a plan or enter a promo code to get started');
   }
 }
@@ -2625,7 +2575,7 @@ if (boardIdx > -1) PROTECTED.splice(boardIdx, 1);
   }
 })();
 </script>
-<!-- Firebase auth state listener (Firebase already initialized in head) -->
+<!-- Firebase auth state (initialized in head) -->
 <script>
   firebase.auth().onAuthStateChanged(user => {
     if (user) {
@@ -2634,7 +2584,7 @@ if (boardIdx > -1) PROTECTED.splice(boardIdx, 1);
         localStorage.setItem('boardLink_' + user.uid, pendingLink);
         localStorage.removeItem('pendingBoardLink');
       }
-      onFirebaseUserSignedIn(user);
+      onFirebaseUserSignedIn(user, false);
     }
   });
 </script>
