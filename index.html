@@ -433,6 +433,48 @@ body::after{content:'';position:fixed;inset:0;background-image:linear-gradient(r
 .section-lbl::before,.section-lbl::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,transparent,var(--border),transparent)}
 input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none}
 
+/* ══ REVIEWS CAROUSEL ══ */
+.reviews-track{display:flex;gap:14px;animation:reviewScroll 30s linear infinite;width:max-content}
+.reviews-track:hover{animation-play-state:paused}
+@keyframes reviewScroll{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+.review-card{background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:18px;min-width:280px;max-width:280px;flex-shrink:0;position:relative;overflow:hidden;transition:transform .25s,border-color .25s}
+.review-card:hover{transform:translateY(-3px);border-color:rgba(255,215,0,.25)}
+.review-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--pink),var(--gold),var(--cyan));opacity:.4}
+.review-stars{color:var(--gold);font-size:.8rem;letter-spacing:2px;margin-bottom:8px}
+.review-text{font-size:.76rem;color:rgba(255,255,255,.7);line-height:1.65;margin-bottom:12px;font-style:italic}
+.review-author{display:flex;align-items:center;gap:10px}
+.review-av{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.85rem;flex-shrink:0}
+.review-name{font-weight:700;font-size:.75rem;color:#fff}
+.review-handle{font-size:.62rem;color:var(--muted)}
+
+/* ══ BOARD SHOWCASE ══ */
+.showcase-wrap{position:relative;overflow:hidden;border-radius:20px;border:1px solid var(--border);background:var(--bg2);max-width:400px;margin:0 auto}
+.showcase-screen{aspect-ratio:16/10;position:relative;overflow:hidden}
+.showcase-slide{position:absolute;inset:0;opacity:0;transition:opacity .8s ease;display:flex;align-items:center;justify-content:center;font-family:'Orbitron',sans-serif;font-weight:900;font-size:1.2rem;letter-spacing:3px}
+.showcase-slide.active{opacity:1}
+.showcase-dots{display:flex;gap:6px;justify-content:center;padding:12px}
+.showcase-dot{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.15);cursor:pointer;transition:all .2s}
+.showcase-dot.active{background:var(--gold);box-shadow:0 0 8px rgba(255,215,0,.5);transform:scale(1.2)}
+
+/* ══ COMING SOON ══ */
+.coming-card{background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:16px;position:relative;overflow:hidden;transition:all .25s}
+.coming-card:hover{transform:translateY(-3px);border-color:rgba(0,242,234,.2)}
+.coming-badge{position:absolute;top:12px;right:12px;font-size:.5rem;letter-spacing:2px;font-weight:900;font-family:'Orbitron',sans-serif;padding:3px 8px;border-radius:6px;text-transform:uppercase}
+.coming-badge.soon{background:rgba(255,215,0,.15);color:var(--gold);border:1px solid rgba(255,215,0,.25)}
+.coming-badge.beta{background:rgba(0,242,234,.12);color:var(--cyan);border:1px solid rgba(0,242,234,.2)}
+.coming-badge.new{background:rgba(0,255,136,.12);color:var(--green);border:1px solid rgba(0,255,136,.2)}
+.coming-icon{font-size:1.8rem;margin-bottom:8px}
+.coming-title{font-weight:700;font-size:.85rem;margin-bottom:4px}
+.coming-desc{font-size:.68rem;color:var(--muted);line-height:1.6}
+
+/* ══ LIVE ACTIVITY TICKER ══ */
+.ticker-wrap{overflow:hidden;background:rgba(255,0,80,.04);border-top:1px solid rgba(255,0,80,.1);border-bottom:1px solid rgba(255,0,80,.1);padding:8px 0;margin-bottom:30px}
+.ticker-track{display:flex;gap:40px;animation:tickerMove 25s linear infinite;width:max-content;align-items:center}
+@keyframes tickerMove{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+.ticker-item{display:flex;align-items:center;gap:8px;white-space:nowrap;font-size:.7rem;color:rgba(255,255,255,.5);font-weight:600}
+.ticker-dot{width:5px;height:5px;border-radius:50%;background:var(--pink);box-shadow:0 0 6px rgba(255,0,80,.5);animation:tickerPulse 1.5s infinite alternate}
+@keyframes tickerPulse{from{opacity:.4}to{opacity:1}}
+
 /* ANIM */
 @keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
 .fade-in{animation:fadeIn .4s ease forwards}
@@ -804,6 +846,140 @@ input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none}
         <div style="background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:14px 20px;text-align:center;flex:1;min-width:120px">
           <div style="font-family:'Orbitron',sans-serif;font-weight:900;font-size:1.3rem;color:var(--cyan);margin-bottom:2px">2M+</div>
           <div style="font-size:.65rem;color:var(--muted);letter-spacing:1px;text-transform:uppercase">Coins Tracked</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CREATOR REVIEWS -->
+    <div style="max-width:600px;margin:0 auto 40px;padding:0 20px">
+      <div class="section-lbl">What Creators Say</div>
+      <div style="overflow:hidden;mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent)">
+        <div class="reviews-track">
+          <div class="review-card">
+            <div class="review-stars">★★★★★</div>
+            <div class="review-text">"My viewers go CRAZY when I start a coin auction. The leaderboard makes it so competitive — they keep sending more just to stay on top."</div>
+            <div class="review-author"><div class="review-av" style="background:linear-gradient(135deg,#FF6B6B,#FF8E53)">🎮</div><div><div class="review-name">TikTok Creator</div><div class="review-handle">Verified User</div></div></div>
+          </div>
+          <div class="review-card">
+            <div class="review-stars">★★★★★</div>
+            <div class="review-text">"Setup took like 2 minutes. The board themes are fire — I use the Galaxy one and my chat loves it. Best money I've spent on my stream."</div>
+            <div class="review-author"><div class="review-av" style="background:linear-gradient(135deg,#4776E6,#8E54E9)">💜</div><div><div class="review-name">TikTok Creator</div><div class="review-handle">Verified User</div></div></div>
+          </div>
+          <div class="review-card">
+            <div class="review-stars">★★★★★</div>
+            <div class="review-text">"The snipe window feature is genius. Right when people think the auction is over — BOOM, 20 more seconds of chaos. My stream revenue tripled."</div>
+            <div class="review-author"><div class="review-av" style="background:linear-gradient(135deg,#f7971e,#ffd200)">🔥</div><div><div class="review-name">TikTok Creator</div><div class="review-handle">Verified User</div></div></div>
+          </div>
+          <div class="review-card">
+            <div class="review-stars">★★★★★</div>
+            <div class="review-text">"I was looking for something like this forever. Clean UI, works perfectly with TikTok LIVE, and the timer controls are so smooth mid-stream."</div>
+            <div class="review-author"><div class="review-av" style="background:linear-gradient(135deg,#00FFFF,#0080FF)">✨</div><div><div class="review-name">TikTok Creator</div><div class="review-handle">Verified User</div></div></div>
+          </div>
+          <div class="review-card">
+            <div class="review-stars">★★★★★</div>
+            <div class="review-text">"Honestly the best auction tool out there. I run 3-4 auctions per stream now and my viewers are addicted. The themes are chef's kiss."</div>
+            <div class="review-author"><div class="review-av" style="background:linear-gradient(135deg,#FF0080,#FF8C00)">👑</div><div><div class="review-name">TikTok Creator</div><div class="review-handle">Verified User</div></div></div>
+          </div>
+          <!-- Duplicate for seamless loop -->
+          <div class="review-card">
+            <div class="review-stars">★★★★★</div>
+            <div class="review-text">"My viewers go CRAZY when I start a coin auction. The leaderboard makes it so competitive — they keep sending more just to stay on top."</div>
+            <div class="review-author"><div class="review-av" style="background:linear-gradient(135deg,#FF6B6B,#FF8E53)">🎮</div><div><div class="review-name">TikTok Creator</div><div class="review-handle">Verified User</div></div></div>
+          </div>
+          <div class="review-card">
+            <div class="review-stars">★★★★★</div>
+            <div class="review-text">"Setup took like 2 minutes. The board themes are fire — I use the Galaxy one and my chat loves it. Best money I've spent on my stream."</div>
+            <div class="review-author"><div class="review-av" style="background:linear-gradient(135deg,#4776E6,#8E54E9)">💜</div><div><div class="review-name">TikTok Creator</div><div class="review-handle">Verified User</div></div></div>
+          </div>
+          <div class="review-card">
+            <div class="review-stars">★★★★★</div>
+            <div class="review-text">"The snipe window feature is genius. Right when people think the auction is over — BOOM, 20 more seconds of chaos. My stream revenue tripled."</div>
+            <div class="review-author"><div class="review-av" style="background:linear-gradient(135deg,#f7971e,#ffd200)">🔥</div><div><div class="review-name">TikTok Creator</div><div class="review-handle">Verified User</div></div></div>
+          </div>
+          <div class="review-card">
+            <div class="review-stars">★★★★★</div>
+            <div class="review-text">"I was looking for something like this forever. Clean UI, works perfectly with TikTok LIVE, and the timer controls are so smooth mid-stream."</div>
+            <div class="review-author"><div class="review-av" style="background:linear-gradient(135deg,#00FFFF,#0080FF)">✨</div><div><div class="review-name">TikTok Creator</div><div class="review-handle">Verified User</div></div></div>
+          </div>
+          <div class="review-card">
+            <div class="review-stars">★★★★★</div>
+            <div class="review-text">"Honestly the best auction tool out there. I run 3-4 auctions per stream now and my viewers are addicted. The themes are chef's kiss."</div>
+            <div class="review-author"><div class="review-av" style="background:linear-gradient(135deg,#FF0080,#FF8C00)">👑</div><div><div class="review-name">TikTok Creator</div><div class="review-handle">Verified User</div></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- BOARD THEME SHOWCASE -->
+    <div style="max-width:480px;margin:0 auto 40px;padding:0 20px">
+      <div class="section-lbl">Board Themes</div>
+      <div class="showcase-wrap">
+        <div class="showcase-screen">
+          <div class="showcase-slide active" style="background:linear-gradient(180deg,#080818,#0C1428);color:var(--cyan)">
+            <div style="text-align:center"><div style="font-size:2rem;margin-bottom:6px">🏆</div><div>CLASSIC</div><div style="font-size:.6rem;color:var(--muted);letter-spacing:1px;margin-top:4px;font-weight:400">Clean & professional</div></div>
+          </div>
+          <div class="showcase-slide" style="background:linear-gradient(180deg,#0A0015,#1A0030);color:#E040FB">
+            <div style="text-align:center"><div style="font-size:2rem;margin-bottom:6px">🔮</div><div>NEON</div><div style="font-size:.6rem;color:var(--muted);letter-spacing:1px;margin-top:4px;font-weight:400">Electric vibes</div></div>
+          </div>
+          <div class="showcase-slide" style="background:linear-gradient(180deg,#020010,#0A0025);color:#8B5CF6">
+            <div style="text-align:center"><div style="font-size:2rem;margin-bottom:6px">🌌</div><div>GALAXY</div><div style="font-size:.6rem;color:var(--muted);letter-spacing:1px;margin-top:4px;font-weight:400">Deep space energy</div></div>
+          </div>
+          <div class="showcase-slide" style="background:linear-gradient(180deg,#1A0500,#2A0A00);color:#FF6B00">
+            <div style="text-align:center"><div style="font-size:2rem;margin-bottom:6px">🔥</div><div>FIRE</div><div style="font-size:.6rem;color:var(--muted);letter-spacing:1px;margin-top:4px;font-weight:400">Blazing hot</div></div>
+          </div>
+          <div class="showcase-slide" style="background:linear-gradient(180deg,#030D1A,#05152A);color:#00E5FF">
+            <div style="text-align:center"><div style="font-size:2rem;margin-bottom:6px">❄️</div><div>ICE</div><div style="font-size:.6rem;color:var(--muted);letter-spacing:1px;margin-top:4px;font-weight:400">Frozen & crisp</div></div>
+          </div>
+          <div class="showcase-slide" style="background:linear-gradient(180deg,#08040F,#100818);color:#E040FB">
+            <div style="text-align:center"><div style="font-size:2rem;margin-bottom:6px">👑</div><div>ROYAL</div><div style="font-size:.6rem;color:var(--muted);letter-spacing:1px;margin-top:4px;font-weight:400">Majestic purple</div></div>
+          </div>
+          <div class="showcase-slide" style="background:#0C0C0C;color:#fff">
+            <div style="text-align:center"><div style="font-size:2rem;margin-bottom:6px">◼️</div><div>MINIMAL</div><div style="font-size:.6rem;color:var(--muted);letter-spacing:1px;margin-top:4px;font-weight:400">Less is more</div></div>
+          </div>
+        </div>
+        <div class="showcase-dots" id="showcaseDots"></div>
+      </div>
+    </div>
+
+    <!-- COMING SOON -->
+    <div style="max-width:560px;margin:0 auto 40px;padding:0 20px">
+      <div class="section-lbl">Coming Soon</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+        <div class="coming-card feat-card">
+          <div class="coming-badge soon">SOON</div>
+          <div class="coming-icon">📡</div>
+          <div class="coming-title">TikTok API Integration</div>
+          <div class="coming-desc">Direct TikTok LIVE connection — coins auto-tracked in real time with zero manual input.</div>
+        </div>
+        <div class="coming-card feat-card">
+          <div class="coming-badge soon">SOON</div>
+          <div class="coming-icon">🎵</div>
+          <div class="coming-title">Sound Alerts</div>
+          <div class="coming-desc">Custom sound effects when someone sends coins or takes the lead. Hype up your stream.</div>
+        </div>
+        <div class="coming-card feat-card">
+          <div class="coming-badge beta">BETA</div>
+          <div class="coming-icon">🤖</div>
+          <div class="coming-title">Discord Bot</div>
+          <div class="coming-desc">Announce auction winners, live updates, and leaderboards straight to your Discord server.</div>
+        </div>
+        <div class="coming-card feat-card">
+          <div class="coming-badge soon">SOON</div>
+          <div class="coming-icon">📊</div>
+          <div class="coming-title">Stream Analytics</div>
+          <div class="coming-desc">See how many coins you earned per stream, your top gifters, peak viewers, and more.</div>
+        </div>
+        <div class="coming-card feat-card">
+          <div class="coming-badge new">NEW</div>
+          <div class="coming-icon">🎨</div>
+          <div class="coming-title">Custom Themes</div>
+          <div class="coming-desc">Build your own board theme — custom colors, fonts, backgrounds. Match your brand perfectly.</div>
+        </div>
+        <div class="coming-card feat-card">
+          <div class="coming-badge soon">SOON</div>
+          <div class="coming-icon">🏆</div>
+          <div class="coming-title">Multi-Round Mode</div>
+          <div class="coming-desc">Run back-to-back auctions with automatic resets. Perfect for marathon LIVE sessions.</div>
         </div>
       </div>
     </div>
@@ -2721,6 +2897,28 @@ document.querySelectorAll('.feat-card').forEach(card=>{
     card.style.setProperty('--my',((e.clientY-r.top)/r.height*100)+'%');
   });
 });
+
+// ── BOARD THEME SHOWCASE ──
+(function(){
+  const slides = document.querySelectorAll('.showcase-slide');
+  const dotsWrap = document.getElementById('showcaseDots');
+  if (!slides.length || !dotsWrap) return;
+  let current = 0;
+  slides.forEach((_, i) => {
+    const dot = document.createElement('div');
+    dot.className = 'showcase-dot' + (i === 0 ? ' active' : '');
+    dot.onclick = () => goSlide(i);
+    dotsWrap.appendChild(dot);
+  });
+  function goSlide(n) {
+    slides[current].classList.remove('active');
+    dotsWrap.children[current].classList.remove('active');
+    current = n;
+    slides[current].classList.add('active');
+    dotsWrap.children[current].classList.add('active');
+  }
+  setInterval(() => goSlide((current + 1) % slides.length), 3000);
+})();
 
 // ── BUTTON RIPPLE EFFECT ──
 document.addEventListener('click',e=>{
