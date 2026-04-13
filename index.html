@@ -750,14 +750,25 @@ input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none}
             <div style="font-size:.76rem;color:rgba(255,255,255,.7);display:flex;align-items:center;gap:8px"><span style="color:var(--green);font-size:16px">✓</span> All future updates included</div>
             <div style="font-size:.76rem;color:rgba(255,255,255,.7);display:flex;align-items:center;gap:8px"><span style="color:var(--green);font-size:16px">✓</span> Best for active streamers</div>
           </div>
-          <a href="#" onclick="handleLandingPlanClick(event,'lifetime')" style="display:block;text-align:center;padding:14px;border-radius:12px;border:none;background:linear-gradient(135deg,var(--pink),var(--gold2));color:#fff;font-family:'Orbitron',sans-serif;font-weight:900;font-size:.78rem;letter-spacing:2px;cursor:pointer;text-decoration:none;box-shadow:0 0 25px rgba(255,0,80,.3);transition:all .25s" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 0 40px rgba(255,0,80,.5)'" onmouseout="this.style.transform='';this.style.boxShadow='0 0 25px rgba(255,0,80,.3)'">
+          <a href="#" onclick="handleLandingPlanClick(event,'lifetime')" id="landingLifetimeBuyBtn" style="display:block;text-align:center;padding:14px;border-radius:12px;border:none;background:linear-gradient(135deg,var(--pink),var(--gold2));color:#fff;font-family:'Orbitron',sans-serif;font-weight:900;font-size:.78rem;letter-spacing:2px;cursor:pointer;text-decoration:none;box-shadow:0 0 25px rgba(255,0,80,.3);transition:all .25s;margin-bottom:14px" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 0 40px rgba(255,0,80,.5)'" onmouseout="this.style.transform='';this.style.boxShadow='0 0 25px rgba(255,0,80,.3)'">
             💳 Get Lifetime — $60
           </a>
+          <div class="coupon-row">
+            <input class="coupon-input" id="landingPromoInput" placeholder="Enter promo code" />
+            <button class="coupon-btn" onclick="applyLandingPromo()">Apply</button>
+          </div>
         </div>
       </div>
 
       <div id="landing-price-card" style="display:none"></div>
     </div>
+
+    <!-- Footer -->
+    <div style="text-align:center;padding:30px 20px 20px;display:flex;justify-content:center;gap:20px;flex-wrap:wrap">
+      <a href="https://privacypolicy-coindrop.vercel.app" style="font-size:.7rem;color:var(--muted);text-decoration:none;transition:color .2s" onmouseover="this.style.color='#fff'" onmouseout="this.style.color=''">Privacy Policy</a>
+      <a href="https://termsofservicecoindrop.vercel.app/" style="font-size:.7rem;color:var(--muted);text-decoration:none;transition:color .2s" onmouseover="this.style.color='#fff'" onmouseout="this.style.color=''">Terms of Service</a>
+    </div>
+
   </div>
 </div>
 
@@ -830,9 +841,13 @@ input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none}
             <div style="font-size:.78rem;color:rgba(255,255,255,.7);display:flex;align-items:center;gap:8px"><span style="color:var(--green)">✓</span> All future updates included</div>
             <div style="font-size:.78rem;color:rgba(255,255,255,.7);display:flex;align-items:center;gap:8px"><span style="color:var(--green)">✓</span> Best for active streamers</div>
           </div>
-          <a href="#" onclick="handlePlanClick(event,'lifetime')" style="display:block;text-align:center;padding:14px;border-radius:12px;border:none;background:linear-gradient(135deg,var(--pink),var(--gold2));color:#fff;font-family:'Orbitron',sans-serif;font-weight:900;font-size:.82rem;letter-spacing:2px;cursor:pointer;text-decoration:none;box-shadow:0 0 25px rgba(255,0,80,.3);transition:all .25s" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 0 40px rgba(255,0,80,.5)'" onmouseout="this.style.transform='';this.style.boxShadow='0 0 25px rgba(255,0,80,.3)'">
+          <a href="#" onclick="handlePlanClick(event,'lifetime')" id="pricingLifetimeBuyBtn" style="display:block;text-align:center;padding:14px;border-radius:12px;border:none;background:linear-gradient(135deg,var(--pink),var(--gold2));color:#fff;font-family:'Orbitron',sans-serif;font-weight:900;font-size:.82rem;letter-spacing:2px;cursor:pointer;text-decoration:none;box-shadow:0 0 25px rgba(255,0,80,.3);transition:all .25s;margin-bottom:14px" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 0 40px rgba(255,0,80,.5)'" onmouseout="this.style.transform='';this.style.boxShadow='0 0 25px rgba(255,0,80,.3)'">
             💳 Get Lifetime — $60
           </a>
+          <div class="coupon-row">
+            <input class="coupon-input" id="pricingPromoInput" placeholder="Enter promo code" />
+            <button class="coupon-btn" onclick="applyPricingPromo()">Apply</button>
+          </div>
         </div>
       </div>
 
@@ -957,13 +972,7 @@ input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none}
         <button class="ss-btn start" id="startBtn" onclick="startAuction()">▶ START</button>
         <button class="ss-btn pause" id="pauseBtn" onclick="togglePause()" disabled>⏸ PAUSE</button>
         <button class="ss-btn stop" id="stopBtn" onclick="stopAuction()" disabled>⏹ STOP</button>
-      </div>
-
-      <!-- Restart button — appears after auction ends -->
-      <div id="restartBtn" style="display:none;padding:0 18px 16px">
-        <button onclick="restartAuction()" style="width:100%;padding:14px;border-radius:14px;border:none;background:linear-gradient(135deg,#7B2FBE,var(--cyan));color:#fff;font-family:'Orbitron',sans-serif;font-weight:900;font-size:.82rem;letter-spacing:2px;cursor:pointer;transition:all .25s;display:flex;align-items:center;justify-content:center;gap:10px;box-shadow:0 0 20px rgba(0,242,234,.25)" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 0 35px rgba(0,242,234,.5)'" onmouseout="this.style.transform='';this.style.boxShadow='0 0 20px rgba(0,242,234,.25)'">
-          🔄 NEW AUCTION — Reset Board
-        </button>
+        <button class="ss-btn start" id="restartBtn" onclick="restartAuction()" style="display:none">🔄 RESTART</button>
       </div>
 
       <!-- Timer -->
@@ -1348,7 +1357,6 @@ function applyCoupon(containerId) {
     discountApplied = true;
     toast('🌮', 'Code TACO applied!', 'Access is now FREE!');
     renderPriceCard(containerId);
-    // Also refresh the other price card
     const other = containerId === 'landing-price-card' ? null : 'landing-price-card';
     if (other) renderPriceCard(other);
   } else if (code === '') {
@@ -1475,7 +1483,7 @@ function handleLandingPlanClick(e, plan) {
   if (plan === 'monthly') {
     stripeUrl = 'https://buy.stripe.com/00wcN45Zqcq38bydbA9R605?success_url=' + encodeURIComponent(successBase);
   } else {
-    stripeUrl = 'https://buy.stripe.com/7sY8wOfA0eyb63q2wW9R60a?success_url=' + encodeURIComponent(successBase);
+    stripeUrl = 'https://buy.stripe.com/9B6fZgbjKdu70J69Zo9R609?success_url=' + encodeURIComponent(successBase);
   }
   window.open(stripeUrl, '_blank');
   toast('💳', 'Opening Stripe...', 'Come back here after paying — your link will appear');
@@ -1486,6 +1494,26 @@ function handleBuyPageClick(e) { handleLandingPlanClick(e, 'lifetime'); }
 
 function applyLandingPromo() {
   const input = document.getElementById('landingPromoInput');
+  if (!input) return;
+  const code = input.value.trim().toUpperCase();
+  if (!code) { toast('⚠️', 'Enter a promo code', ''); return; }
+  if (code === 'THRU10' || code === 'TACO' || code === 'PRINCEXVX3') {
+    if (!appState.authed) {
+      toast('👤', 'Sign in first', 'Sign in to claim free access');
+      localStorage.setItem('pendingPromo', code);
+      setTimeout(() => goPage('auth'), 400);
+      return;
+    }
+    grantFreeAccess(code);
+  } else {
+    toast('❌', 'Invalid code', 'Check your promo code and try again');
+    input.style.borderColor = 'rgba(255,0,80,.5)';
+    setTimeout(() => input.style.borderColor = '', 1500);
+  }
+}
+
+function applyPricingPromo() {
+  const input = document.getElementById('pricingPromoInput');
   if (!input) return;
   const code = input.value.trim().toUpperCase();
   if (!code) { toast('⚠️', 'Enter a promo code', ''); return; }
@@ -1849,6 +1877,8 @@ function renderTimerDisplay() {
     return;
   }
   if (s <= 0) {
+    // Don't flash ENDED if snipe delay is about to activate
+    if (appState.auctionRunning && appState.settings.snipe > 0 && !appState.snipePhase) return;
     el.textContent = 'ENDED';
     el.className = 'timer-big red';
     return;
@@ -1870,6 +1900,7 @@ function startAuction() {
   document.getElementById('startBtn').disabled = true;
   document.getElementById('pauseBtn').disabled = false;
   document.getElementById('stopBtn').disabled = false;
+  document.getElementById('stopBtn').style.display = '';
   // Hide restart btn if visible
   const restartBtn = document.getElementById('restartBtn');
   if (restartBtn) restartBtn.style.display = 'none';
@@ -1979,13 +2010,11 @@ function endAuction() {
   document.getElementById('auctionState').className = 'auction-state ended';
   document.getElementById('startBtn').disabled = true;
   document.getElementById('pauseBtn').disabled = true;
+  // Hide stop button, show restart button in its place
   const stopBtn = document.getElementById('stopBtn');
-  stopBtn.textContent = '🔄 NEW AUCTION';
-  stopBtn.className = 'ss-btn start';
-  stopBtn.disabled = false;
-  stopBtn.onclick = restartAuction;
+  stopBtn.style.display = 'none';
   const restartBtn = document.getElementById('restartBtn');
-  if (restartBtn) restartBtn.style.display = 'none';
+  if (restartBtn) restartBtn.style.display = '';
   updateMidAuctionControls();
   showWinnerPopup();
 }
@@ -2134,6 +2163,7 @@ function restartAuction() {
   stopBtn2.textContent = '⏹ STOP';
   stopBtn2.className = 'ss-btn stop';
   stopBtn2.disabled = true;
+  stopBtn2.style.display = '';
   stopBtn2.onclick = stopAuction;
   const restartBtn = document.getElementById('restartBtn');
   if (restartBtn) restartBtn.style.display = 'none';
@@ -2259,9 +2289,12 @@ function renderBoard() {
       timerBig.className = 'bd-timer-big red';
       if (timerLabel) timerLabel.textContent = '⚡ SNIPE WINDOW';
     } else if (s <= 0) {
-      timerBig.textContent = 'ENDED';
-      timerBig.className = 'bd-timer-big ended';
-      if (timerLabel) timerLabel.textContent = 'AUCTION ENDED';
+      // Don't flash ENDED if snipe delay is about to activate
+      if (!(appState.auctionRunning && appState.settings.snipe > 0 && !appState.snipePhase)) {
+        timerBig.textContent = 'ENDED';
+        timerBig.className = 'bd-timer-big ended';
+        if (timerLabel) timerLabel.textContent = 'AUCTION ENDED';
+      }
     } else if (false) {
       const m = Math.floor(s / 60), sec = s % 60;
       timerBig.textContent = `${m}:${sec.toString().padStart(2,'0')}`;
