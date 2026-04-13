@@ -1598,7 +1598,7 @@ function handleGoogleSignIn() {
   firebase.auth().signInWithPopup(provider)
     .then(result => {
       const user = result.user;
-      onFirebaseUserSignedIn(user);
+      onFirebaseUserSignedIn(user, true);
     })
     .catch(err => {
       btn.style.display = 'flex';
@@ -1619,13 +1619,6 @@ function onFirebaseUserSignedIn(user, freshLogin = false) {
   document.getElementById('accName').textContent = user.displayName || 'User';
   document.getElementById('accEmail').textContent = user.email || '';
   const landingNav = document.getElementById('landingNavLinks');
-  if (landingNav) {
-    if (user.photoURL) {
-      landingNav.innerHTML = `<img src="${user.photoURL}" onclick="goPage('account')" style="width:34px;height:34px;border-radius:50%;object-fit:cover;cursor:pointer;border:2px solid rgba(255,215,0,.4)" /><button class="nav-btn primary" onclick="goPage('pricing')">Get Access</button>`;
-    } else {
-      landingNav.innerHTML = `<div onclick="goPage('account')" style="cursor:pointer;color:#fff">👤</div><button class="nav-btn primary" onclick="goPage('pricing')">Get Access</button>`;
-    }
-  }
   const pendingLink = localStorage.getItem('pendingBoardLink');
   if (pendingLink) { localStorage.setItem('boardLink_' + user.uid, pendingLink); localStorage.removeItem('pendingBoardLink'); }
   const savedLink = localStorage.getItem('boardLink_' + user.uid);
@@ -1634,13 +1627,31 @@ function onFirebaseUserSignedIn(user, freshLogin = false) {
     appState.generatedBoardLink = savedLink;
     const inputEl = document.getElementById('boardLinkInput');
     if (inputEl) inputEl.value = savedLink;
-    if (freshLogin) { toast('👋', 'Welcome back!', user.displayName || 'User'); setTimeout(() => goPage('dashboard'), 500); }
-  } else if (freshLogin) {
+  }
+  // Update landing nav with Dashboard button if paid
+  if (landingNav) {
+    const avHtml = user.photoURL
+      ? `<img src="${user.photoURL}" onclick="goPage('account')" style="width:34px;height:34px;border-radius:50%;object-fit:cover;cursor:pointer;border:2px solid rgba(255,215,0,.4)" />`
+      : `<div onclick="goPage('account')" style="cursor:pointer;color:#fff">👤</div>`;
+    if (appState.paid) {
+      landingNav.innerHTML = avHtml + `<button class="nav-btn primary" onclick="goPage('dashboard')">Dashboard</button>`;
+    } else {
+      landingNav.innerHTML = avHtml + `<button class="nav-btn primary" onclick="goPage('pricing')">Get Access</button>`;
+    }
+  }
+  if (freshLogin) {
     const pendingPromo = localStorage.getItem('pendingPromo');
-    if (pendingPromo) { localStorage.removeItem('pendingPromo'); setTimeout(() => grantFreeAccess(pendingPromo), 500); return; }
+    if (pendingPromo) { localStorage.removeItem('pendingPromo'); goPage('landing'); setTimeout(() => grantFreeAccess(pendingPromo), 500); return; }
     const pendingPlan = localStorage.getItem('pendingPlan');
     if (pendingPlan) { localStorage.removeItem('pendingPlan'); setTimeout(() => { handleLandingPlanClick({preventDefault:()=>{}}, pendingPlan); }, 500); return; }
-    toast('✅', 'Signed in!', 'Pick a plan or enter a promo code to get started');
+    // Reset auth page UI
+    const btn = document.getElementById('googleSignInBtn');
+    const spinner = document.getElementById('authSpinner');
+    if (btn) btn.style.display = 'flex';
+    if (spinner) spinner.style.display = 'none';
+    // Go back to landing
+    toast('✅', 'Signed in!', appState.paid ? 'Welcome back, ' + (user.displayName || 'User') + '!' : 'Pick a plan or enter a promo code to get started');
+    setTimeout(() => goPage('landing'), 400);
   }
 }
 
