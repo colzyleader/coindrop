@@ -1,0 +1,2788 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CoinDrop – TikTok Live Auctions</title>
+<link href="https://fonts.googleapis.com/css2?family=Russo+One&family=Exo+2:wght@400;600;700;900&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+:root {
+  --gold:#FFD700;--gold2:#FFA500;--silver:#C0C0C0;--bronze:#CD7F32;
+  --pink:#FF0050;--cyan:#00F2EA;--green:#00FF88;
+  --bg:#080810;--bg2:#10101C;--bg3:#16162A;
+  --card:rgba(255,255,255,0.04);
+  --border:rgba(255,255,255,0.07);
+  --text:rgba(255,255,255,0.85);
+  --muted:rgba(255,255,255,0.3);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--text);font-family:'Exo 2',sans-serif;min-height:100vh;overflow-x:hidden}
+body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse at 15% 40%,rgba(255,0,80,.07) 0%,transparent 55%),radial-gradient(ellipse at 85% 15%,rgba(0,242,234,.07) 0%,transparent 55%),radial-gradient(ellipse at 55% 85%,rgba(255,215,0,.04) 0%,transparent 45%);pointer-events:none;z-index:0}
+body::after{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(255,255,255,.015) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.015) 1px,transparent 1px);background-size:44px 44px;pointer-events:none;z-index:0}
+
+/* PAGE SYSTEM */
+.page{position:fixed;inset:0;overflow-y:auto;z-index:1;display:none;opacity:0;transition:opacity .35s ease}
+.page.active{display:block;opacity:1}
+
+/* TOAST */
+#toastWrap{position:fixed;top:16px;right:16px;z-index:9999;display:flex;flex-direction:column;gap:8px;pointer-events:none}
+.toast{background:var(--bg2);border:1px solid rgba(255,215,0,.25);border-radius:12px;padding:10px 14px;display:flex;align-items:center;gap:10px;min-width:210px;box-shadow:0 0 20px rgba(255,215,0,.15);animation:tIn .4s cubic-bezier(.34,1.56,.64,1) forwards,tOut .3s ease-in 3.2s forwards;opacity:0}
+@keyframes tIn{from{transform:translateX(110%) scale(.8);opacity:0}to{transform:translateX(0) scale(1);opacity:1}}
+@keyframes tOut{to{transform:translateX(110%);opacity:0}}
+.toast-e{font-size:1.1rem}.toast-t{font-weight:700;font-size:.78rem;color:var(--gold)}.toast-s{font-size:.65rem;color:var(--muted);margin-top:1px}
+
+/* NAV */
+.nav{display:flex;align-items:center;justify-content:space-between;padding:14px 20px;border-bottom:1px solid var(--border);background:rgba(8,8,16,.85);backdrop-filter:blur(12px);position:sticky;top:0;z-index:100}
+.nav-logo{font-family:'Orbitron',sans-serif;font-weight:900;font-size:1.1rem;background:linear-gradient(135deg,var(--pink),var(--gold),var(--cyan));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;letter-spacing:3px}
+.nav-links{display:flex;gap:6px;align-items:center}
+.nav-btn{padding:6px 14px;border-radius:20px;border:1px solid var(--border);background:transparent;color:var(--muted);font-family:'Exo 2',sans-serif;font-weight:700;font-size:.72rem;letter-spacing:1px;cursor:pointer;transition:all .2s;text-transform:uppercase}
+.nav-btn:hover{border-color:rgba(255,255,255,.2);color:#fff}
+.nav-btn.primary{background:linear-gradient(135deg,var(--pink),var(--gold2));border-color:transparent;color:#fff;box-shadow:0 0 14px rgba(255,0,80,.3)}
+.nav-btn.primary:hover{box-shadow:0 0 22px rgba(255,0,80,.5)}
+.nav-avatar{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--pink),var(--cyan));display:flex;align-items:center;justify-content:center;font-size:.85rem;cursor:pointer;border:2px solid rgba(255,215,0,.3)}
+
+/* ══════════════════════════════════════════
+   LANDING PAGE
+══════════════════════════════════════════ */
+.hero{text-align:center;padding:60px 24px 40px;max-width:600px;margin:0 auto}
+.hero-eyebrow{display:inline-flex;align-items:center;gap:8px;background:rgba(255,0,80,.1);border:1px solid rgba(255,0,80,.25);border-radius:20px;padding:5px 16px;font-size:.68rem;font-weight:700;letter-spacing:2px;color:var(--pink);text-transform:uppercase;margin-bottom:20px}
+.hero-eyebrow::before{content:'●';animation:live 1s infinite alternate}
+@keyframes live{from{opacity:.3}to{opacity:1}}
+.hero-h1{font-family:'Orbitron',sans-serif;font-weight:900;font-size:2.6rem;line-height:1.1;margin-bottom:16px;letter-spacing:2px}
+.hero-h1 .grad{background:linear-gradient(135deg,var(--pink),var(--gold),var(--cyan));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero-sub{color:var(--muted);font-size:.95rem;line-height:1.6;margin-bottom:32px;max-width:420px;margin-left:auto;margin-right:auto}
+.hero-btns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.btn-xl{padding:14px 32px;border-radius:14px;font-family:'Orbitron',sans-serif;font-weight:700;font-size:.8rem;letter-spacing:2px;cursor:pointer;transition:all .25s;border:none;text-transform:uppercase}
+.btn-xl.primary{background:linear-gradient(135deg,var(--pink),var(--gold2));color:#fff;box-shadow:0 0 30px rgba(255,0,80,.4)}
+.btn-xl.primary:hover{transform:translateY(-2px);box-shadow:0 0 50px rgba(255,0,80,.6)}
+.btn-xl.secondary{background:transparent;color:#fff;border:1px solid var(--border)}
+.btn-xl.secondary:hover{border-color:rgba(255,255,255,.3);background:rgba(255,255,255,.04)}
+
+/* PRICING */
+.pricing-section{max-width:480px;margin:0 auto 40px;padding:0 20px}
+.section-head{text-align:center;margin-bottom:24px}
+.section-head h2{font-family:'Orbitron',sans-serif;font-size:1.2rem;font-weight:900;letter-spacing:3px;margin-bottom:6px}
+.section-head p{color:var(--muted);font-size:.82rem}
+.price-card{background:var(--bg2);border:1px solid rgba(255,215,0,.2);border-radius:24px;padding:28px;position:relative;overflow:hidden;box-shadow:0 0 40px rgba(255,215,0,.08)}
+.price-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--pink),var(--gold),var(--cyan))}
+.price-badge{position:absolute;top:16px;right:16px;background:linear-gradient(135deg,var(--pink),var(--gold2));color:#fff;font-size:.58rem;font-weight:900;letter-spacing:2px;padding:4px 10px;border-radius:6px;text-transform:uppercase}
+.price-main{display:flex;align-items:baseline;gap:8px;margin-bottom:6px}
+.price-dollar{font-family:'Orbitron',sans-serif;font-size:3rem;font-weight:900;color:var(--gold);line-height:1}
+.price-cents{font-family:'Orbitron',sans-serif;font-size:1.2rem;color:var(--gold2)}
+.price-period{color:var(--muted);font-size:.8rem}
+.price-desc{color:var(--muted);font-size:.8rem;margin-bottom:20px}
+.price-features{list-style:none;display:flex;flex-direction:column;gap:10px;margin-bottom:24px}
+.price-features li{display:flex;align-items:center;gap:10px;font-size:.82rem}
+.price-features li::before{content:'✦';color:var(--gold);font-size:.7rem;flex-shrink:0}
+.coupon-row{display:flex;gap:8px;margin-bottom:18px}
+.coupon-input{flex:1;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:10px;color:#fff;font-family:'Orbitron',sans-serif;font-size:.75rem;padding:10px 14px;outline:none;transition:border-color .2s;text-transform:uppercase;letter-spacing:2px}
+.coupon-input:focus{border-color:rgba(0,242,234,.4)}
+.coupon-input::placeholder{color:var(--muted);font-size:.65rem;letter-spacing:1px;font-family:'Exo 2',sans-serif;text-transform:none}
+.coupon-btn{padding:10px 18px;border-radius:10px;border:none;background:rgba(0,242,234,.12);color:var(--cyan);font-family:'Orbitron',sans-serif;font-size:.65rem;font-weight:700;cursor:pointer;transition:all .2s;letter-spacing:1px;white-space:nowrap}
+.coupon-btn:hover{background:rgba(0,242,234,.25);box-shadow:0 0 12px rgba(0,242,234,.3)}
+.buy-btn{width:100%;padding:16px;border-radius:14px;border:none;background:linear-gradient(135deg,var(--pink),var(--gold2));color:#fff;font-family:'Orbitron',sans-serif;font-weight:900;font-size:.85rem;letter-spacing:2px;cursor:pointer;transition:all .25s;text-transform:uppercase}
+.buy-btn:hover{transform:translateY(-2px);box-shadow:0 0 30px rgba(255,0,80,.5)}
+.buy-btn.free{background:linear-gradient(135deg,#00FF88,#00B4D8)}
+.buy-btn.free:hover{box-shadow:0 0 30px rgba(0,255,136,.5)}
+
+/* FEATURES GRID */
+.features{max-width:560px;margin:0 auto 40px;padding:0 20px}
+.feat-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.feat-card{background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:16px;transition:all .25s;cursor:default}
+.feat-card:hover{transform:translateY(-3px);border-color:rgba(255,255,255,.15)}
+.feat-icon{font-size:1.5rem;margin-bottom:8px}
+.feat-title{font-weight:700;font-size:.82rem;margin-bottom:4px}
+.feat-desc{color:var(--muted);font-size:.7rem;line-height:1.5}
+
+/* ══════════════════════════════════════════
+   AUTH PAGE
+══════════════════════════════════════════ */
+.auth-wrap{max-width:380px;margin:60px auto;padding:0 20px}
+.auth-card{background:var(--bg2);border:1px solid var(--border);border-radius:24px;padding:32px;position:relative;overflow:hidden}
+.auth-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--pink),var(--cyan))}
+.auth-logo{text-align:center;margin-bottom:24px}
+.auth-logo .logo-big{font-family:'Orbitron',sans-serif;font-weight:900;font-size:1.8rem;background:linear-gradient(135deg,var(--pink),var(--gold),var(--cyan));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;letter-spacing:4px}
+.auth-logo .sub{color:var(--muted);font-size:.72rem;margin-top:4px;letter-spacing:2px;text-transform:uppercase}
+.auth-title{font-family:'Russo One',sans-serif;font-size:1.1rem;margin-bottom:6px;text-align:center}
+.auth-sub{color:var(--muted);font-size:.78rem;text-align:center;margin-bottom:24px}
+.google-btn{width:100%;padding:14px;border-radius:14px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.05);color:#fff;font-family:'Exo 2',sans-serif;font-weight:700;font-size:.85rem;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:12px;transition:all .25s;margin-bottom:16px}
+.google-btn:hover{background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.25);transform:translateY(-1px)}
+.google-icon{width:20px;height:20px;flex-shrink:0}
+.auth-divider{display:flex;align-items:center;gap:12px;margin-bottom:16px}
+.auth-divider span{color:var(--muted);font-size:.72rem;white-space:nowrap}
+.auth-divider::before,.auth-divider::after{content:'';flex:1;height:1px;background:var(--border)}
+.auth-input{width:100%;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:10px;color:#fff;font-family:'Exo 2',sans-serif;font-size:.85rem;padding:12px 14px;outline:none;transition:border-color .2s;margin-bottom:10px}
+.auth-input:focus{border-color:rgba(0,242,234,.4);box-shadow:0 0 8px rgba(0,242,234,.1)}
+.auth-input::placeholder{color:var(--muted)}
+.auth-submit{width:100%;padding:13px;border-radius:12px;border:none;background:linear-gradient(135deg,var(--pink),var(--gold2));color:#fff;font-family:'Orbitron',sans-serif;font-weight:700;font-size:.78rem;letter-spacing:2px;cursor:pointer;transition:all .25s;margin-top:4px}
+.auth-submit:hover{transform:translateY(-1px);box-shadow:0 0 20px rgba(255,0,80,.4)}
+.auth-footer{text-align:center;font-size:.72rem;color:var(--muted);margin-top:16px}
+.auth-link{color:var(--cyan);cursor:pointer;font-weight:700}
+.auth-link:hover{text-decoration:underline}
+
+/* ══════════════════════════════════════════
+   DASHBOARD
+══════════════════════════════════════════ */
+.dash-wrap{max-width:520px;margin:0 auto;padding:20px}
+
+/* TikTok Connect Card */
+.connect-card{background:var(--bg2);border:1px solid var(--border);border-radius:20px;padding:20px;margin-bottom:16px;position:relative;overflow:hidden}
+.connect-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--pink),var(--cyan))}
+.connect-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.connect-title{font-family:'Russo One',sans-serif;font-size:.95rem;display:flex;align-items:center;gap:8px}
+.status-dot{width:8px;height:8px;border-radius:50%;background:#555;flex-shrink:0}
+.status-dot.connected{background:var(--green);box-shadow:0 0 8px rgba(0,255,136,.6);animation:pulse 1.5s infinite}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(0,255,136,.7)}50%{box-shadow:0 0 0 6px rgba(0,255,136,0)}}
+.status-dot.error{background:var(--pink);box-shadow:0 0 8px rgba(255,0,80,.6)}
+.connect-status-text{font-size:.68rem;color:var(--muted);font-weight:600;letter-spacing:1px;text-transform:uppercase}
+.key-input-wrap{position:relative;margin-bottom:10px}
+.key-input{width:100%;background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:10px;color:#fff;font-family:'Orbitron',sans-serif;font-size:.72rem;padding:11px 44px 11px 14px;outline:none;transition:all .2s;letter-spacing:1px}
+.key-input:focus{border-color:rgba(0,242,234,.4);box-shadow:0 0 8px rgba(0,242,234,.1)}
+.key-input::placeholder{font-family:'Exo 2',sans-serif;color:var(--muted);font-size:.78rem;letter-spacing:0}
+.key-toggle{position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--muted);cursor:pointer;font-size:.85rem;padding:4px}
+.key-toggle:hover{color:#fff}
+.key-label{font-size:.62rem;letter-spacing:2px;color:var(--muted);text-transform:uppercase;font-weight:700;margin-bottom:6px;display:block}
+.connect-actions{display:flex;gap:8px;margin-top:12px}
+.conn-btn{flex:1;padding:10px;border-radius:10px;border:none;font-family:'Orbitron',sans-serif;font-size:.65rem;font-weight:700;cursor:pointer;transition:all .2s;letter-spacing:1px;text-transform:uppercase}
+.conn-btn.primary{background:linear-gradient(135deg,var(--pink),var(--gold2));color:#fff}
+.conn-btn.primary:hover{box-shadow:0 0 16px rgba(255,0,80,.4);transform:scale(1.02)}
+.conn-btn.secondary{background:rgba(255,255,255,.05);color:var(--muted);border:1px solid var(--border)}
+.conn-btn.secondary:hover{color:#fff;border-color:rgba(255,255,255,.2)}
+.tiktok-help{background:rgba(0,242,234,.06);border:1px solid rgba(0,242,234,.12);border-radius:10px;padding:12px;margin-top:12px;font-size:.7rem;color:rgba(0,242,234,.8);line-height:1.6}
+.tiktok-help a{color:var(--cyan);font-weight:700}
+
+/* Auction Controls */
+.auction-ctrl-card{background:var(--bg2);border:1px solid var(--border);border-radius:20px;overflow:hidden;margin-bottom:16px}
+.auction-ctrl-card::before{content:'';display:block;height:2px;background:linear-gradient(90deg,var(--gold),var(--pink),var(--cyan))}
+.ctrl-header{padding:16px 18px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border)}
+.ctrl-title{font-family:'Russo One',sans-serif;font-size:.9rem;display:flex;align-items:center;gap:8px}
+.auction-state{font-size:.62rem;letter-spacing:2px;padding:3px 10px;border-radius:6px;font-weight:900;text-transform:uppercase;font-family:'Orbitron',sans-serif}
+.auction-state.idle{background:rgba(255,255,255,.07);color:var(--muted)}
+.auction-state.live{background:rgba(255,0,80,.2);color:var(--pink);animation:statePulse .8s infinite alternate}
+.auction-state.paused{background:rgba(255,215,0,.15);color:var(--gold)}
+.auction-state.ended{background:rgba(0,255,136,.12);color:var(--green)}
+@keyframes statePulse{from{box-shadow:0 0 0 0 rgba(255,0,80,.4)}to{box-shadow:0 0 0 6px rgba(255,0,80,0)}}
+
+/* Big Start/Stop */
+.start-stop-row{display:flex;gap:10px;padding:16px 18px;border-bottom:1px solid var(--border)}
+.ss-btn{flex:1;padding:16px;border-radius:14px;border:none;font-family:'Orbitron',sans-serif;font-weight:900;font-size:.85rem;cursor:pointer;transition:all .25s;display:flex;align-items:center;justify-content:center;gap:8px;letter-spacing:1px;text-transform:uppercase}
+.ss-btn.start{background:linear-gradient(135deg,#00FF88,#00B4D8);color:#000;box-shadow:0 0 20px rgba(0,255,136,.3)}
+.ss-btn.start:hover{transform:translateY(-2px);box-shadow:0 0 35px rgba(0,255,136,.5)}
+.ss-btn.stop{background:linear-gradient(135deg,var(--pink),#8B0000);color:#fff;box-shadow:0 0 20px rgba(255,0,80,.3)}
+.ss-btn.stop:hover{transform:translateY(-2px);box-shadow:0 0 35px rgba(255,0,80,.5)}
+.ss-btn.pause{background:linear-gradient(135deg,var(--gold),var(--gold2));color:#000;box-shadow:0 0 14px rgba(255,215,0,.3)}
+.ss-btn.pause:hover{transform:translateY(-2px);box-shadow:0 0 25px rgba(255,215,0,.5)}
+.ss-btn:disabled{opacity:.35;cursor:not-allowed;transform:none!important;box-shadow:none!important}
+
+/* Timer Section */
+.timer-section{padding:16px 18px;border-bottom:1px solid var(--border)}
+.timer-big{font-family:'Orbitron',sans-serif;font-size:3.5rem;font-weight:900;text-align:center;letter-spacing:4px;color:var(--cyan);text-shadow:0 0 30px rgba(0,242,234,.6);margin-bottom:14px;transition:color .3s}
+.timer-big.red{color:var(--pink);text-shadow:0 0 30px rgba(255,0,80,.6);animation:timerBlink .5s infinite alternate}
+.timer-big.paused-color{color:var(--gold);text-shadow:0 0 20px rgba(255,215,0,.4)}
+@keyframes timerBlink{from{opacity:.7}to{opacity:1}}
+.timer-adj-row{display:flex;gap:6px;justify-content:center;margin-bottom:12px}
+.t-btn{padding:9px 0;border-radius:10px;border:none;font-family:'Orbitron',sans-serif;font-weight:700;font-size:.7rem;cursor:pointer;transition:all .2s;width:62px;letter-spacing:.5px}
+.t-btn:active{transform:scale(.93)}
+.t-btn.minus{background:rgba(255,0,80,.12);color:var(--pink);border:1px solid rgba(255,0,80,.25)}
+.t-btn.minus:hover{background:rgba(255,0,80,.25);box-shadow:0 0 10px rgba(255,0,80,.3)}
+.t-btn.plus{background:rgba(0,242,234,.08);color:var(--cyan);border:1px solid rgba(0,242,234,.2)}
+.t-btn.plus:hover{background:rgba(0,242,234,.2);box-shadow:0 0 10px rgba(0,242,234,.3)}
+
+/* Duration Presets */
+.duration-wrap{background:rgba(0,0,0,.25);border-radius:12px;padding:14px}
+.dur-label{font-size:.58rem;letter-spacing:3px;color:var(--muted);text-transform:uppercase;font-weight:700;margin-bottom:10px;text-align:center}
+.presets{display:flex;gap:6px;flex-wrap:wrap;justify-content:center;margin-bottom:10px}
+.preset-btn{padding:6px 12px;border-radius:8px;border:1px solid var(--border);background:rgba(255,255,255,.04);color:var(--muted);font-family:'Orbitron',sans-serif;font-size:.62rem;font-weight:700;cursor:pointer;transition:all .2s;letter-spacing:.5px}
+.preset-btn:hover,.preset-btn.sel{background:linear-gradient(135deg,var(--pink),var(--gold2));border-color:transparent;color:#fff;box-shadow:0 0 10px rgba(255,0,80,.3)}
+.custom-row{display:flex;gap:6px;align-items:center}
+.c-input{flex:1;background:rgba(255,255,255,.06);border:1px solid var(--border);border-radius:8px;color:#fff;font-family:'Orbitron',sans-serif;font-size:.72rem;font-weight:700;padding:8px 10px;outline:none;text-align:center;transition:border-color .2s;-moz-appearance:textfield}
+.c-input::-webkit-inner-spin-button,.c-input::-webkit-outer-spin-button{-webkit-appearance:none}
+.c-input:focus{border-color:rgba(0,242,234,.4)}
+.c-input::placeholder{color:var(--muted);font-size:.62rem;font-family:'Exo 2',sans-serif}
+.set-time-btn{padding:8px 16px;border-radius:8px;border:none;background:linear-gradient(135deg,var(--pink),var(--gold2));color:#fff;font-family:'Orbitron',sans-serif;font-size:.62rem;font-weight:700;cursor:pointer;transition:all .2s;letter-spacing:1px;white-space:nowrap}
+.set-time-btn:hover{transform:scale(1.05);box-shadow:0 0 12px rgba(255,0,80,.4)}
+
+/* ══════════════════════════════════════════
+   BOARD PAGE
+══════════════════════════════════════════ */
+.board-page-wrap{max-width:480px;margin:0 auto;padding:16px}
+.board-selector-wrap{margin-bottom:16px}
+.board-sel-label{font-size:.58rem;letter-spacing:3px;color:var(--muted);text-transform:uppercase;font-weight:700;margin-bottom:10px;text-align:center}
+.board-tabs{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px;scrollbar-width:none}
+.board-tabs::-webkit-scrollbar{display:none}
+.btab{flex-shrink:0;padding:8px 16px;border-radius:24px;border:1px solid var(--border);background:var(--card);color:var(--muted);font-family:'Exo 2',sans-serif;font-weight:700;font-size:.72rem;letter-spacing:1px;cursor:pointer;transition:all .2s;white-space:nowrap;text-transform:uppercase}
+.btab.active{background:linear-gradient(135deg,var(--pink),var(--gold2));border-color:transparent;color:#fff;box-shadow:0 0 14px rgba(255,0,80,.3)}
+.btab:hover:not(.active){border-color:rgba(255,255,255,.2);color:#fff}
+
+/* Board Themes */
+.board-display{border-radius:20px;overflow:hidden;border:1px solid var(--border);position:relative}
+
+/* CLASSIC theme */
+.theme-classic .board-top-bar{background:linear-gradient(135deg,#1A1A2E,#16213E);padding:14px 16px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid rgba(255,215,0,.15)}
+.theme-classic .board-timer{font-family:'Orbitron',sans-serif;font-size:2rem;font-weight:900;color:var(--cyan);text-shadow:0 0 20px rgba(0,242,234,.6)}
+.theme-classic .board-timer.red{color:var(--pink);text-shadow:0 0 20px rgba(255,0,80,.7)}
+.theme-classic .board-config{display:flex;gap:16px}
+.theme-classic .bcfg{text-align:center}
+.theme-classic .bcfg-label{font-size:.55rem;letter-spacing:2px;color:var(--muted);text-transform:uppercase;font-weight:700}
+.theme-classic .bcfg-val{font-family:'Orbitron',sans-serif;font-size:.8rem;color:var(--gold);font-weight:700;display:flex;align-items:center;gap:4px;justify-content:center}
+.theme-classic .bcfg-val.snipe{background:var(--pink);color:#fff;padding:2px 8px;border-radius:5px;font-size:.7rem}
+.board-ranks{padding:12px}
+.rank-row{display:flex;align-items:center;gap:10px;border-radius:14px;padding:11px 13px;margin-bottom:8px;position:relative;overflow:hidden;transition:transform .2s;cursor:pointer}
+.rank-row:hover{transform:scale(1.015)}
+.rank-row.r1{background:linear-gradient(135deg,rgba(255,215,0,.12),rgba(255,165,0,.06));border:1px solid rgba(255,215,0,.25);box-shadow:0 0 20px rgba(255,215,0,.1)}
+.rank-row.r2{background:linear-gradient(135deg,rgba(192,192,192,.08),rgba(192,192,192,.03));border:1px solid rgba(192,192,192,.15)}
+.rank-row.r3{background:linear-gradient(135deg,rgba(205,127,50,.08),rgba(205,127,50,.03));border:1px solid rgba(205,127,50,.15)}
+.rank-row.empty{background:rgba(255,255,255,.02);border:1px dashed rgba(255,255,255,.07);opacity:.6}
+.rank-num{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Orbitron',sans-serif;font-weight:900;font-size:.72rem;flex-shrink:0}
+.rn1{background:linear-gradient(135deg,#FFD700,#FFA500);color:#000;box-shadow:0 0 12px rgba(255,215,0,.5)}
+.rn2{background:linear-gradient(135deg,#C0C0C0,#888);color:#000}
+.rn3{background:linear-gradient(135deg,#CD7F32,#8B4513);color:#fff}
+.rn-empty{background:rgba(255,255,255,.06);color:var(--muted);border:1px dashed rgba(255,255,255,.1);font-size:1rem}
+.user-av{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0}
+.user-data{flex:1;min-width:0}
+.u-name{font-family:'Russo One',sans-serif;font-size:.88rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.r1 .u-name{color:var(--gold)}
+.r2 .u-name{color:var(--silver)}
+.r3 .u-name{color:var(--bronze)}
+.empty .u-name{color:var(--muted);font-family:'Exo 2',sans-serif;font-size:.78rem;font-weight:600}
+.u-handle{font-size:.65rem;color:var(--muted);margin-top:1px}
+.coin-col{text-align:right;flex-shrink:0}
+.coin-num{font-family:'Orbitron',sans-serif;font-weight:700;font-size:.95rem}
+.r1 .coin-num{color:var(--gold)}
+.r2 .coin-num{color:var(--silver)}
+.r3 .coin-num{color:var(--bronze)}
+.empty .coin-num{color:rgba(255,255,255,.12);font-size:.8rem}
+.coin-lbl{font-size:.58rem;color:var(--muted);letter-spacing:1px;text-transform:uppercase}
+.crown{position:absolute;top:-1px;right:12px;font-size:1.1rem;animation:crownAnim 2s ease-in-out infinite alternate;filter:drop-shadow(0 0 6px rgba(255,215,0,.8))}
+@keyframes crownAnim{from{transform:translateY(0) rotate(-4deg)}to{transform:translateY(-4px) rotate(4deg)}}
+.board-footer{display:flex;justify-content:space-between;padding:10px 14px;border-top:1px solid var(--border);font-size:.68rem;color:var(--muted)}
+.board-footer span{display:flex;align-items:center;gap:5px}
+.board-footer b{color:rgba(255,255,255,.75);font-family:'Orbitron',sans-serif;font-size:.7rem}
+
+/* NEON theme */
+.theme-neon{background:#050510;border-color:rgba(255,0,255,.2)}
+.theme-neon .board-top-bar{background:linear-gradient(135deg,#0A0020,#100020);border-bottom:1px solid rgba(255,0,255,.15)}
+.theme-neon .board-timer{color:#FF00FF;text-shadow:0 0 20px #FF00FF,0 0 40px rgba(255,0,255,.4)}
+.theme-neon .board-timer.red{color:#FF0050}
+.theme-neon .bcfg-val{color:#FF00FF}
+.theme-neon .bcfg-val.snipe{background:#FF00FF}
+.theme-neon .rank-row.r1{background:linear-gradient(135deg,rgba(255,0,255,.15),rgba(255,0,255,.06));border-color:rgba(255,0,255,.3);box-shadow:0 0 20px rgba(255,0,255,.1)}
+.theme-neon .rank-row.r2{background:linear-gradient(135deg,rgba(0,255,255,.1),rgba(0,255,255,.04));border-color:rgba(0,255,255,.2)}
+.theme-neon .rank-row.r3{background:linear-gradient(135deg,rgba(168,85,247,.1),rgba(168,85,247,.04));border-color:rgba(168,85,247,.2)}
+.theme-neon .r1 .u-name{color:#FF00FF;text-shadow:0 0 8px rgba(255,0,255,.5)}
+.theme-neon .r2 .u-name{color:#00FFFF;text-shadow:0 0 8px rgba(0,255,255,.4)}
+.theme-neon .r3 .u-name{color:#A855F7;text-shadow:0 0 8px rgba(168,85,247,.4)}
+.theme-neon .r1 .coin-num{color:#FF00FF}
+.theme-neon .r2 .coin-num{color:#00FFFF}
+.theme-neon .r3 .coin-num{color:#A855F7}
+.theme-neon .rn1{background:linear-gradient(135deg,#FF00FF,#FF69B4);box-shadow:0 0 12px #FF00FF}
+.theme-neon .rn2{background:linear-gradient(135deg,#00FFFF,#0080FF);color:#000;box-shadow:0 0 8px #00FFFF}
+.theme-neon .rn3{background:linear-gradient(135deg,#A855F7,#7C3AED);box-shadow:0 0 8px #A855F7}
+
+/* GALAXY theme */
+.theme-galaxy{background:linear-gradient(180deg,#050520,#0A0530);border-color:rgba(120,0,255,.2)}
+.theme-galaxy .board-top-bar{background:linear-gradient(135deg,#060220,#0E0840);border-bottom:1px solid rgba(120,0,255,.2)}
+.theme-galaxy .board-timer{color:#A855F7;text-shadow:0 0 20px rgba(168,85,247,.8)}
+.theme-galaxy .bcfg-val{color:#A855F7}
+.theme-galaxy .bcfg-val.snipe{background:#7C3AED}
+.theme-galaxy .rank-row.r1{background:linear-gradient(135deg,rgba(255,215,0,.12),rgba(168,85,247,.08));border-color:rgba(255,215,0,.25)}
+.theme-galaxy .rank-row.r2{background:linear-gradient(135deg,rgba(168,85,247,.1),rgba(100,50,200,.06));border-color:rgba(168,85,247,.2)}
+.theme-galaxy .rank-row.r3{background:linear-gradient(135deg,rgba(78,205,196,.08),rgba(78,150,196,.04));border-color:rgba(78,205,196,.15)}
+.theme-galaxy .r2 .u-name{color:#A855F7}
+.theme-galaxy .r3 .u-name{color:#4ECDC4}
+.theme-galaxy .r2 .coin-num{color:#A855F7}
+.theme-galaxy .r3 .coin-num{color:#4ECDC4}
+.theme-galaxy .rn2{background:linear-gradient(135deg,#A855F7,#7C3AED);color:#fff;box-shadow:0 0 8px rgba(168,85,247,.5)}
+.theme-galaxy .rn3{background:linear-gradient(135deg,#4ECDC4,#2980B9);color:#fff}
+
+/* FIRE theme */
+.theme-fire{background:linear-gradient(180deg,#0A0500,#150800);border-color:rgba(255,80,0,.2)}
+.theme-fire .board-top-bar{background:linear-gradient(135deg,#150800,#200A00);border-bottom:1px solid rgba(255,80,0,.15)}
+.theme-fire .board-timer{color:#FF6B00;text-shadow:0 0 20px rgba(255,107,0,.8),0 0 40px rgba(255,50,0,.4)}
+.theme-fire .bcfg-val{color:#FF6B00}
+.theme-fire .bcfg-val.snipe{background:#FF4500}
+.theme-fire .rank-row.r1{background:linear-gradient(135deg,rgba(255,107,0,.15),rgba(255,50,0,.08));border-color:rgba(255,107,0,.3);box-shadow:0 0 20px rgba(255,107,0,.1)}
+.theme-fire .rank-row.r2{background:linear-gradient(135deg,rgba(255,165,0,.1),rgba(200,100,0,.05));border-color:rgba(255,165,0,.2)}
+.theme-fire .rank-row.r3{background:linear-gradient(135deg,rgba(200,70,0,.08),rgba(150,40,0,.04));border-color:rgba(200,70,0,.18)}
+.theme-fire .r1 .u-name{color:#FF6B00}
+.theme-fire .r2 .u-name{color:#FFA500}
+.theme-fire .r3 .u-name{color:#CC5500}
+.theme-fire .r1 .coin-num{color:#FF6B00}
+.theme-fire .r2 .coin-num{color:#FFA500}
+.theme-fire .r3 .coin-num{color:#CC5500}
+.theme-fire .rn1{background:linear-gradient(135deg,#FF6B00,#FF0000);color:#fff;box-shadow:0 0 12px rgba(255,107,0,.6)}
+.theme-fire .rn2{background:linear-gradient(135deg,#FFA500,#FF6B00);color:#000}
+.theme-fire .rn3{background:linear-gradient(135deg,#CC5500,#8B2500);color:#fff}
+
+/* ICE theme */
+.theme-ice{background:linear-gradient(180deg,#030D1A,#05152A);border-color:rgba(0,200,255,.2)}
+.theme-ice .board-top-bar{background:linear-gradient(135deg,#051020,#0A1830);border-bottom:1px solid rgba(0,200,255,.15)}
+.theme-ice .board-timer{color:#00E5FF;text-shadow:0 0 20px rgba(0,229,255,.7)}
+.theme-ice .bcfg-val{color:#00E5FF}
+.theme-ice .bcfg-val.snipe{background:rgba(0,229,255,.8);color:#000}
+.theme-ice .rank-row.r1{background:linear-gradient(135deg,rgba(0,229,255,.12),rgba(0,150,200,.06));border-color:rgba(0,229,255,.25);box-shadow:0 0 20px rgba(0,229,255,.08)}
+.theme-ice .rank-row.r2{background:linear-gradient(135deg,rgba(100,180,255,.08),rgba(80,150,220,.04));border-color:rgba(100,180,255,.2)}
+.theme-ice .rank-row.r3{background:linear-gradient(135deg,rgba(150,220,255,.06),rgba(100,180,240,.03));border-color:rgba(150,220,255,.15)}
+.theme-ice .r1 .u-name,.theme-ice .r1 .coin-num{color:#00E5FF}
+.theme-ice .r2 .u-name,.theme-ice .r2 .coin-num{color:#64B4FF}
+.theme-ice .r3 .u-name,.theme-ice .r3 .coin-num{color:#96DCFF}
+.theme-ice .rn1{background:linear-gradient(135deg,#00E5FF,#0080FF);color:#000;box-shadow:0 0 12px rgba(0,229,255,.5)}
+.theme-ice .rn2{background:linear-gradient(135deg,#64B4FF,#4080D0);color:#000}
+.theme-ice .rn3{background:linear-gradient(135deg,#96DCFF,#5090C0);color:#000}
+
+/* ROYAL theme */
+.theme-royal{background:linear-gradient(180deg,#08040F,#100818);border-color:rgba(180,100,255,.2)}
+.theme-royal .board-top-bar{background:linear-gradient(135deg,#0E0520,#180B30);border-bottom:1px solid rgba(180,100,255,.15)}
+.theme-royal .board-timer{color:#E040FB;text-shadow:0 0 20px rgba(224,64,251,.7)}
+.theme-royal .bcfg-val{color:#E040FB}
+.theme-royal .bcfg-val.snipe{background:#7B1FA2}
+.theme-royal .rank-row.r1{background:linear-gradient(135deg,rgba(255,215,0,.12),rgba(180,100,255,.08));border-color:rgba(255,215,0,.25)}
+.theme-royal .rank-row.r2{background:linear-gradient(135deg,rgba(180,100,255,.1),rgba(120,60,200,.05));border-color:rgba(180,100,255,.2)}
+.theme-royal .rank-row.r3{background:linear-gradient(135deg,rgba(120,60,180,.08),rgba(80,30,130,.04));border-color:rgba(120,60,180,.15)}
+.theme-royal .r2 .u-name,.theme-royal .r2 .coin-num{color:#CE93D8}
+.theme-royal .r3 .u-name,.theme-royal .r3 .coin-num{color:#9C4DCC}
+.theme-royal .rn2{background:linear-gradient(135deg,#E040FB,#9C27B0);color:#fff;box-shadow:0 0 8px rgba(224,64,251,.5)}
+.theme-royal .rn3{background:linear-gradient(135deg,#9C27B0,#6A1B9A);color:#fff}
+
+/* MINIMAL theme */
+.theme-minimal{background:#0C0C0C;border-color:rgba(255,255,255,.08)}
+.theme-minimal .board-top-bar{background:#111;border-bottom:1px solid rgba(255,255,255,.06)}
+.theme-minimal .board-timer{color:#fff;text-shadow:none;font-size:1.8rem}
+.theme-minimal .board-timer.red{color:#FF0050}
+.theme-minimal .bcfg-val{color:#fff}
+.theme-minimal .bcfg-val.snipe{background:#333;color:#fff}
+.theme-minimal .rank-row.r1{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12)}
+.theme-minimal .rank-row.r2{background:rgba(255,255,255,.035);border:1px solid rgba(255,255,255,.07)}
+.theme-minimal .rank-row.r3{background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.05)}
+.theme-minimal .r1 .u-name,.theme-minimal .r2 .u-name,.theme-minimal .r3 .u-name{color:#fff}
+.theme-minimal .r1 .coin-num{color:#FFD700}
+.theme-minimal .r2 .coin-num{color:#C0C0C0}
+.theme-minimal .r3 .coin-num{color:#CD7F32}
+.theme-minimal .rn1{background:#FFD700;color:#000;box-shadow:none}
+.theme-minimal .rn2{background:#C0C0C0;color:#000}
+.theme-minimal .rn3{background:#CD7F32;color:#fff}
+
+/* MOBILE NAV */
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;background:rgba(8,8,16,.95);backdrop-filter:blur(12px);border-top:1px solid var(--border);display:flex;z-index:200;padding-bottom:env(safe-area-inset-bottom)}
+.bnav-item{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:10px 4px;cursor:pointer;transition:all .2s;gap:4px}
+.bnav-icon{font-size:1.2rem}
+.bnav-label{font-size:.58rem;letter-spacing:1px;color:var(--muted);text-transform:uppercase;font-weight:700}
+.bnav-item.active .bnav-label{color:var(--pink)}
+.bnav-item.active .bnav-icon{filter:drop-shadow(0 0 6px rgba(255,0,80,.6))}
+
+/* GENERAL */
+.wrap-pad{padding-bottom:80px}
+.section-lbl{font-size:.58rem;letter-spacing:3px;color:var(--muted);text-transform:uppercase;font-weight:700;margin-bottom:10px;text-align:center;display:flex;align-items:center;gap:10px}
+.section-lbl::before,.section-lbl::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,transparent,var(--border),transparent)}
+input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none}
+
+/* ANIM */
+@keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.fade-in{animation:fadeIn .4s ease forwards}
+
+/* FLOATING COINS */
+.fcoin{position:fixed;pointer-events:none;z-index:999;font-size:1.3rem;animation:floatUp 2s ease-out forwards}
+@keyframes floatUp{0%{transform:translateY(0) scale(1);opacity:1}100%{transform:translateY(-130px) scale(.4);opacity:0}}
+
+/* RANK FLASH */
+@keyframes rankFlash{0%{transform:scale(1)}35%{transform:scale(1.04);box-shadow:0 0 30px rgba(255,215,0,.5)}100%{transform:scale(1)}}
+.rank-flash{animation:rankFlash .55s ease-out}
+
+/* ══ NEW VIEWER BOARD LAYOUT ══ */
+
+/* Snipe zone — top of board, only visible when snipe active */
+.bd-snipe-zone{background:linear-gradient(135deg,rgba(255,0,80,.18),rgba(255,0,80,.08));border-bottom:1px solid rgba(255,0,80,.25);padding:14px 16px 10px;text-align:center;display:none}
+.bd-snipe-zone.active{display:block;animation:snipeZonePop .3s cubic-bezier(.34,1.56,.64,1)}
+@keyframes snipeZonePop{from{transform:scaleY(0);opacity:0}to{transform:scaleY(1);opacity:1}}
+.bd-snipe-header{display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:4px}
+.bd-snipe-title{font-family:'Orbitron',sans-serif;font-weight:900;font-size:.65rem;letter-spacing:4px;color:var(--pink);text-transform:uppercase}
+.bd-snipe-flash{font-size:.8rem;animation:snipeFlash .4s infinite alternate}
+@keyframes snipeFlash{from{opacity:.3}to{opacity:1}}
+.bd-snipe-timer{font-family:'Orbitron',sans-serif;font-size:2.8rem;font-weight:900;color:var(--pink);text-shadow:0 0 20px rgba(255,0,80,.8),0 0 40px rgba(255,0,80,.4);line-height:1;margin-bottom:2px;animation:snipeNumPulse .5s infinite alternate}
+@keyframes snipeNumPulse{from{transform:scale(1)}to{transform:scale(1.04)}}
+.bd-snipe-sub{font-size:.62rem;color:rgba(255,0,80,.6);letter-spacing:2px;text-transform:uppercase;margin-bottom:8px}
+.bd-snipe-track{height:4px;background:rgba(255,0,80,.15);border-radius:2px;overflow:hidden}
+.bd-snipe-fill{height:100%;background:linear-gradient(90deg,var(--pink),var(--gold));border-radius:2px;transition:width .1s linear}
+
+/* Timer zone */
+.bd-timer-zone{text-align:center;padding:18px 16px 12px;border-bottom:1px solid var(--border)}
+.bd-timer-label{font-size:.58rem;letter-spacing:4px;color:var(--muted);text-transform:uppercase;font-weight:700;margin-bottom:6px}
+.bd-timer-big{font-family:'Orbitron',sans-serif;font-size:3.8rem;font-weight:900;color:var(--cyan);text-shadow:0 0 30px rgba(0,242,234,.6);line-height:1;margin-bottom:10px;transition:color .3s,text-shadow .3s}
+.bd-timer-big.red{color:var(--pink);text-shadow:0 0 30px rgba(255,0,80,.8);animation:timerBlink .5s infinite alternate}
+.bd-timer-big.ended{color:var(--gold);text-shadow:0 0 20px rgba(255,215,0,.5);animation:none;font-size:2rem;letter-spacing:4px}
+.bd-timer-meta{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.bd-meta-chip{display:flex;align-items:center;gap:5px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:20px;padding:4px 12px;font-size:.65rem;color:var(--muted);font-weight:600}
+.bd-meta-chip b{color:rgba(255,255,255,.85);font-family:'Orbitron',sans-serif;font-size:.65rem}
+.bd-meta-chip.snipe-chip{background:rgba(255,0,80,.08);border-color:rgba(255,0,80,.2);color:var(--pink)}
+.bd-meta-chip.snipe-chip b{color:var(--pink)}
+.bd-meta-dot{width:6px;height:6px;border-radius:50%;background:var(--gold);box-shadow:0 0 4px rgba(255,215,0,.6);display:inline-block}
+
+/* Rankings on board */
+.bd-ranks{padding:12px 12px 4px}
+.bd-rank-row{display:flex;align-items:center;gap:10px;border-radius:14px;padding:12px 13px;margin-bottom:8px;position:relative;overflow:hidden;transition:transform .25s,box-shadow .25s}
+.bd-rank-row.just-updated{animation:rankPop .5s cubic-bezier(.34,1.56,.64,1)}
+@keyframes rankPop{0%{transform:scale(1)}40%{transform:scale(1.03)}100%{transform:scale(1)}}
+.bd-rank-row.p1{background:linear-gradient(135deg,rgba(255,215,0,.14),rgba(255,165,0,.07));border:1px solid rgba(255,215,0,.3);box-shadow:0 0 24px rgba(255,215,0,.1)}
+.bd-rank-row.p2{background:linear-gradient(135deg,rgba(192,192,192,.09),rgba(192,192,192,.03));border:1px solid rgba(192,192,192,.18)}
+.bd-rank-row.p3{background:linear-gradient(135deg,rgba(205,127,50,.09),rgba(205,127,50,.03));border:1px solid rgba(205,127,50,.18)}
+.bd-rank-row.empty{background:rgba(255,255,255,.025);border:1px dashed rgba(255,255,255,.07)}
+.bd-rank-num{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Orbitron',sans-serif;font-weight:900;font-size:.72rem;flex-shrink:0}
+.bd-rn1{background:linear-gradient(135deg,#FFD700,#FFA500);color:#000;box-shadow:0 0 12px rgba(255,215,0,.5)}
+.bd-rn2{background:linear-gradient(135deg,#C0C0C0,#888);color:#000}
+.bd-rn3{background:linear-gradient(135deg,#CD7F32,#8B4513);color:#fff}
+.bd-rn-empty{background:rgba(255,255,255,.06);color:rgba(255,255,255,.2);border:1px dashed rgba(255,255,255,.1);font-size:.8rem}
+.bd-user-av{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0;border:2px solid transparent}
+.bd-rank-row.p1 .bd-user-av{border-color:rgba(255,215,0,.4)}
+.bd-rank-row.p2 .bd-user-av{border-color:rgba(192,192,192,.25)}
+.bd-rank-row.p3 .bd-user-av{border-color:rgba(205,127,50,.25)}
+.bd-user-info{flex:1;min-width:0}
+.bd-user-name{font-family:'Russo One',sans-serif;font-size:.9rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.p1 .bd-user-name{color:var(--gold)}
+.p2 .bd-user-name{color:var(--silver)}
+.p3 .bd-user-name{color:var(--bronze)}
+.empty .bd-user-name{color:rgba(255,255,255,.25);font-family:'Exo 2',sans-serif;font-size:.75rem;font-weight:600;font-style:italic}
+.bd-user-handle{font-size:.65rem;color:var(--muted);margin-top:1px}
+.bd-coin-col{text-align:right;flex-shrink:0}
+.bd-coin-num{font-family:'Orbitron',sans-serif;font-weight:700;font-size:.98rem}
+.p1 .bd-coin-num{color:var(--gold)}
+.p2 .bd-coin-num{color:var(--silver)}
+.p3 .bd-coin-num{color:var(--bronze)}
+.empty .bd-coin-num{color:rgba(255,255,255,.12)}
+.bd-coin-lbl{font-size:.58rem;color:var(--muted);letter-spacing:1px;text-transform:uppercase}
+.bd-crown{position:absolute;top:-1px;right:12px;font-size:1.1rem;animation:crownAnim 2s ease-in-out infinite alternate;filter:drop-shadow(0 0 6px rgba(255,215,0,.8))}
+
+/* Coin pop-in notification on board */
+.bd-coin-pop{position:absolute;right:10px;top:50%;transform:translateY(-50%);font-family:'Orbitron',sans-serif;font-size:.7rem;font-weight:900;color:var(--gold);background:rgba(255,215,0,.15);border:1px solid rgba(255,215,0,.3);padding:3px 8px;border-radius:8px;animation:coinPopIn .8s ease forwards;pointer-events:none}
+@keyframes coinPopIn{0%{opacity:0;transform:translateY(-50%) scale(.5)}30%{opacity:1;transform:translateY(-50%) scale(1.1)}60%{opacity:1;transform:translateY(-50%) scale(1)}100%{opacity:0;transform:translateY(-80%) scale(.8)}}
+
+/* Prize zone */
+.bd-prize-zone{margin:4px 12px 12px;background:linear-gradient(135deg,rgba(255,215,0,.08),rgba(255,165,0,.04));border:1px solid rgba(255,215,0,.2);border-radius:14px;padding:14px 16px;text-align:center;position:relative;overflow:hidden}
+.bd-prize-zone::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,rgba(255,215,0,.5),transparent)}
+.bd-prize-label{font-size:.58rem;letter-spacing:3px;color:rgba(255,215,0,.5);text-transform:uppercase;font-weight:700;margin-bottom:6px}
+.bd-prize-title{font-family:'Russo One',sans-serif;font-size:1.15rem;color:var(--gold);text-shadow:0 0 16px rgba(255,215,0,.4);margin-bottom:4px}
+.bd-prize-sub{font-size:.65rem;color:var(--muted);letter-spacing:1px}
+
+/* Footer */
+.bd-footer{display:flex;justify-content:space-between;align-items:center;padding:10px 16px;border-top:1px solid var(--border);font-size:.68rem;color:var(--muted)}
+.bd-footer b{color:rgba(255,255,255,.8);font-family:'Orbitron',sans-serif;font-size:.68rem}
+.bd-live-badge{background:rgba(255,0,80,.15);color:var(--pink);font-weight:700;font-size:.62rem;letter-spacing:2px;padding:3px 9px;border-radius:6px;border:1px solid rgba(255,0,80,.25);animation:liveBadgePulse 1s infinite alternate}
+@keyframes liveBadgePulse{from{opacity:.7}to{opacity:1;box-shadow:0 0 8px rgba(255,0,80,.4)}}
+.bd-idle-badge{background:rgba(255,255,255,.05);color:var(--muted);font-weight:700;font-size:.62rem;letter-spacing:2px;padding:3px 9px;border-radius:6px;border:1px solid var(--border)}
+
+/* Owner's "Your Position" popup toast on board */
+.owner-rank-pop{position:fixed;bottom:90px;left:50%;transform:translateX(-50%);background:var(--bg2);border:1px solid rgba(255,215,0,.3);border-radius:16px;padding:12px 20px;display:flex;align-items:center;gap:12px;box-shadow:0 0 30px rgba(255,215,0,.2);z-index:500;animation:ownerPopIn .4s cubic-bezier(.34,1.56,.64,1) forwards;white-space:nowrap}
+@keyframes ownerPopIn{from{transform:translateX(-50%) translateY(20px);opacity:0}to{transform:translateX(-50%) translateY(0);opacity:1}}
+.owner-rank-emoji{font-size:1.4rem}
+.owner-rank-text{font-size:.8rem;font-weight:700}
+.owner-rank-text span{font-family:'Orbitron',sans-serif;color:var(--gold);font-size:.9rem}
+
+/* ══ BOARD PAYWALL LOCK OVERLAY ══ */
+.board-lock-overlay{position:absolute;inset:0;z-index:200;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:24px;background:linear-gradient(180deg,rgba(8,8,16,0) 0%,rgba(8,8,16,.75) 30%,rgba(8,8,16,.97) 100%);backdrop-filter:blur(2px);border-radius:inherit}
+.board-lock-overlay.hidden{display:none}
+.lock-icon{font-size:2.8rem;margin-bottom:12px;filter:drop-shadow(0 0 12px rgba(255,215,0,.5))}
+.lock-title{font-family:'Orbitron',sans-serif;font-weight:900;font-size:1.05rem;letter-spacing:2px;color:#fff;margin-bottom:6px}
+.lock-sub{color:var(--muted);font-size:.78rem;line-height:1.6;max-width:260px;margin-bottom:20px}
+.lock-buy-btn{padding:14px 32px;border-radius:14px;border:none;background:linear-gradient(135deg,var(--pink),var(--gold2));color:#fff;font-family:'Orbitron',sans-serif;font-weight:900;font-size:.8rem;letter-spacing:2px;cursor:pointer;transition:all .25s;box-shadow:0 0 30px rgba(255,0,80,.4)}
+.lock-buy-btn:hover{transform:translateY(-2px);box-shadow:0 0 50px rgba(255,0,80,.6)}
+.lock-signin{margin-top:12px;font-size:.7rem;color:var(--muted)}
+.lock-signin span{color:var(--cyan);cursor:pointer;font-weight:700}
+.lock-signin span:hover{text-decoration:underline}
+
+/* ══ DISCONNECTED POPUP ══ */
+.disconn-overlay{position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:4500;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(10px);opacity:0;pointer-events:none;transition:opacity .3s}
+.disconn-overlay.show{opacity:1;pointer-events:all}
+.disconn-popup{background:var(--bg2);border:2px solid rgba(255,0,80,.35);border-radius:24px;padding:32px 28px;max-width:320px;width:90%;text-align:center;position:relative;overflow:hidden;transform:scale(.88);transition:transform .35s cubic-bezier(.34,1.56,.64,1)}
+.disconn-overlay.show .disconn-popup{transform:scale(1)}
+.disconn-popup::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--pink),#8B0000,var(--pink));background-size:200%;animation:shimmerW 2s linear infinite}
+.disconn-icon{font-size:2.8rem;margin-bottom:12px;animation:shake .5s ease-in-out}
+@keyframes shake{0%,100%{transform:rotate(0)}25%{transform:rotate(-8deg)}75%{transform:rotate(8deg)}}
+.disconn-title{font-family:'Orbitron',sans-serif;font-weight:900;font-size:1rem;letter-spacing:2px;color:var(--pink);margin-bottom:8px}
+.disconn-msg{color:var(--muted);font-size:.78rem;line-height:1.6;margin-bottom:20px}
+.disconn-user{display:inline-flex;align-items:center;gap:6px;background:rgba(255,0,80,.08);border:1px solid rgba(255,0,80,.2);border-radius:20px;padding:5px 14px;font-family:'Orbitron',sans-serif;font-size:.7rem;color:var(--pink);margin-bottom:20px}
+.disconn-btns{display:flex;flex-direction:column;gap:8px}
+.disconn-retry{padding:12px;border-radius:12px;border:none;background:linear-gradient(135deg,var(--pink),var(--gold2));color:#fff;font-family:'Orbitron',sans-serif;font-weight:900;font-size:.75rem;letter-spacing:1px;cursor:pointer;transition:all .2s}
+.disconn-retry:hover{box-shadow:0 0 18px rgba(255,0,80,.5);transform:scale(1.02)}
+.disconn-dismiss{padding:10px;border-radius:12px;border:1px solid var(--border);background:transparent;color:var(--muted);font-family:'Exo 2',sans-serif;font-size:.78rem;cursor:pointer;transition:all .2s}
+.disconn-dismiss:hover{color:#fff;border-color:rgba(255,255,255,.2)}
+
+/* ══ CONNECT TO LIVE BUTTON on board ══ */
+.board-connect-bar{padding:12px 14px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px}
+.board-connect-btn{flex:1;padding:11px;border-radius:12px;border:none;font-family:'Orbitron',sans-serif;font-weight:900;font-size:.72rem;cursor:pointer;transition:all .25s;display:flex;align-items:center;justify-content:center;gap:8px;letter-spacing:1px;text-transform:uppercase}
+.board-connect-btn.disconnected{background:linear-gradient(135deg,var(--pink),var(--gold2));color:#fff;box-shadow:0 0 16px rgba(255,0,80,.3);animation:connectPulse 2s ease-in-out infinite}
+@keyframes connectPulse{0%,100%{box-shadow:0 0 16px rgba(255,0,80,.3)}50%{box-shadow:0 0 30px rgba(255,0,80,.6)}}
+.board-connect-btn.connected{background:linear-gradient(135deg,rgba(0,255,136,.15),rgba(0,180,100,.1));color:var(--green);border:1px solid rgba(0,255,136,.3);animation:none}
+.board-conn-status{display:flex;flex-direction:column;align-items:flex-end;gap:2px}
+.board-conn-dot{width:8px;height:8px;border-radius:50%;background:#555;align-self:flex-end}
+.board-conn-dot.on{background:var(--green);box-shadow:0 0 6px rgba(0,255,136,.7);animation:pulse 1.5s infinite}
+.board-conn-label{font-size:.58rem;color:var(--muted);letter-spacing:1px;font-weight:700;text-transform:uppercase}
+
+/* ══ WINNER POPUP ══ */
+.winner-overlay{position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:5000;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(8px);opacity:0;pointer-events:none;transition:opacity .4s}
+.winner-overlay.show{opacity:1;pointer-events:all}
+.winner-popup{background:var(--bg2);border:2px solid rgba(255,215,0,.4);border-radius:28px;padding:36px 28px;text-align:center;max-width:340px;width:90%;position:relative;overflow:hidden;transform:scale(.8);transition:transform .4s cubic-bezier(.34,1.56,.64,1)}
+.winner-overlay.show .winner-popup{transform:scale(1)}
+.winner-popup::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--pink),var(--gold),var(--cyan),var(--gold),var(--pink));background-size:200%;animation:shimmerW 2s linear infinite}
+@keyframes shimmerW{0%{background-position:-200% 0}100%{background-position:200% 0}}
+.winner-confetti{font-size:2.5rem;margin-bottom:8px;animation:winnerBounce 1s ease-in-out infinite alternate}
+@keyframes winnerBounce{from{transform:scale(1) rotate(-5deg)}to{transform:scale(1.1) rotate(5deg)}}
+.winner-title{font-family:'Orbitron',sans-serif;font-weight:900;font-size:1rem;letter-spacing:3px;color:var(--gold);text-transform:uppercase;margin-bottom:4px;text-shadow:0 0 20px rgba(255,215,0,.6)}
+.winner-subtitle{color:var(--muted);font-size:.72rem;letter-spacing:1px;margin-bottom:20px}
+.winner-avatar{width:72px;height:72px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:2rem;margin:0 auto 14px;border:3px solid rgba(255,215,0,.5);box-shadow:0 0 30px rgba(255,215,0,.3)}
+.winner-name{font-family:'Russo One',sans-serif;font-size:1.4rem;color:var(--gold);margin-bottom:4px;text-shadow:0 0 15px rgba(255,215,0,.5)}
+.winner-handle{color:var(--muted);font-size:.78rem;margin-bottom:16px}
+.winner-coins-badge{display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,rgba(255,215,0,.2),rgba(255,165,0,.1));border:1px solid rgba(255,215,0,.35);border-radius:40px;padding:10px 22px;margin-bottom:20px}
+.winner-coins-num{font-family:'Orbitron',sans-serif;font-size:1.6rem;font-weight:900;color:var(--gold);line-height:1}
+.winner-coins-label{font-size:.65rem;color:rgba(255,215,0,.6);letter-spacing:2px;text-transform:uppercase}
+.winner-close{width:100%;padding:13px;border-radius:14px;border:none;background:linear-gradient(135deg,var(--pink),var(--gold2));color:#fff;font-family:'Orbitron',sans-serif;font-weight:900;font-size:.78rem;letter-spacing:2px;cursor:pointer;transition:all .25s}
+.winner-close:hover{transform:scale(1.03);box-shadow:0 0 20px rgba(255,0,80,.4)}
+/* sparkle stars around winner */
+.winner-stars{position:absolute;inset:0;pointer-events:none;overflow:hidden}
+.wstar{position:absolute;font-size:.9rem;animation:wstarAnim 2s ease-in-out infinite}
+@keyframes wstarAnim{0%,100%{opacity:0;transform:scale(0)}50%{opacity:1;transform:scale(1)}}
+
+/* ══ SNIPE COUNTDOWN ══ */
+.snipe-bar{background:rgba(255,0,80,.08);border:1px solid rgba(255,0,80,.2);border-radius:12px;padding:10px 14px;margin:0 12px 12px;display:none;align-items:center;gap:10px}
+.snipe-bar.active{display:flex}
+.snipe-label{font-size:.62rem;letter-spacing:2px;color:var(--pink);text-transform:uppercase;font-weight:700;flex:1}
+.snipe-countdown{font-family:'Orbitron',sans-serif;font-size:1.1rem;font-weight:900;color:var(--pink);text-shadow:0 0 10px rgba(255,0,80,.6);min-width:32px;text-align:right}
+.snipe-progress{height:3px;background:rgba(255,0,80,.15);border-radius:2px;margin:0 12px 8px;display:none;overflow:hidden}
+.snipe-progress.active{display:block}
+.snipe-bar-fill{height:100%;background:linear-gradient(90deg,var(--pink),var(--gold));border-radius:2px;transition:width .1s linear}
+
+/* ══ STRIPE MODAL ══ */
+.stripe-overlay{position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:4000;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(8px);opacity:0;pointer-events:none;transition:opacity .35s}
+.stripe-overlay.show{opacity:1;pointer-events:all}
+.stripe-modal{background:var(--bg2);border:1px solid rgba(255,215,0,.2);border-radius:24px;padding:28px;max-width:360px;width:90%;position:relative;overflow:hidden;transform:translateY(20px);transition:transform .4s cubic-bezier(.34,1.56,.64,1)}
+.stripe-overlay.show .stripe-modal{transform:translateY(0)}
+.stripe-modal::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--pink),var(--gold),var(--cyan))}
+.stripe-close-x{position:absolute;top:14px;right:16px;background:none;border:none;color:var(--muted);font-size:1.2rem;cursor:pointer;line-height:1}
+.stripe-close-x:hover{color:#fff}
+.stripe-logo{text-align:center;margin-bottom:18px}
+.stripe-logo .sl{font-family:'Orbitron',sans-serif;font-weight:900;font-size:1.4rem;background:linear-gradient(135deg,var(--pink),var(--gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;letter-spacing:3px}
+.stripe-price-row{display:flex;justify-content:space-between;align-items:center;background:rgba(255,215,0,.06);border:1px solid rgba(255,215,0,.15);border-radius:12px;padding:14px;margin-bottom:16px}
+.stripe-price-label{font-size:.8rem;font-weight:600}
+.stripe-price-amt{font-family:'Orbitron',sans-serif;font-size:1.4rem;font-weight:900;color:var(--gold)}
+.stripe-price-amt.free-price{color:var(--green)}
+.stripe-link-btn{display:block;width:100%;padding:14px;border-radius:14px;border:none;background:linear-gradient(135deg,#635BFF,#7B73FF);color:#fff;font-family:'Orbitron',sans-serif;font-weight:900;font-size:.8rem;letter-spacing:2px;cursor:pointer;transition:all .25s;text-align:center;text-decoration:none;margin-bottom:10px}
+.stripe-link-btn:hover{transform:translateY(-2px);box-shadow:0 0 24px rgba(99,91,255,.6)}
+.stripe-note{font-size:.65rem;color:var(--muted);text-align:center;line-height:1.6}
+.stripe-verify-row{display:flex;gap:8px;margin-top:12px}
+.stripe-verify-input{flex:1;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:10px;color:#fff;font-family:'Exo 2',sans-serif;font-size:.8rem;padding:10px 12px;outline:none;transition:border-color .2s}
+.stripe-verify-input:focus{border-color:rgba(0,242,234,.4)}
+.stripe-verify-input::placeholder{color:var(--muted)}
+.stripe-verify-btn{padding:10px 16px;border-radius:10px;border:none;background:linear-gradient(135deg,var(--cyan),#0080FF);color:#000;font-family:'Orbitron',sans-serif;font-size:.62rem;font-weight:900;cursor:pointer;transition:all .2s;white-space:nowrap;letter-spacing:1px}
+.stripe-verify-btn:hover{box-shadow:0 0 12px rgba(0,242,234,.4)}
+
+::-webkit-scrollbar{width:3px;height:3px}
+::-webkit-scrollbar-thumb{background:rgba(255,255,255,.08);border-radius:2px}
+</style>
+</head>
+<body>
+
+<!-- TOAST -->
+<div id="toastWrap"></div>
+
+<!-- WINNER POPUP -->
+<div class="winner-overlay" id="winnerOverlay">
+  <div class="winner-popup">
+    <div class="winner-stars" id="winnerStars"></div>
+    <div class="winner-confetti">🏆</div>
+    <div class="winner-title">Auction Ended!</div>
+    <div class="winner-subtitle">And the winner is...</div>
+    <div class="winner-avatar" id="winnerAv" style="background:linear-gradient(135deg,#FF6B6B,#FF8E53)">🐉</div>
+    <div class="winner-name" id="winnerName">DragonSlayer</div>
+    <div class="winner-handle" id="winnerHandle">@dragonslayer99</div>
+    <div class="winner-coins-badge">
+      <span style="font-size:1.4rem">🪙</span>
+      <div>
+        <div class="winner-coins-num" id="winnerCoins">847</div>
+        <div class="winner-coins-label">coins sent</div>
+      </div>
+    </div>
+    <button class="winner-close" onclick="closeWinner()" style="margin-bottom:8px">🎉 Close & View Board</button>
+    <button onclick="closeWinner();restartAuction()" style="width:100%;padding:11px;border-radius:14px;border:1px solid rgba(0,242,234,.3);background:rgba(0,242,234,.08);color:var(--cyan);font-family:'Orbitron',sans-serif;font-weight:700;font-size:.72rem;letter-spacing:2px;cursor:pointer;transition:all .2s" onmouseover="this.style.background='rgba(0,242,234,.18)'" onmouseout="this.style.background='rgba(0,242,234,.08)'">🔄 New Auction</button>
+  </div>
+</div>
+
+<!-- TIE POPUP — shown to streamer when auction ends in a tie -->
+<div class="winner-overlay" id="tieOverlay">
+  <div class="winner-popup" style="max-width:340px">
+    <div style="font-size:2rem;text-align:center;margin-bottom:8px">🤝</div>
+    <div class="winner-title" style="color:#FFA500">It's a Tie!</div>
+    <div class="winner-subtitle" id="tieSubtitle">Two players are tied for 1st place</div>
+    <div id="tiePlayers" style="width:100%;margin:16px 0;display:flex;flex-direction:column;gap:8px"></div>
+    <div style="font-size:.7rem;color:rgba(255,255,255,.4);text-align:center;margin-bottom:16px;line-height:1.6">Add time so they can break the tie,<br>or end the auction and split the prize.</div>
+    <div style="display:flex;flex-direction:column;gap:8px;width:100%">
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px">
+        <button onclick="addTieTime(30)" style="padding:10px 0;border-radius:10px;border:1px solid rgba(0,242,234,.3);background:rgba(0,242,234,.08);color:#00F2EA;font-family:'Orbitron',sans-serif;font-size:.6rem;font-weight:900;cursor:pointer">+30s</button>
+        <button onclick="addTieTime(60)" style="padding:10px 0;border-radius:10px;border:1px solid rgba(0,242,234,.3);background:rgba(0,242,234,.08);color:#00F2EA;font-family:'Orbitron',sans-serif;font-size:.6rem;font-weight:900;cursor:pointer">+1m</button>
+        <button onclick="addTieTime(120)" style="padding:10px 0;border-radius:10px;border:1px solid rgba(0,242,234,.3);background:rgba(0,242,234,.08);color:#00F2EA;font-family:'Orbitron',sans-serif;font-size:.6rem;font-weight:900;cursor:pointer">+2m</button>
+        <button onclick="addTieTime(300)" style="padding:10px 0;border-radius:10px;border:1px solid rgba(0,242,234,.3);background:rgba(0,242,234,.08);color:#00F2EA;font-family:'Orbitron',sans-serif;font-size:.6rem;font-weight:900;cursor:pointer">+5m</button>
+      </div>
+      <button onclick="closeTieAndContinue()" style="width:100%;padding:13px;border-radius:12px;border:none;background:linear-gradient(135deg,#FF006E,#FF8C00);color:#fff;font-family:'Orbitron',sans-serif;font-weight:900;font-size:.72rem;letter-spacing:2px;cursor:pointer">🏆 End & Show Winner</button>
+      <button onclick="closeTieAndRestart()" style="width:100%;padding:11px;border-radius:12px;border:1px solid rgba(0,242,234,.3);background:rgba(0,242,234,.08);color:var(--cyan);font-family:'Orbitron',sans-serif;font-weight:700;font-size:.68rem;letter-spacing:2px;cursor:pointer">🔄 New Auction</button>
+    </div>
+  </div>
+</div>
+
+<!-- DISCONNECTED POPUP -->
+<div class="disconn-overlay" id="disconnOverlay">
+  <div class="disconn-popup">
+    <div class="disconn-icon">📡</div>
+    <div class="disconn-title">You're Disconnected</div>
+    <div class="disconn-user" id="disconnUser">@yourtiktok</div>
+    <div class="disconn-msg">
+      Your TikTok LIVE connection was lost or the account is not currently live.<br><br>
+      Make sure your TikTok is live, then reconnect.
+    </div>
+    <div class="disconn-btns">
+      <button class="disconn-retry" onclick="retryConnect()">🔄 Try Reconnecting</button>
+      <button class="disconn-dismiss" onclick="closeDisconn()">Dismiss</button>
+    </div>
+  </div>
+</div>
+
+<!-- BOARD LINK REVEAL MODAL (shown after payment) -->
+<div class="stripe-overlay" id="stripeOverlay">
+  <div class="stripe-modal">
+    <button class="stripe-close-x" onclick="closeStripe()">✕</button>
+    <div id="stripeStep1" style="display:none"></div>
+    <!-- Board Link revealed on screen after payment -->
+    <div id="stripeStep2">
+      <div style="text-align:center;margin-bottom:18px">
+        <div style="font-size:2rem;margin-bottom:8px">🎉</div>
+        <div style="font-family:'Orbitron',sans-serif;font-weight:900;font-size:1rem;color:var(--green);letter-spacing:2px;margin-bottom:4px">ACCESS GRANTED!</div>
+        <div style="font-size:.72rem;color:var(--muted);line-height:1.6">Here is your unique board link.<br>Copy it — you'll need it to activate your board.</div>
+      </div>
+      <div style="background:rgba(0,242,234,.06);border:1px solid rgba(0,242,234,.2);border-radius:14px;padding:14px;margin-bottom:14px">
+        <div style="font-size:.58rem;letter-spacing:2px;color:var(--muted);text-transform:uppercase;font-weight:700;margin-bottom:8px">Your Board Link</div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <div id="boardLinkDisplay" style="flex:1;font-family:'Orbitron',sans-serif;font-size:.68rem;color:var(--cyan);word-break:break-all;letter-spacing:.5px;line-height:1.6">coindrop.app/board/—</div>
+          <button onclick="copyBoardLink()" id="copyLinkBtn" style="flex-shrink:0;padding:10px 16px;border-radius:10px;border:none;background:linear-gradient(135deg,var(--cyan),#0080FF);color:#000;font-family:'Orbitron',sans-serif;font-size:.65rem;font-weight:900;cursor:pointer;transition:all .2s;letter-spacing:1px;white-space:nowrap">📋 COPY</button>
+        </div>
+      </div>
+      <div style="background:rgba(0,255,136,.05);border:1px solid rgba(0,255,136,.15);border-radius:12px;padding:12px;margin-bottom:16px;font-size:.68rem;color:rgba(0,255,136,.75);line-height:1.7">
+        ✅ <strong>TikTok Compliant</strong> — CoinDrop uses TikTok's official LIVE Gifting API. Your account is safe.
+      </div>
+      <button onclick="goToDashboardFromStripe()" style="width:100%;padding:14px;border-radius:14px;border:none;background:linear-gradient(135deg,var(--pink),var(--gold2));color:#fff;font-family:'Orbitron',sans-serif;font-weight:900;font-size:.8rem;letter-spacing:2px;cursor:pointer;box-shadow:0 0 20px rgba(255,0,80,.3)">
+        🚀 Go to Dashboard →
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- BOTTOM NAV (hidden on landing/auth) -->
+<div class="bottom-nav" id="bottomNav" style="display:none">
+  <div class="bnav-item active" id="bnav-dash" onclick="goPage('dashboard')">
+    <div class="bnav-icon">🎛️</div>
+    <div class="bnav-label">Control</div>
+  </div>
+  <div class="bnav-item" id="bnav-board" onclick="goPage('board')">
+    <div class="bnav-icon">🏆</div>
+    <div class="bnav-label">Board</div>
+  </div>
+  <div class="bnav-item" id="bnav-settings" onclick="goPage('settings')">
+    <div class="bnav-icon">⚙️</div>
+    <div class="bnav-label">Settings</div>
+  </div>
+  <div class="bnav-item" id="bnav-account" onclick="goPage('account')">
+    <div class="bnav-icon">👤</div>
+    <div class="bnav-label">Account</div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     PAGE: LANDING
+═══════════════════════════════════════ -->
+<div class="page active" id="page-landing">
+  <div class="nav">
+    <div class="nav-logo">COINDROP</div>
+    <div class="nav-links" id="landingNavLinks">
+      <button class="nav-btn" onclick="goPage('auth')">Sign In</button>
+      <button class="nav-btn primary" onclick="goPage('pricing')">Get Access</button>
+    </div>
+  </div>
+  <div class="wrap-pad">
+    <div class="hero">
+      <div class="hero-eyebrow">TikTok LIVE Auctions</div>
+      <h1 class="hero-h1">Run <span class="grad">Coin Auctions</span> on Your TikTok LIVE</h1>
+      <p class="hero-sub">Real-time leaderboards, automatic rankings, and stunning board designs — all powered by TikTok coins.</p>
+      <div class="hero-btns">
+        <button class="btn-xl primary" onclick="goPage('pricing')">Get Started — $60</button>
+        <button class="btn-xl secondary" onclick="viewDemoBoard()">👀 View Demo Board</button>
+      </div>
+    </div>
+
+    <div class="features" style="margin-top:0">
+      <div class="section-lbl">Features</div>
+      <div class="feat-grid">
+        <div class="feat-card"><div class="feat-icon">🎨</div><div class="feat-title">8 Board Themes</div><div class="feat-desc">Classic, Neon, Galaxy, Fire, Ice, Royal, Minimal & more</div></div>
+        <div class="feat-card"><div class="feat-icon">⏱️</div><div class="feat-title">Full Timer Control</div><div class="feat-desc">Add or remove time mid-auction, change prize, pause — all live</div></div>
+        <div class="feat-card"><div class="feat-icon">🔗</div><div class="feat-title">Board Link</div><div class="feat-desc">We give you a link — paste it in and your board goes live instantly</div></div>
+        <div class="feat-card"><div class="feat-icon">🏅</div><div class="feat-title">Live Rankings</div><div class="feat-desc">Auto-updates as coins come in from viewers</div></div>
+        <div class="feat-card"><div class="feat-icon">⚡</div><div class="feat-title">Snipe Window</div><div class="feat-desc">Extra time added after the timer — your choice how long — so viewers can still steal first place</div></div>
+        <div class="feat-card"><div class="feat-icon">🔔</div><div class="feat-title">Live Alerts</div><div class="feat-desc">Pop-up notifications for every coin gift</div></div>
+      </div>
+    </div>
+
+    <div class="pricing-section">
+      <div class="section-lbl">Pricing</div>
+
+      <!-- Monthly card -->
+      <div style="background:var(--bg2);border:1px solid rgba(0,242,234,.2);border-radius:20px;overflow:hidden;margin-bottom:14px">
+        <div style="padding:20px 22px">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
+            <div style="font-family:'Russo One',sans-serif;font-size:.95rem;color:#fff">Monthly</div>
+            <div style="font-size:.58rem;letter-spacing:2px;color:var(--cyan);border:1px solid rgba(0,242,234,.3);border-radius:20px;padding:3px 10px;font-weight:700">FLEXIBLE</div>
+          </div>
+          <div style="display:flex;align-items:flex-end;gap:6px;margin-bottom:4px">
+            <div style="font-family:'Orbitron',sans-serif;font-size:2rem;font-weight:900;color:var(--cyan);line-height:1">$10</div>
+            <div style="font-size:.78rem;color:var(--muted);padding-bottom:5px">/ month</div>
+          </div>
+          <div style="font-size:.7rem;color:var(--muted);margin-bottom:14px">Cancel anytime. Full access while active.</div>
+          <div style="display:flex;flex-direction:column;gap:6px;margin-bottom:16px">
+            <div style="font-size:.76rem;color:rgba(255,255,255,.7);display:flex;align-items:center;gap:8px"><span style="color:var(--cyan);font-size:16px">✓</span> Everything included</div>
+            <div style="font-size:.76rem;color:rgba(255,255,255,.7);display:flex;align-items:center;gap:8px"><span style="color:var(--cyan);font-size:16px">✓</span> Cancel anytime</div>
+            <div style="font-size:.76rem;color:rgba(255,255,255,.7);display:flex;align-items:center;gap:8px"><span style="color:var(--cyan);font-size:16px">✓</span> Great if you're just starting out</div>
+          </div>
+          <a href="#" onclick="handleLandingPlanClick(event,'monthly')" style="display:block;text-align:center;padding:13px;border-radius:12px;border:1px solid rgba(0,242,234,.4);background:rgba(0,242,234,.08);color:var(--cyan);font-family:'Orbitron',sans-serif;font-weight:900;font-size:.75rem;letter-spacing:2px;cursor:pointer;text-decoration:none;transition:all .2s" onmouseover="this.style.background='rgba(0,242,234,.18)'" onmouseout="this.style.background='rgba(0,242,234,.08)'">
+            Get Started — $10/mo
+          </a>
+        </div>
+      </div>
+
+      <!-- Lifetime card -->
+      <div style="background:var(--bg2);border:2px solid rgba(255,215,0,.35);border-radius:20px;overflow:hidden;position:relative;margin-bottom:20px">
+        <div style="position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--pink),var(--gold),var(--cyan))"></div>
+        <div style="position:absolute;top:14px;right:14px;background:linear-gradient(135deg,var(--pink),var(--gold2));color:#fff;font-family:'Orbitron',sans-serif;font-size:.52rem;font-weight:900;letter-spacing:1px;padding:4px 10px;border-radius:20px">BEST VALUE</div>
+        <div style="padding:20px 22px">
+          <div style="font-family:'Russo One',sans-serif;font-size:.95rem;color:#fff;margin-bottom:6px">Lifetime</div>
+          <div style="display:flex;align-items:flex-end;gap:6px;margin-bottom:4px">
+            <div style="font-family:'Orbitron',sans-serif;font-size:2rem;font-weight:900;color:var(--gold);line-height:1">$60</div>
+            <div style="font-size:.78rem;color:var(--muted);padding-bottom:5px">one time</div>
+          </div>
+          <div style="font-size:.7rem;color:rgba(0,255,136,.8);font-weight:700;margin-bottom:14px">= 6 months free vs monthly 🎉</div>
+          <div style="display:flex;flex-direction:column;gap:6px;margin-bottom:16px">
+            <div style="font-size:.76rem;color:rgba(255,255,255,.7);display:flex;align-items:center;gap:8px"><span style="color:var(--green);font-size:16px">✓</span> Everything included — forever</div>
+            <div style="font-size:.76rem;color:rgba(255,255,255,.7);display:flex;align-items:center;gap:8px"><span style="color:var(--green);font-size:16px">✓</span> Pay once, never pay again</div>
+            <div style="font-size:.76rem;color:rgba(255,255,255,.7);display:flex;align-items:center;gap:8px"><span style="color:var(--green);font-size:16px">✓</span> All future updates included</div>
+            <div style="font-size:.76rem;color:rgba(255,255,255,.7);display:flex;align-items:center;gap:8px"><span style="color:var(--green);font-size:16px">✓</span> Best for active streamers</div>
+          </div>
+          <a href="#" onclick="handleLandingPlanClick(event,'lifetime')" style="display:block;text-align:center;padding:14px;border-radius:12px;border:none;background:linear-gradient(135deg,var(--pink),var(--gold2));color:#fff;font-family:'Orbitron',sans-serif;font-weight:900;font-size:.78rem;letter-spacing:2px;cursor:pointer;text-decoration:none;box-shadow:0 0 25px rgba(255,0,80,.3);transition:all .25s" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 0 40px rgba(255,0,80,.5)'" onmouseout="this.style.transform='';this.style.boxShadow='0 0 25px rgba(255,0,80,.3)'">
+            💳 Get Lifetime — $60
+          </a>
+        </div>
+      </div>
+
+      <div id="landing-price-card" style="display:none"></div>
+
+      <!-- Promo code -->
+      <div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:14px 16px;margin-top:4px">
+        <div style="font-size:.6rem;letter-spacing:2px;color:var(--muted);text-transform:uppercase;font-weight:700;margin-bottom:10px">🎟 Have a promo code?</div>
+        <div style="display:flex;gap:8px">
+          <input id="landingPromoInput" type="text" placeholder="Enter promo code..." class="key-input" style="flex:1;font-family:'Exo 2',sans-serif;letter-spacing:2px;font-size:.8rem;text-transform:uppercase" oninput="this.value=this.value.toUpperCase()" />
+          <button onclick="applyLandingPromo()" style="padding:10px 16px;border-radius:10px;border:none;background:linear-gradient(135deg,var(--cyan),#0080FF);color:#000;font-family:'Orbitron',sans-serif;font-size:.62rem;font-weight:900;cursor:pointer;letter-spacing:1px;white-space:nowrap">APPLY</button>
+        </div>
+      </div>
+
+      <!-- Footer links — required for TikTok compliance -->
+      <div style="text-align:center;padding:24px 0 8px;border-top:1px solid rgba(255,255,255,.05);margin-top:24px">
+        <div style="font-size:.65rem;color:rgba(255,255,255,.2);margin-bottom:10px">© 2025 CoinDrop. All rights reserved.</div>
+        <div style="display:flex;justify-content:center;gap:20px;flex-wrap:wrap">
+          <a href="/privacy" style="font-size:.68rem;color:rgba(0,242,234,.6);text-decoration:none;font-weight:600" onmouseover="this.style.color='#00F2EA'" onmouseout="this.style.color='rgba(0,242,234,.6)'">Privacy Policy</a>
+          <a href="/terms" style="font-size:.68rem;color:rgba(0,242,234,.6);text-decoration:none;font-weight:600" onmouseover="this.style.color='#00F2EA'" onmouseout="this.style.color='rgba(0,242,234,.6)'">Terms of Service</a>
+          <a href="mailto:support@coindrop.app" style="font-size:.68rem;color:rgba(0,242,234,.6);text-decoration:none;font-weight:600" onmouseover="this.style.color='#00F2EA'" onmouseout="this.style.color='rgba(0,242,234,.6)'">Contact</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     PAGE: PRICING / BUY
+═══════════════════════════════════════ -->
+<div class="page" id="page-pricing">
+  <div class="nav">
+    <div class="nav-logo">COINDROP</div>
+    <div class="nav-links">
+      <button class="nav-btn" onclick="goPage('landing')">← Back</button>
+    </div>
+  </div>
+  <div class="wrap-pad" style="padding-bottom:60px">
+
+    <!-- Header -->
+    <div style="text-align:center;padding:40px 0 32px">
+      <div style="font-size:.7rem;letter-spacing:4px;color:var(--cyan);text-transform:uppercase;font-weight:700;margin-bottom:12px">Choose Your Plan</div>
+      <h1 style="font-family:'Russo One',sans-serif;font-size:2rem;color:#fff;margin-bottom:10px">Get Full Access to <span style="background:linear-gradient(135deg,var(--pink),var(--gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">CoinDrop</span></h1>
+      <p style="color:var(--muted);font-size:.9rem">Everything you need to run pro coin auctions on TikTok LIVE</p>
+    </div>
+
+    <!-- Email input shared between both plans -->
+    <div style="max-width:460px;margin:0 auto 20px">
+      <input id="buyPageEmail" type="email" placeholder="Enter your email first..." class="key-input" style="width:100%;font-family:'Exo 2',sans-serif;letter-spacing:0;font-size:.85rem;padding:14px 16px;border-radius:12px" />
+      <div style="font-size:.6rem;color:var(--muted);margin-top:5px;text-align:center">Your board link will be tied to this email — required before checkout</div>
+    </div>
+
+    <!-- Two plan cards -->
+    <div style="max-width:460px;margin:0 auto;display:flex;flex-direction:column;gap:16px">
+
+      <!-- Monthly plan -->
+      <div style="background:var(--bg2);border:1px solid rgba(0,242,234,.2);border-radius:20px;overflow:hidden;position:relative">
+        <div style="padding:22px 24px">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px">
+            <div style="font-family:'Russo One',sans-serif;font-size:1rem;color:#fff">Monthly</div>
+            <div style="font-size:.6rem;letter-spacing:2px;color:var(--cyan);border:1px solid rgba(0,242,234,.3);border-radius:20px;padding:3px 10px;font-weight:700">FLEXIBLE</div>
+          </div>
+          <div style="display:flex;align-items:flex-end;gap:6px;margin-bottom:6px">
+            <div style="font-family:'Orbitron',sans-serif;font-size:2.2rem;font-weight:900;color:var(--cyan);line-height:1">$10</div>
+            <div style="font-size:.8rem;color:var(--muted);padding-bottom:6px">/ month</div>
+          </div>
+          <div style="font-size:.72rem;color:var(--muted);margin-bottom:16px">Cancel anytime. Full access while active.</div>
+          <div style="display:flex;flex-direction:column;gap:7px;margin-bottom:18px">
+            <div style="font-size:.78rem;color:rgba(255,255,255,.7);display:flex;align-items:center;gap:8px"><span style="color:var(--cyan)">✓</span> Everything included</div>
+            <div style="font-size:.78rem;color:rgba(255,255,255,.7);display:flex;align-items:center;gap:8px"><span style="color:var(--cyan)">✓</span> Cancel anytime</div>
+            <div style="font-size:.78rem;color:rgba(255,255,255,.7);display:flex;align-items:center;gap:8px"><span style="color:var(--cyan)">✓</span> Great if you're just starting out</div>
+          </div>
+          <a href="#" onclick="handlePlanClick(event,'monthly')" style="display:block;text-align:center;padding:13px;border-radius:12px;border:1px solid rgba(0,242,234,.4);background:rgba(0,242,234,.08);color:var(--cyan);font-family:'Orbitron',sans-serif;font-weight:900;font-size:.78rem;letter-spacing:2px;cursor:pointer;text-decoration:none;transition:all .2s" onmouseover="this.style.background='rgba(0,242,234,.18)'" onmouseout="this.style.background='rgba(0,242,234,.08)'">
+            Get Started — $10/mo
+          </a>
+        </div>
+      </div>
+
+      <!-- Lifetime plan — highlighted -->
+      <div style="background:var(--bg2);border:2px solid rgba(255,215,0,.35);border-radius:20px;overflow:hidden;position:relative">
+        <div style="position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--pink),var(--gold),var(--cyan))"></div>
+        <!-- Best value badge -->
+        <div style="position:absolute;top:16px;right:16px;background:linear-gradient(135deg,var(--pink),var(--gold2));color:#fff;font-family:'Orbitron',sans-serif;font-size:.55rem;font-weight:900;letter-spacing:1px;padding:4px 10px;border-radius:20px">BEST VALUE</div>
+        <div style="padding:22px 24px">
+          <div style="font-family:'Russo One',sans-serif;font-size:1rem;color:#fff;margin-bottom:4px">Lifetime</div>
+          <div style="display:flex;align-items:flex-end;gap:6px;margin-bottom:4px">
+            <div style="font-family:'Orbitron',sans-serif;font-size:2.2rem;font-weight:900;color:var(--gold);line-height:1">$60</div>
+            <div style="font-size:.8rem;color:var(--muted);padding-bottom:6px">one time</div>
+          </div>
+          <div style="font-size:.7rem;color:rgba(0,255,136,.8);font-weight:700;margin-bottom:16px">= 6 months free vs monthly 🎉</div>
+          <div style="display:flex;flex-direction:column;gap:7px;margin-bottom:18px">
+            <div style="font-size:.78rem;color:rgba(255,255,255,.7);display:flex;align-items:center;gap:8px"><span style="color:var(--green)">✓</span> Everything included — forever</div>
+            <div style="font-size:.78rem;color:rgba(255,255,255,.7);display:flex;align-items:center;gap:8px"><span style="color:var(--green)">✓</span> Pay once, never pay again</div>
+            <div style="font-size:.78rem;color:rgba(255,255,255,.7);display:flex;align-items:center;gap:8px"><span style="color:var(--green)">✓</span> All future updates included</div>
+            <div style="font-size:.78rem;color:rgba(255,255,255,.7);display:flex;align-items:center;gap:8px"><span style="color:var(--green)">✓</span> Best for active streamers</div>
+          </div>
+          <a href="#" onclick="handlePlanClick(event,'lifetime')" style="display:block;text-align:center;padding:14px;border-radius:12px;border:none;background:linear-gradient(135deg,var(--pink),var(--gold2));color:#fff;font-family:'Orbitron',sans-serif;font-weight:900;font-size:.82rem;letter-spacing:2px;cursor:pointer;text-decoration:none;box-shadow:0 0 25px rgba(255,0,80,.3);transition:all .25s" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 0 40px rgba(255,0,80,.5)'" onmouseout="this.style.transform='';this.style.boxShadow='0 0 25px rgba(255,0,80,.3)'">
+            💳 Get Lifetime — $60
+          </a>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Trust badges -->
+    <div style="max-width:460px;margin:20px auto 12px;display:flex;justify-content:center;gap:20px;flex-wrap:wrap">
+      <div style="font-size:.68rem;color:rgba(255,255,255,.3);display:flex;align-items:center;gap:5px">🔒 SSL Secured</div>
+      <div style="font-size:.68rem;color:rgba(255,255,255,.3);display:flex;align-items:center;gap:5px">✅ TikTok Compliant</div>
+      <div style="font-size:.68rem;color:rgba(255,255,255,.3);display:flex;align-items:center;gap:5px">⚡ Instant Access</div>
+      <div style="font-size:.68rem;color:rgba(255,255,255,.3);display:flex;align-items:center;gap:5px">🏆 Cancel Anytime</div>
+    </div>
+
+    <!-- Promo code -->
+    <div style="max-width:460px;margin:0 auto;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:14px 16px">
+      <div style="font-size:.6rem;letter-spacing:2px;color:var(--muted);text-transform:uppercase;font-weight:700;margin-bottom:10px">🎟 Have a promo code?</div>
+      <div style="display:flex;gap:8px">
+        <input id="pricingPromoInput" type="text" placeholder="Enter promo code..." class="key-input" style="flex:1;font-family:'Exo 2',sans-serif;letter-spacing:2px;font-size:.8rem;text-transform:uppercase" oninput="this.value=this.value.toUpperCase()" />
+        <button onclick="applyPricingPromo()" style="padding:10px 16px;border-radius:10px;border:none;background:linear-gradient(135deg,var(--cyan),#0080FF);color:#000;font-family:'Orbitron',sans-serif;font-size:.62rem;font-weight:900;cursor:pointer;letter-spacing:1px;white-space:nowrap">APPLY</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     PAGE: AUTH
+═══════════════════════════════════════ -->
+<div class="page" id="page-auth">
+  <div class="nav">
+    <div class="nav-logo">COINDROP</div>
+    <div class="nav-links">
+      <button class="nav-btn" onclick="goPage('landing')">← Back</button>
+    </div>
+  </div>
+  <div class="auth-wrap">
+    <div class="auth-card fade-in">
+      <div class="auth-logo">
+        <div class="logo-big">COINDROP</div>
+        <div class="sub">TikTok Live Auctions</div>
+      </div>
+      <div class="auth-title" id="authTitle">Sign In</div>
+      <div class="auth-sub" id="authSub">Sign in with your Google account to access your auction dashboard</div>
+
+      <button class="google-btn" id="googleSignInBtn" onclick="handleGoogleSignIn()">
+        <svg class="google-icon" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+        Continue with Google
+      </button>
+
+      <div id="authSpinner" style="display:none;text-align:center;padding:16px;font-size:.8rem;color:var(--muted)">
+        Signing you in...
+      </div>
+
+      <div class="auth-footer">
+        Don't have an account? <span class="auth-link" onclick="goPage('pricing')">Get Access — $60</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     PAGE: DASHBOARD (Control)
+═══════════════════════════════════════ -->
+<div class="page" id="page-dashboard">
+  <div class="nav">
+    <div class="nav-logo">COINDROP</div>
+    <div class="nav-links">
+      <div class="nav-avatar" id="userAvatar" onclick="goPage('account')">👤</div>
+    </div>
+  </div>
+  <div class="dash-wrap wrap-pad">
+
+    <!-- Board Link Activation -->
+    <div class="connect-card" id="connectCard">
+      <div class="connect-header">
+        <div class="connect-title">
+          <div class="status-dot" id="connDot"></div>
+          Board Activation
+        </div>
+        <div class="connect-status-text" id="connStatusText">Not Activated</div>
+      </div>
+
+      <!-- Board link is shown on screen after purchase -->
+      <div id="linkStep1" style="">
+        <div style="background:rgba(0,242,234,.06);border:1px solid rgba(0,242,234,.15);border-radius:12px;padding:14px;margin-bottom:14px;font-size:.72rem;color:rgba(0,242,234,.85);line-height:1.7">
+          📋 <strong>How it works:</strong><br>
+          After you purchase, your unique board link appears on screen instantly — copy it and paste it below. Your live auction board will launch and connect to your TikTok LIVE.
+        </div>
+
+        <label class="key-label">Your Board Link</label>
+        <div style="display:flex;gap:8px;margin-bottom:10px">
+          <input class="key-input" id="boardLinkInput" placeholder="Paste your board link here..." type="text" style="flex:1;font-family:'Exo 2',sans-serif;letter-spacing:0;font-size:.8rem" />
+          <button onclick="copyDashboardLink()" id="copyDashLinkBtn" title="Copy link" style="flex-shrink:0;padding:10px 13px;border-radius:10px;border:1px solid rgba(0,242,234,.3);background:rgba(0,242,234,.08);color:var(--cyan);font-family:'Orbitron',sans-serif;font-size:.62rem;font-weight:900;cursor:pointer;transition:all .2s;letter-spacing:1px" onmouseover="this.style.background='rgba(0,242,234,.18)'" onmouseout="this.style.background='rgba(0,242,234,.08)'">📋</button>
+        </div>
+
+        <label class="key-label">Your TikTok Username</label>
+        <div class="key-input-wrap" style="margin-bottom:12px">
+          <input class="key-input" id="ttUsername" placeholder="@yourtiktok" type="text" />
+        </div>
+
+        <div class="connect-actions">
+          <button class="conn-btn primary" id="mainConnectBtn" onclick="activateBoardLink()">🔗 Activate Board</button>
+          <button class="conn-btn secondary" onclick="deactivateBoard()">Deactivate</button>
+        </div>
+      </div>
+
+      <!-- Go Live button -->
+      <button class="ss-btn start" style="margin-top:10px;width:100%;font-size:.8rem" id="goLiveBtn" onclick="goLive()" disabled>📡 Go Live — Launch Board</button>
+
+      <!-- Board popup preview button (shows after activation) -->
+      <button id="openBoardPopupBtn" onclick="openBoardPopup()" style="display:none;margin-top:8px;width:100%;padding:10px;border-radius:10px;border:1px solid rgba(255,215,0,.3);background:rgba(255,215,0,.08);color:var(--gold);font-family:'Orbitron',sans-serif;font-size:.65rem;font-weight:700;letter-spacing:1px;cursor:pointer;transition:all .2s" onmouseover="this.style.background='rgba(255,215,0,.16)'" onmouseout="this.style.background='rgba(255,215,0,.08)'">
+        🏆 Open Board Window
+      </button>
+
+      <div class="tiktok-help" style="margin-top:12px">
+        ✅ <strong>TikTok Compliant</strong><br>
+        CoinDrop uses TikTok's official <strong>LIVE Gifting API</strong> — the same API TikTok provides for authorized third-party tools. Your account is never at risk. We do <em>not</em> scrape, automate, or violate TikTok's Terms of Service.<br><br>
+        🔗 Don't have your link yet? <span style="color:var(--cyan);cursor:pointer;font-weight:700" onclick="goPage('pricing')">Get access here</span> — your link appears on screen the moment you pay.
+      </div>
+    </div>
+
+    <!-- Auction Controls -->
+    <div class="auction-ctrl-card">
+      <div class="ctrl-header">
+        <div class="ctrl-title">🎮 Auction Control</div>
+        <div class="auction-state idle" id="auctionState">IDLE</div>
+      </div>
+
+      <!-- Start / Stop / Pause -->
+      <div class="start-stop-row">
+        <button class="ss-btn start" id="startBtn" onclick="startAuction()">▶ START</button>
+        <button class="ss-btn pause" id="pauseBtn" onclick="togglePause()" disabled>⏸ PAUSE</button>
+        <button class="ss-btn stop" id="stopBtn" onclick="stopAuction()" disabled>⏹ STOP</button>
+      </div>
+
+      <!-- Restart button — appears after auction ends -->
+      <div id="restartBtn" style="display:none;padding:0 18px 16px">
+        <button onclick="restartAuction()" style="width:100%;padding:14px;border-radius:14px;border:none;background:linear-gradient(135deg,#7B2FBE,var(--cyan));color:#fff;font-family:'Orbitron',sans-serif;font-weight:900;font-size:.82rem;letter-spacing:2px;cursor:pointer;transition:all .25s;display:flex;align-items:center;justify-content:center;gap:10px;box-shadow:0 0 20px rgba(0,242,234,.25)" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 0 35px rgba(0,242,234,.5)'" onmouseout="this.style.transform='';this.style.boxShadow='0 0 20px rgba(0,242,234,.25)'">
+          🔄 NEW AUCTION — Reset Board
+        </button>
+      </div>
+
+      <!-- Timer -->
+      <div class="timer-section">
+        <div class="timer-big" id="timerDisplay">2:30</div>
+        <div class="timer-adj-row">
+          <button class="t-btn minus" onclick="adjustTime(-30)">−30s</button>
+          <button class="t-btn minus" onclick="adjustTime(-10)">−10s</button>
+          <button class="t-btn plus" onclick="adjustTime(10)">+10s</button>
+          <button class="t-btn plus" onclick="adjustTime(30)">+30s</button>
+        </div>
+        <div class="duration-wrap">
+          <div class="dur-label">Set Duration</div>
+          <div class="presets">
+            <button class="preset-btn" onclick="setPreset(60,this)">1m</button>
+            <button class="preset-btn" onclick="setPreset(120,this)">2m</button>
+            <button class="preset-btn sel" onclick="setPreset(150,this)">2:30</button>
+            <button class="preset-btn" onclick="setPreset(300,this)">5m</button>
+            <button class="preset-btn" onclick="setPreset(600,this)">10m</button>
+            <button class="preset-btn" onclick="setPreset(900,this)">15m</button>
+            <button class="preset-btn" onclick="setPreset(1800,this)">30m</button>
+          </div>
+          <div class="custom-row">
+            <input class="c-input" id="cMin" type="number" min="0" max="99" placeholder="min" />
+            <span style="color:var(--muted);font-family:'Orbitron',sans-serif;font-size:.8rem">:</span>
+            <input class="c-input" id="cSec" type="number" min="0" max="59" placeholder="sec" />
+            <button class="set-time-btn" onclick="setCustomTime()">SET</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Snipe Delay Control -->
+      <div style="padding:16px 18px;border-bottom:1px solid var(--border)">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+          <div style="font-family:'Russo One',sans-serif;font-size:.88rem;display:flex;align-items:center;gap:8px">
+            ⚡ Snipe Delay
+            <span style="font-size:.6rem;color:var(--muted);font-family:'Exo 2',sans-serif;font-weight:400">— stops last-second sniping</span>
+          </div>
+          <div style="font-family:'Orbitron',sans-serif;font-size:.9rem;font-weight:900;color:var(--pink);background:rgba(255,0,80,.12);border:1px solid rgba(255,0,80,.25);padding:4px 12px;border-radius:8px" id="snipeDisplayVal">20s</div>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-bottom:10px">
+          <button class="preset-btn" style="font-size:.6rem" onclick="setSnipePreset(0,this)">OFF</button>
+          <button class="preset-btn" style="font-size:.6rem" onclick="setSnipePreset(5,this)">5s</button>
+          <button class="preset-btn" style="font-size:.6rem" onclick="setSnipePreset(10,this)">10s</button>
+          <button class="preset-btn sel" style="font-size:.6rem" onclick="setSnipePreset(20,this)">20s</button>
+          <button class="preset-btn" style="font-size:.6rem" onclick="setSnipePreset(30,this)">30s</button>
+        </div>
+        <div style="display:flex;gap:8px;align-items:center">
+          <input class="c-input" id="snipeCustom" type="number" min="0" max="300" placeholder="Custom sec" style="flex:1" />
+          <button class="set-time-btn" onclick="setSnipeCustom()">SET</button>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Stats row -->
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:16px">
+      <div style="background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:14px;text-align:center">
+        <div style="font-family:'Orbitron',sans-serif;font-size:1.2rem;font-weight:900;color:var(--gold)" id="statPart">0</div>
+        <div style="font-size:.6rem;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-top:3px">Participants</div>
+      </div>
+      <div style="background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:14px;text-align:center">
+        <div style="font-family:'Orbitron',sans-serif;font-size:1.2rem;font-weight:900;color:var(--cyan)" id="statPool">0</div>
+        <div style="font-size:.6rem;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-top:3px">Prize Pool</div>
+      </div>
+      <div style="background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:14px;text-align:center">
+        <div style="font-family:'Orbitron',sans-serif;font-size:1.2rem;font-weight:900;color:var(--pink)" id="statViewers">0</div>
+        <div style="font-size:.6rem;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-top:3px">Viewers</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     PAGE: BOARD
+═══════════════════════════════════════ -->
+<div class="page" id="page-board">
+  <div class="nav">
+    <div class="nav-logo">COINDROP</div>
+    <div class="nav-links" id="boardNavLinks">
+      <button class="nav-btn" onclick="goPage('landing')">← Back</button>
+    </div>
+  </div>
+  <div class="board-page-wrap wrap-pad">
+
+    <div class="board-selector-wrap">
+      <div class="board-sel-label">Choose Board Theme</div>
+      <div class="board-tabs" id="boardTabs">
+        <button class="btab active" onclick="setTheme('classic',this)">🏆 Classic</button>
+        <button class="btab" onclick="setTheme('neon',this)">💜 Neon</button>
+        <button class="btab" onclick="setTheme('galaxy',this)">🌌 Galaxy</button>
+        <button class="btab" onclick="setTheme('fire',this)">🔥 Fire</button>
+        <button class="btab" onclick="setTheme('ice',this)">❄️ Ice</button>
+        <button class="btab" onclick="setTheme('royal',this)">👑 Royal</button>
+        <button class="btab" onclick="setTheme('minimal',this)">◼ Minimal</button>
+      </div>
+    </div>
+
+    <!-- The board display -->
+    <div class="board-display theme-classic" id="boardDisplay" style="position:relative">
+
+      <!-- PAYWALL LOCK OVERLAY — shown to non-paying visitors -->
+      <div class="board-lock-overlay hidden" id="boardLockOverlay">
+        <div class="lock-icon">🔒</div>
+        <div class="lock-title">Unlock Full Access</div>
+        <div class="lock-sub">You're watching a live preview. Get access to run your own TikTok LIVE coin auctions with this board.</div>
+        <button class="lock-buy-btn" onclick="goPage('pricing')">💳 Get Access — $60</button>
+        <div class="lock-signin">Already purchased? <span onclick="closeAndSignIn()">Sign in here</span></div>
+      </div>
+
+      <!-- Connect to Live bar (owner-only when logged in) -->
+      <div class="board-connect-bar" id="boardConnectBar">
+        <button class="board-connect-btn disconnected" id="boardConnectBtn" onclick="boardConnectToLive()">
+          <span id="boardConnBtnIcon">📡</span>
+          <span id="boardConnBtnText">Connect to Live</span>
+        </button>
+        <div class="board-conn-status">
+          <div class="board-conn-dot" id="boardConnDot"></div>
+          <div class="board-conn-label" id="boardConnLabel">Offline</div>
+        </div>
+      </div>
+
+      <!-- ① SNIPE DELAY — shown AFTER main timer ends, giving a window to snipe -->
+      <div class="bd-snipe-zone" id="bdSnipeZone" style="display:none">
+      </div>
+
+      <!-- ② AUCTION TIMER — big countdown below snipe zone -->
+      <div class="bd-timer-zone">
+        <div class="bd-timer-label" id="bdTimerLabel">TIME REMAINING</div>
+        <div class="bd-timer-big" id="bdTimerBig">2:30</div>
+        <div class="bd-timer-meta">
+          <div class="bd-meta-chip"><span class="bd-meta-dot"></span>MIN <b id="bdMetaMin">1</b> coins</div>
+          <div class="bd-meta-chip snipe-chip">⚡ SNIPE <b id="bdMetaSnipe">20s</b></div>
+          <div class="bd-meta-chip"><span style="color:var(--green)">👁</span> <b id="bdMetaViewers">—</b></div>
+        </div>
+      </div>
+
+      <!-- ③ RANKINGS -->
+      <div class="bd-ranks" id="bdRanks"></div>
+
+      <!-- ④ PRIZE BANNER — what they're winning -->
+      <div class="bd-prize-zone" id="bdPrizeZone">
+        <div class="bd-prize-label">🏆 PRIZE</div>
+        <div class="bd-prize-title" id="bdPrizeTitle">iPhone 15 Pro</div>
+        <div class="bd-prize-sub">Top 3 when timer ends win</div>
+      </div>
+
+      <!-- ⑤ FOOTER -->
+      <div class="bd-footer">
+        <span>👥 <b id="bdFootPart">0</b></span>
+        <span>💰 <b id="bdFootPool">0</b> coins</span>
+        <span id="bdFootStatus" class="bd-live-badge">● LIVE</span>
+      </div>
+
+    </div>
+
+    <!-- Mid-auction live controls (owner only) -->
+    <div id="midAuctionControls" style="display:none;margin-top:12px">
+      <div style="background:var(--bg2);border:1px solid var(--border);border-radius:16px;overflow:hidden">
+        <div style="padding:12px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between">
+          <div style="font-family:'Russo One',sans-serif;font-size:.85rem;display:flex;align-items:center;gap:8px">⚡ Live Controls</div>
+          <div style="font-size:.6rem;color:var(--green);letter-spacing:2px;font-weight:700;text-transform:uppercase">● MID-AUCTION</div>
+        </div>
+        <!-- Add/remove time on the fly -->
+        <div style="padding:14px 16px;border-bottom:1px solid var(--border)">
+          <div style="font-size:.6rem;letter-spacing:2px;color:var(--muted);text-transform:uppercase;font-weight:700;margin-bottom:10px">⏱ Add / Remove Time</div>
+          <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:8px">
+            <button class="t-btn minus" onclick="midAddTime(-30)" style="width:100%">−30s</button>
+            <button class="t-btn minus" onclick="midAddTime(-10)" style="width:100%">−10s</button>
+            <button class="t-btn plus" onclick="midAddTime(10)" style="width:100%">+10s</button>
+            <button class="t-btn plus" onclick="midAddTime(30)" style="width:100%">+30s</button>
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px">
+            <button class="t-btn plus" onclick="midAddTime(60)" style="width:100%;font-size:.62rem">+1m</button>
+            <button class="t-btn plus" onclick="midAddTime(120)" style="width:100%;font-size:.62rem">+2m</button>
+            <button class="t-btn plus" onclick="midAddTime(300)" style="width:100%;font-size:.62rem">+5m</button>
+            <button class="t-btn plus" onclick="midAddTime(600)" style="width:100%;font-size:.62rem">+10m</button>
+          </div>
+        </div>
+        <!-- Change prize live -->
+        <div style="padding:14px 16px;border-bottom:1px solid var(--border)">
+          <div style="font-size:.6rem;letter-spacing:2px;color:var(--muted);text-transform:uppercase;font-weight:700;margin-bottom:8px">🏆 Change Prize</div>
+          <div style="display:flex;gap:8px">
+            <input id="midPrizeInput" class="key-input" type="text" placeholder="New prize name..." style="flex:1;font-family:'Exo 2',sans-serif;letter-spacing:0;font-size:.8rem" />
+            <button onclick="midChangePrize()" style="padding:10px 14px;border-radius:10px;border:none;background:linear-gradient(135deg,var(--gold),var(--gold2));color:#000;font-family:'Orbitron',sans-serif;font-size:.62rem;font-weight:900;cursor:pointer;white-space:nowrap">SET</button>
+          </div>
+        </div>
+        <!-- Change min coins live -->
+        <div style="padding:14px 16px">
+          <div style="font-size:.6rem;letter-spacing:2px;color:var(--muted);text-transform:uppercase;font-weight:700;margin-bottom:8px">🪙 Min Coins to Enter</div>
+          <div style="display:flex;gap:8px">
+            <input id="midMinInput" class="key-input" type="number" min="1" placeholder="e.g. 100" style="flex:1;font-family:'Orbitron',sans-serif;font-size:.75rem" />
+            <button onclick="midChangeMin()" style="padding:10px 14px;border-radius:10px;border:none;background:linear-gradient(135deg,var(--cyan),#0080FF);color:#000;font-family:'Orbitron',sans-serif;font-size:.62rem;font-weight:900;cursor:pointer;white-space:nowrap">SET</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+<div class="page" id="page-settings">
+  <div class="nav">
+    <div class="nav-logo">COINDROP</div>
+  </div>
+  <div class="dash-wrap wrap-pad">
+    <div style="margin-bottom:16px">
+      <div class="section-lbl">Auction Settings</div>
+      <div style="background:var(--bg2);border:1px solid var(--border);border-radius:20px;padding:20px;display:flex;flex-direction:column;gap:14px">
+
+        <div>
+          <label class="key-label">Minimum Coins to Enter</label>
+          <input class="key-input" id="setMin" type="number" value="1" style="width:100%" />
+        </div>
+        <div>
+          <label class="key-label">Snipe Delay (seconds)</label>
+          <input class="key-input" id="setSnipe" type="number" value="20" style="width:100%" />
+        </div>
+        <div>
+          <label class="key-label">Prize / Auction Title</label>
+          <input class="key-input" id="setTitle" type="text" placeholder="e.g. iPhone 15 Pro" style="width:100%;font-family:'Exo 2',sans-serif;letter-spacing:0" />
+        </div>
+        <button class="set-time-btn" style="width:100%;padding:12px;font-size:.75rem" onclick="saveSettings()">💾 Save Settings</button>
+      </div>
+    </div>
+
+    <div>
+      <div class="section-lbl">Board Theme</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <div class="feat-card" onclick="setTheme('classic');goPage('board')" style="cursor:pointer;border-left:3px solid var(--gold)"><div class="feat-icon">🏆</div><div class="feat-title">Classic</div><div class="feat-desc">Gold/silver/bronze on dark</div></div>
+        <div class="feat-card" onclick="setTheme('neon');goPage('board')" style="cursor:pointer;border-left:3px solid #FF00FF"><div class="feat-icon">💜</div><div class="feat-title">Neon</div><div class="feat-desc">Glowing cyberpunk vibes</div></div>
+        <div class="feat-card" onclick="setTheme('galaxy');goPage('board')" style="cursor:pointer;border-left:3px solid #A855F7"><div class="feat-icon">🌌</div><div class="feat-title">Galaxy</div><div class="feat-desc">Deep space cosmic purple</div></div>
+        <div class="feat-card" onclick="setTheme('fire');goPage('board')" style="cursor:pointer;border-left:3px solid #FF6B00"><div class="feat-icon">🔥</div><div class="feat-title">Fire</div><div class="feat-desc">Blazing orange energy</div></div>
+        <div class="feat-card" onclick="setTheme('ice');goPage('board')" style="cursor:pointer;border-left:3px solid #00E5FF"><div class="feat-icon">❄️</div><div class="feat-title">Ice</div><div class="feat-desc">Cold electric blue</div></div>
+        <div class="feat-card" onclick="setTheme('royal');goPage('board')" style="cursor:pointer;border-left:3px solid #E040FB"><div class="feat-icon">👑</div><div class="feat-title">Royal</div><div class="feat-desc">Luxury purple + gold</div></div>
+        <div class="feat-card" onclick="setTheme('minimal');goPage('board')" style="cursor:pointer;border-left:3px solid #fff"><div class="feat-icon">◼</div><div class="feat-title">Minimal</div><div class="feat-desc">Clean monochrome</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     PAGE: ACCOUNT
+═══════════════════════════════════════ -->
+<div class="page" id="page-account">
+  <div class="nav">
+    <div class="nav-logo">COINDROP</div>
+  </div>
+  <div class="dash-wrap wrap-pad">
+    <div style="background:var(--bg2);border:1px solid rgba(255,215,0,.15);border-radius:20px;padding:24px;text-align:center;margin-bottom:16px;position:relative;overflow:hidden">
+      <div style="position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--pink),var(--gold),var(--cyan))"></div>
+      <div style="width:64px;height:64px;border-radius:50%;background:linear-gradient(135deg,var(--pink),var(--cyan));display:flex;align-items:center;justify-content:center;font-size:1.8rem;margin:0 auto 14px;border:3px solid rgba(255,215,0,.3)" id="bigAvatar">👤</div>
+      <div style="font-family:'Russo One',sans-serif;font-size:1.1rem;margin-bottom:4px" id="accName">User</div>
+      <div style="font-size:.75rem;color:var(--muted)" id="accEmail"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="e792948295a7828a868e8bc984888a">[email&#160;protected]</a></div>
+      <div style="display:inline-flex;align-items:center;gap:6px;background:rgba(255,215,0,.1);border:1px solid rgba(255,215,0,.2);border-radius:20px;padding:4px 14px;font-size:.65rem;font-weight:700;letter-spacing:2px;color:var(--gold);text-transform:uppercase;margin-top:12px" id="accBadge">✦ Full Access</div>
+    </div>
+    <div style="background:var(--bg2);border:1px solid var(--border);border-radius:20px;overflow:hidden;margin-bottom:16px">
+      <div onclick="appState.paid ? goPage('dashboard') : (toast('🔒','Purchase required','Get access first'), goPage('pricing'))" style="padding:16px 18px;display:flex;align-items:center;gap:12px;cursor:pointer;border-bottom:1px solid var(--border);transition:background .2s" onmouseover="this.style.background='rgba(255,255,255,.04)'" onmouseout="this.style.background='transparent'"><span style="font-size:1.1rem">🎛️</span><span style="font-size:.85rem;font-weight:600">Auction Control</span><span style="margin-left:auto;color:var(--muted)">→</span></div>
+      <div onclick="appState.paid ? goPage('settings') : (toast('🔒','Purchase required','Get access first'), goPage('pricing'))" style="padding:16px 18px;display:flex;align-items:center;gap:12px;cursor:pointer;border-bottom:1px solid var(--border);transition:background .2s" onmouseover="this.style.background='rgba(255,255,255,.04)'" onmouseout="this.style.background='transparent'"><span style="font-size:1.1rem">⚙️</span><span style="font-size:.85rem;font-weight:600">Settings</span><span style="margin-left:auto;color:var(--muted)">→</span></div>
+      <div onclick="goPage('board')" style="padding:16px 18px;display:flex;align-items:center;gap:12px;cursor:pointer;border-bottom:1px solid var(--border);transition:background .2s" onmouseover="this.style.background='rgba(255,255,255,.04)'" onmouseout="this.style.background='transparent'"><span style="font-size:1.1rem">🏆</span><span style="font-size:.85rem;font-weight:600">View Board</span><span style="margin-left:auto;color:var(--muted)">→</span></div>
+      <div onclick="signOut()" style="padding:16px 18px;display:flex;align-items:center;gap:12px;cursor:pointer;transition:background .2s" onmouseover="this.style.background='rgba(255,0,80,.05)'" onmouseout="this.style.background='transparent'"><span style="font-size:1.1rem">🚪</span><span style="font-size:.85rem;font-weight:600;color:var(--pink)">Sign Out</span></div>
+    </div>
+  </div>
+</div>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+// ══════════════════════════════════════════════
+// STATE
+// ══════════════════════════════════════════════
+let appState = {
+  authed: false,
+  paid: false,
+  user: null,
+  tiktokConnected: false,
+  auctionRunning: false,
+  auctionPaused: false,
+  seconds: 150,
+  timerInterval: null,
+  currentTheme: 'classic',
+  settings: { min: 1, snipe: 20, title: 'iPhone 15 Pro' },
+  board: {
+    participants: 0,
+    pool: 0,
+    viewers: 0,
+    ranks: [
+      { name: 'DragonSlayer', handle: '@dragonslayer99', emoji: '🐉', coins: 0, bg: 'linear-gradient(135deg,#FF6B6B,#FF8E53)' },
+      { name: null },
+      { name: null }
+    ]
+  }
+};
+
+// ══════════════════════════════════════════════
+// PAGE ROUTING
+// ══════════════════════════════════════════════
+const PROTECTED = ['dashboard','board','settings','account'];
+const PAID_ONLY = ['dashboard','settings']; // these require payment
+const DASH_PAGES = ['dashboard','board','settings','account'];
+
+function goPage(id) {
+  if (PROTECTED.includes(id) && !appState.authed) { goPage('auth'); return; }
+  if (PAID_ONLY.includes(id) && !appState.paid) {
+    toast('🔒', 'Purchase required', 'Get access to use the dashboard');
+    goPage('pricing');
+    return;
+  }
+  document.querySelectorAll('.page').forEach(p => {
+    p.classList.remove('active');
+    p.style.display = 'none';
+    p.style.opacity = '0';
+  });
+  const pg = document.getElementById('page-' + id);
+  if (!pg) return;
+  pg.style.display = 'block';
+  setTimeout(() => { pg.style.opacity = '1'; pg.classList.add('active'); }, 10);
+
+  const nav = document.getElementById('bottomNav');
+  if (DASH_PAGES.includes(id) && appState.authed) {
+    nav.style.display = 'flex';
+    document.querySelectorAll('.bnav-item').forEach(b => b.classList.remove('active'));
+    const map = {dashboard:'bnav-dash',board:'bnav-board',settings:'bnav-settings',account:'bnav-account'};
+    if (map[id]) document.getElementById(map[id])?.classList.add('active');
+  } else {
+    nav.style.display = 'none';
+  }
+
+  if (id === 'board') {
+    // Update board nav links based on auth state
+    const links = document.getElementById('boardNavLinks');
+    if (links) {
+      if (appState.authed) {
+        links.innerHTML = '<div class="nav-avatar" onclick="goPage(\'account\')" style="cursor:pointer">👤</div>';
+      } else {
+        links.innerHTML = '<button class="nav-btn" onclick="goPage(\'landing\')">← Back</button><button class="nav-btn primary" onclick="goPage(\'pricing\')" style="font-size:.65rem">Get Access</button>';
+      }
+    }
+    // Show/hide lock overlay
+    const lockEl = document.getElementById('boardLockOverlay');
+    if (lockEl) lockEl.classList.toggle('hidden', appState.paid || appState.authed);
+    // Update connect button state
+    updateBoardConnectBtn(appState.liveConnected, appState.tiktokUsername);
+    renderBoard();
+  }
+  if (id === 'landing') renderPriceCard('landing-price-card');
+}
+
+// ══════════════════════════════════════════════
+// PRICING
+// ══════════════════════════════════════════════
+let discountApplied = false;
+
+function renderPriceCard(containerId) {
+  const c = document.getElementById(containerId);
+  if (!c) return;
+  c.innerHTML = `
+    <div class="price-card">
+      <div class="price-badge">Most Popular</div>
+      <div class="price-main">
+        <div class="price-dollar" id="priceNum_${containerId}">${discountApplied ? '0' : '60'}</div>
+        <div class="price-cents">${discountApplied ? '' : '.00'}</div>
+        <div class="price-period">${discountApplied ? '🎉 FREE with code!' : 'one-time'}</div>
+      </div>
+      <div class="price-desc">Full lifetime access. No monthly fees.</div>
+      <ul class="price-features">
+        <li>All 7 board themes (Classic, Neon, Galaxy, Fire, Ice, Royal, Minimal)</li>
+        <li>TikTok LIVE API connection</li>
+        <li>Full timer controls — start, stop, pause, adjust</li>
+        <li>Real-time leaderboard with live coin tracking</li>
+        <li>Unlimited auctions, forever</li>
+      </ul>
+      <div class="coupon-row">
+        <input class="coupon-input" id="couponInput_${containerId}" placeholder="Enter promo code" value="${discountApplied ? 'TACO' : ''}" ${discountApplied ? 'disabled' : ''} />
+        <button class="coupon-btn" onclick="applyCoupon('${containerId}')" ${discountApplied ? 'disabled style=opacity:.4' : ''}>Apply</button>
+      </div>
+      <button class="buy-btn ${discountApplied ? 'free' : ''}" onclick="${discountApplied ? 'handleFreeAccess()' : "goPage('pricing')"}">
+        ${discountApplied ? '🎉 Claim Free Access' : '💳 Buy Now — $60'}
+      </button>
+    </div>`;
+}
+
+function applyCoupon(containerId) {
+  const input = document.getElementById('couponInput_' + containerId);
+  const code = input.value.trim().toUpperCase();
+  if (code === 'TACO') {
+    discountApplied = true;
+    toast('🌮', 'Code TACO applied!', 'Access is now FREE!');
+    renderPriceCard(containerId);
+    // Also refresh the other price card
+    const other = containerId === 'landing-price-card' ? null : 'landing-price-card';
+    if (other) renderPriceCard(other);
+  } else if (code === '') {
+    toast('❌', 'Enter a code', 'Type a promo code first');
+  } else {
+    toast('❌', 'Invalid code', 'Check your promo code and try again');
+    input.style.borderColor = 'rgba(255,0,80,.5)';
+    setTimeout(() => input.style.borderColor = '', 1500);
+  }
+}
+
+function handleFreeAccess() {
+  // Generate board link and show it on screen
+  const link = generateBoardLink('FREE');
+  showBoardLinkScreen(link, 'CoinDrop User');
+}
+
+function generateBoardLink(identifier) {
+  // Generate a unique-looking board link token
+  const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
+  let token = '';
+  for (let i = 0; i < 10; i++) token += chars[Math.floor(Math.random() * chars.length)];
+  return 'coindrop.app/board/' + token;
+}
+
+function showBoardLinkScreen(link, name) {
+  appState.paid = true;
+  appState.authed = true;
+  appState.generatedBoardLink = link;
+  const nameVal = name || 'User';
+  appState.user = { name: nameVal, email: '', avatar: '🏆' };
+  document.getElementById('userAvatar').textContent = '🏆';
+  document.getElementById('bigAvatar').textContent = '🏆';
+  document.getElementById('accName').textContent = nameVal;
+  // Show board link in modal
+  document.getElementById('boardLinkDisplay').textContent = link;
+  // Pre-fill the dashboard board link input
+  const inputEl = document.getElementById('boardLinkInput');
+  if (inputEl) inputEl.value = link;
+  // Open the modal
+  document.getElementById('stripeOverlay').classList.add('show');
+}
+
+function copyDashboardLink() {
+  const input = document.getElementById('boardLinkInput');
+  if (!input || !input.value.trim()) { toast('⚠️', 'No link to copy', 'Paste your board link first'); return; }
+  navigator.clipboard.writeText(input.value.trim()).then(() => {
+    const btn = document.getElementById('copyDashLinkBtn');
+    btn.textContent = '✓';
+    setTimeout(() => { btn.textContent = '📋'; }, 2000);
+    toast('📋', 'Copied!', 'Board link copied to clipboard');
+  }).catch(() => {
+    input.select();
+    document.execCommand('copy');
+    toast('📋', 'Copied!', 'Board link copied');
+  });
+}
+
+function copyBoardLink() {
+  const link = appState.generatedBoardLink || document.getElementById('boardLinkDisplay').textContent;
+  if (!link || link.includes('—')) return;
+  navigator.clipboard.writeText(link).then(() => {
+    const btn = document.getElementById('copyLinkBtn');
+    btn.textContent = '✓ COPIED';
+    btn.style.background = 'linear-gradient(135deg,var(--green),#00B4D8)';
+    setTimeout(() => {
+      btn.textContent = 'COPY';
+      btn.style.background = '';
+    }, 2000);
+    toast('📋', 'Copied!', 'Board link copied to clipboard');
+  }).catch(() => {
+    // Fallback for browsers without clipboard API
+    const el = document.getElementById('boardLinkDisplay');
+    const range = document.createRange();
+    range.selectNode(el);
+    window.getSelection().removeAllRanges();
+    window.getSelection().addRange(range);
+    document.execCommand('copy');
+    window.getSelection().removeAllRanges();
+    toast('📋', 'Copied!', 'Board link copied');
+  });
+}
+
+function goToDashboardFromStripe() {
+  closeStripe();
+  // Pre-fill the board link in dashboard
+  const inputEl = document.getElementById('boardLinkInput');
+  if (inputEl && appState.generatedBoardLink) inputEl.value = appState.generatedBoardLink;
+  setTimeout(() => goPage('dashboard'), 100);
+}
+
+function closeAndBuy() {
+  goPage('landing');
+  setTimeout(() => goPage('pricing'), 200);
+}
+
+function closeAndSignIn() {
+  goPage('auth');
+}
+
+function openStripe() {
+  // If already paid, show board link modal. Otherwise go to pricing page.
+  if (appState.paid && appState.generatedBoardLink) {
+    document.getElementById('stripeOverlay').classList.add('show');
+  } else {
+    goPage('pricing');
+  }
+}
+
+function closeStripe() {
+  document.getElementById('stripeOverlay').classList.remove('show');
+}
+
+function handleLandingPlanClick(e, plan) {
+  e.preventDefault();
+  // Must be signed in before purchasing
+  if (!appState.authed) {
+    toast('👤', 'Sign in first', 'Create a free account before purchasing');
+    localStorage.setItem('pendingPlan', plan);
+    setTimeout(() => goPage('auth'), 400);
+    return;
+  }
+  const successBase = 'https://auctiontiktok.vercel.app/?payment=success&session_id={CHECKOUT_SESSION_ID}';
+  let stripeUrl;
+  if (plan === 'monthly') {
+    stripeUrl = 'https://buy.stripe.com/00wcN45Zqcq38bydbA9R605?success_url=' + encodeURIComponent(successBase);
+  } else {
+    stripeUrl = 'https://buy.stripe.com/7sY8wOfA0eyb63q2wW9R60a?success_url=' + encodeURIComponent(successBase);
+  }
+  window.open(stripeUrl, '_blank');
+  toast('💳', 'Opening Stripe...', 'Come back here after paying — your link will appear');
+}
+
+function handlePlanClick(e, plan) {
+  handleLandingPlanClick(e, plan);
+}
+
+function applyLandingPromo() {
+  const code = document.getElementById('landingPromoInput').value.trim().toUpperCase();
+  if (!code) { toast('⚠️', 'Enter a promo code', ''); return; }
+
+  if (code === 'THRU10' || code === 'TACO' || code === 'PRINCEXVX3') {
+    // Must be signed in first
+    if (!appState.authed) {
+      toast('👤', 'Sign in first', 'Sign in with Google to claim your free access');
+      localStorage.setItem('pendingPromo', code);
+      setTimeout(() => goPage('auth'), 500);
+      return;
+    }
+    grantFreeAccess(code);
+  } else {
+    toast('❌', 'Invalid code', 'Check your promo code and try again');
+    document.getElementById('landingPromoInput').style.borderColor = 'rgba(255,0,80,.5)';
+    setTimeout(() => document.getElementById('landingPromoInput').style.borderColor = '', 1500);
+  }
+}
+
+function applyPricingPromo() {
+  const code = document.getElementById('pricingPromoInput').value.trim().toUpperCase();
+  if (!code) { toast('⚠️', 'Enter a promo code', ''); return; }
+  if (code === 'THRU10' || code === 'TACO' || code === 'PRINCEXVX3') {
+    if (!appState.authed) {
+      toast('👤', 'Sign in first', 'Sign in with Google to claim your free access');
+      localStorage.setItem('pendingPromo', code);
+      setTimeout(() => goPage('auth'), 500);
+      return;
+    }
+    grantFreeAccess(code);
+  } else {
+    toast('❌', 'Invalid code', 'Check your promo code and try again');
+    document.getElementById('pricingPromoInput').style.borderColor = 'rgba(255,0,80,.5)';
+    setTimeout(() => document.getElementById('pricingPromoInput').style.borderColor = '', 1500);
+  }
+}
+
+function handleBuyPageClick(e) {
+  handleLandingPlanClick(e, 'lifetime');
+}
+
+function grantFreeAccess(code) {
+  const link = generateBoardLink(code + '_' + Date.now());
+  appState.paid = true;
+  appState.generatedBoardLink = link;
+  const fbUser = firebase.auth().currentUser;
+  if (fbUser) {
+    savePurchaseToFirestore(fbUser.uid, link, fbUser.email || '', 'promo_' + code);
+    localStorage.setItem('boardLink_' + fbUser.uid, link);
+  } else {
+    localStorage.setItem('pendingBoardLink', link);
+  }
+  const inputEl = document.getElementById('boardLinkInput');
+  if (inputEl) inputEl.value = link;
+  showBoardLinkScreen(link, appState.user ? appState.user.name : 'CoinDrop User');
+  toast('🎉', 'Promo applied!', 'Free lifetime access granted!');
+
+  // Add dashboard button to the board link reveal modal
+  setTimeout(() => {
+    const step2 = document.getElementById('stripeStep2');
+    if (step2 && !document.getElementById('promoDashBtn')) {
+      const btn = document.createElement('button');
+      btn.id = 'promoDashBtn';
+      btn.textContent = '🎛️ Go to Dashboard';
+      btn.onclick = function() { closeStripe(); goPage('dashboard'); };
+      btn.style.cssText = 'width:100%;margin-top:10px;padding:13px;border-radius:12px;border:none;background:linear-gradient(135deg,#00F2EA,#0080FF);color:#000;font-family:Orbitron,sans-serif;font-weight:900;font-size:.78rem;letter-spacing:2px;cursor:pointer';
+      step2.appendChild(btn);
+    }
+  }, 300);
+}
+
+function onStripeClick() {
+  toast('💳', 'Opening Stripe...', 'Come back here after paying to get your board link');
+}
+
+function verifyPayment() {
+  const input = document.getElementById('stripeOrderInput').value.trim();
+  if (!input) { toast('❌', 'Enter your Order ID or email', ''); return; }
+  const btn = document.querySelector('.stripe-verify-btn');
+  btn.textContent = '...';
+  btn.disabled = true;
+  setTimeout(() => {
+    btn.textContent = 'UNLOCK';
+    btn.disabled = false;
+    // In production: verify against Stripe API. Here we grant access.
+    const name = input.includes('@') ? input.split('@')[0] : 'CoinDrop User';
+    const link = generateBoardLink(input);
+    showBoardLinkScreen(link, name);
+    document.getElementById('accEmail').textContent = input.includes('@') ? input : '';
+  }, 1400);
+}
+
+// ══════════════════════════════════════════════
+// AUTH
+// ══════════════════════════════════════════════
+function handleGoogleSignIn() {
+  const btn = document.getElementById('googleSignInBtn');
+  const spinner = document.getElementById('authSpinner');
+  btn.style.display = 'none';
+  spinner.style.display = 'block';
+
+  const provider = new firebase.auth.GoogleAuthProvider();
+  firebase.auth().signInWithPopup(provider)
+    .then(result => {
+      const user = result.user;
+      onFirebaseUserSignedIn(user, true);
+    })
+    .catch(err => {
+      btn.style.display = 'flex';
+      spinner.style.display = 'none';
+      toast('❌', 'Sign in failed', err.message || 'Try again');
+    });
+}
+
+function onFirebaseUserSignedIn(user, freshLogin = false) {
+  appState.authed = true;
+  appState.user = {
+    name: user.displayName || 'User',
+    email: user.email || '',
+    avatar: user.photoURL || '👤',
+    uid: user.uid
+  };
+
+  // Update UI
+  const avatarEl = document.getElementById('userAvatar');
+  const bigAv = document.getElementById('bigAvatar');
+  if (user.photoURL) {
+    avatarEl.innerHTML = `<img src="${user.photoURL}" style="width:32px;height:32px;border-radius:50%;object-fit:cover">`;
+    bigAv.innerHTML = `<img src="${user.photoURL}" style="width:64px;height:64px;border-radius:50%;object-fit:cover">`;
+  } else {
+    avatarEl.textContent = '👤';
+    bigAv.textContent = '👤';
+  }
+  document.getElementById('accName').textContent = user.displayName || 'User';
+  document.getElementById('accEmail').textContent = user.email || '';
+
+  // Update landing page nav to show avatar instead of Sign In button
+  const landingNav = document.getElementById('landingNavLinks');
+  if (landingNav) {
+    if (user.photoURL) {
+      landingNav.innerHTML = `<img src="${user.photoURL}" onclick="goPage('account')" style="width:34px;height:34px;border-radius:50%;object-fit:cover;cursor:pointer;border:2px solid rgba(255,215,0,.4)" /><button class="nav-btn primary" onclick="goPage('pricing')">Get Access</button>`;
+    } else {
+      landingNav.innerHTML = `<div class="nav-avatar" onclick="goPage('account')" style="cursor:pointer">👤</div><button class="nav-btn primary" onclick="goPage('pricing')">Get Access</button>`;
+    }
+  }
+
+  // appState.paid and boardLink are already set by onAuthStateChanged via Firestore
+  // Just check the result here
+  const savedLink = appState.generatedBoardLink || localStorage.getItem('boardLink_' + user.uid);
+  if (savedLink || appState.paid) {
+    appState.paid = true;
+    if (savedLink) {
+      appState.generatedBoardLink = savedLink;
+      const inputEl = document.getElementById('boardLinkInput');
+      if (inputEl) inputEl.value = savedLink;
+    }
+    if (freshLogin) {
+      toast('👋', 'Welcome back!', user.displayName || 'User');
+      setTimeout(() => goPage('dashboard'), 500);
+    }
+  } else {
+    const pendingPlan = localStorage.getItem('pendingPlan');
+    const pendingPromo = localStorage.getItem('pendingPromo');
+    if (pendingPromo && freshLogin) {
+      localStorage.removeItem('pendingPromo');
+      setTimeout(() => grantFreeAccess(pendingPromo), 500);
+    } else if (pendingPlan && freshLogin) {
+      localStorage.removeItem('pendingPlan');
+      setTimeout(() => {
+        const fakeEvent = { preventDefault: () => {} };
+        handleLandingPlanClick(fakeEvent, pendingPlan);
+      }, 500);
+    } else if (freshLogin) {
+      // Just stay on landing page — nav icon already updated above
+      toast('✅', 'Signed in!', 'Now pick a plan to get started');
+    }
+  }
+}
+
+function handleEmailSignIn() {
+  // Email/password disabled — Google only
+  toast('ℹ️', 'Use Google Sign In', 'We only support Google login');
+}
+
+function signOut() {
+  firebase.auth().signOut().then(() => {
+    appState.authed = false;
+    appState.paid = false;
+    appState.user = null;
+    stopAuction();
+    document.getElementById('userAvatar').textContent = '👤';
+    toast('👋', 'Signed out', 'See you next time!');
+    setTimeout(() => goPage('landing'), 400);
+  });
+}
+
+// ══════════════════════════════════════════════
+// TIKTOK CONNECT
+// ══════════════════════════════════════════════
+function toggleKey(id, btn) {
+  const inp = document.getElementById(id);
+  inp.type = inp.type === 'password' ? 'text' : 'password';
+  btn.textContent = inp.type === 'password' ? '👁' : '🙈';
+}
+
+// ══ BOARD LINK ACTIVATION ══
+function activateBoardLink() {
+  const link = document.getElementById('boardLinkInput').value.trim();
+  const user = document.getElementById('ttUsername').value.trim();
+  if (!link) { toast('⚠️','Missing link','Paste your board link first'); return; }
+  if (!user) { toast('⚠️','Missing username','Enter your TikTok username'); return; }
+  const btn = document.getElementById('mainConnectBtn');
+  btn.textContent = '🔄 Activating...'; btn.disabled = true;
+  setTimeout(() => {
+    appState.tiktokConnected = true;
+    appState.tiktokUsername = user;
+    appState.boardLink = link;
+    document.getElementById('connDot').className = 'status-dot connected';
+    document.getElementById('connStatusText').textContent = 'Activated · ' + user;
+    document.getElementById('connStatusText').style.color = 'var(--green)';
+    document.getElementById('goLiveBtn').disabled = false;
+    document.getElementById('openBoardPopupBtn').style.display = 'block';
+    btn.textContent = '✅ Activated'; btn.disabled = false;
+    toast('✅','Board Activated!','Click "Go Live" when your TikTok LIVE starts');
+  }, 1400);
+}
+
+function deactivateBoard() {
+  appState.tiktokConnected = false;
+  appState.liveConnected = false;
+  appState.boardLink = null;
+  document.getElementById('connDot').className = 'status-dot';
+  document.getElementById('connStatusText').textContent = 'Not Activated';
+  document.getElementById('connStatusText').style.color = '';
+  document.getElementById('goLiveBtn').disabled = true;
+  document.getElementById('goLiveBtn').textContent = '📡 Go Live — Launch Board';
+  document.getElementById('goLiveBtn').className = 'ss-btn start';
+  document.getElementById('goLiveBtn').style.cssText = '';
+  document.getElementById('goLiveBtn').onclick = function() { goLive(); };
+  document.getElementById('mainConnectBtn').textContent = '🔗 Activate Board';
+  document.getElementById('openBoardPopupBtn').style.display = 'none';
+  updateBoardConnectBtn(false, null);
+  toast('🔌','Board Deactivated','Link removed');
+}
+
+// Opens the board in a popup window (or navigates to board page)
+let boardPopupWin = null;
+function openBoardPopup() {
+  // In a real deployment this would open the board URL in a new window
+  // For the demo, we just navigate to the board page
+  goPage('board');
+  toast('🏆','Board Opened','Your board is live!');
+}
+
+function goLive() {
+  const user = appState.tiktokUsername || document.getElementById('ttUsername')?.value.trim();
+  if (!user) { toast('⚠️','No username','Enter your TikTok username first'); return; }
+  const btn = document.getElementById('goLiveBtn');
+  btn.textContent = '🔄 Launching...'; btn.disabled = true;
+  setTimeout(() => {
+    appState.liveConnected = true;
+    btn.textContent = '🔴 Live — Board Active';
+    btn.className = 'ss-btn pause';
+    btn.style.background = 'linear-gradient(135deg,rgba(0,255,136,.15),rgba(0,180,100,.1))';
+    btn.style.color = 'var(--green)';
+    btn.style.border = '1px solid rgba(0,255,136,.3)';
+    btn.style.boxShadow = 'none';
+    btn.disabled = false;
+    btn.onclick = function() { disconnectLive(); };
+    updateBoardConnectBtn(true, user);
+    appState.board.viewers = Math.floor(Math.random() * 3000) + 500;
+    document.getElementById('statViewers').textContent = appState.board.viewers.toLocaleString();
+    // Auto-open board page
+    goPage('board');
+    toast('🔴','You\'re Live!', 'Board is tracking coins for ' + user);
+    if (appState.auctionRunning) startSimulation();
+  }, 1800);
+}
+
+function disconnectLive() {
+  appState.liveConnected = false;
+  const btn = document.getElementById('goLiveBtn');
+  btn.textContent = '📡 Go Live — Launch Board';
+  btn.className = 'ss-btn start';
+  btn.style.cssText = '';
+  btn.onclick = function() { goLive(); };
+  updateBoardConnectBtn(false, appState.tiktokUsername);
+  toast('🔌','Disconnected from Live','Board is no longer tracking coins');
+}
+
+function updateBoardConnectBtn(connected, username) {
+  const btn = document.getElementById('boardConnectBtn');
+  const dot = document.getElementById('boardConnDot');
+  const label = document.getElementById('boardConnLabel');
+  const icon = document.getElementById('boardConnBtnIcon');
+  const text = document.getElementById('boardConnBtnText');
+  if (!btn) return;
+  if (connected) {
+    btn.className = 'board-connect-btn connected';
+    dot.className = 'board-conn-dot on';
+    label.textContent = 'Live';
+    label.style.color = 'var(--green)';
+    icon.textContent = '🔴';
+    text.textContent = username ? 'Live: ' + username : 'Connected';
+  } else {
+    btn.className = 'board-connect-btn disconnected';
+    dot.className = 'board-conn-dot';
+    label.textContent = 'Offline';
+    label.style.color = '';
+    icon.textContent = '📡';
+    text.textContent = 'Connect to Live';
+  }
+}
+
+function boardConnectToLive() {
+  if (appState.authed) {
+    if (appState.liveConnected) {
+      toast('🔴','Already Live!', appState.tiktokUsername + ' is connected');
+      return;
+    }
+    if (appState.tiktokConnected) {
+      goLive();
+    } else {
+      toast('⚙️','Activate first','Go to Control tab and paste your board link');
+      goPage('dashboard');
+    }
+  } else {
+    goPage('pricing');
+  }
+}
+
+// ══ MID-AUCTION LIVE CONTROLS ══
+function midAddTime(delta) {
+  if (!appState.auctionRunning) { toast('⚠️','Not running','Start the auction first'); return; }
+  appState.seconds = Math.max(0, appState.seconds + delta);
+  if (appState.seconds === 0) appState.seconds = 1; // prevent instant end
+  renderTimerDisplay();
+  toast(delta > 0 ? '⏱' : '⏳', delta > 0 ? `+${delta}s added!` : `${delta}s removed`, 'Timer updated live');
+}
+
+function midChangePrize() {
+  const val = document.getElementById('midPrizeInput').value.trim();
+  if (!val) { toast('⚠️','Enter a prize name',''); return; }
+  appState.settings.title = val;
+  document.getElementById('midPrizeInput').value = '';
+  renderBoard();
+  toast('🏆', 'Prize Updated!', '"' + val + '" — board updated live');
+}
+
+function midChangeMin() {
+  const val = parseInt(document.getElementById('midMinInput').value) || 1;
+  appState.settings.min = val;
+  document.getElementById('midMinInput').value = '';
+  renderBoard();
+  toast('🪙', 'Min Coins Updated!', 'Now ' + val + ' coins minimum to enter');
+}
+
+// Show/hide mid-auction controls based on auction state
+function updateMidAuctionControls() {
+  const ctrl = document.getElementById('midAuctionControls');
+  if (ctrl) ctrl.style.display = appState.auctionRunning ? 'block' : 'none';
+}
+
+// ══ DISCONNECTED POPUP ══
+function showDisconnectedPopup(username) {
+  const userEl = document.getElementById('disconnUser');
+  if (userEl) userEl.textContent = username || '@yourtiktok';
+  document.getElementById('disconnOverlay').classList.add('show');
+}
+
+function closeDisconn() {
+  document.getElementById('disconnOverlay').classList.remove('show');
+}
+
+function retryConnect() {
+  closeDisconn();
+  if (appState.authed) {
+    goPage('dashboard');
+    setTimeout(() => { goLive(); }, 400);
+  } else {
+    goPage('pricing');
+  }
+}
+
+// Simulate a disconnect event occasionally when live (for demo)
+function simulateDisconnect() {
+  if (appState.liveConnected && Math.random() < 0.05) {
+    appState.liveConnected = false;
+    updateBoardConnectBtn(false, appState.tiktokUsername);
+    showDisconnectedPopup(appState.tiktokUsername);
+  }
+}
+
+// ══════════════════════════════════════════════
+// TIMER + AUCTION
+// ══════════════════════════════════════════════
+function renderTimerDisplay() {
+  const el = document.getElementById('timerDisplay');
+  const s = appState.seconds;
+  // Also call renderBoard to keep board timer in sync
+  if (document.getElementById('page-board')?.classList.contains('active')) {
+    renderBoard();
+    return;
+  }
+  if (!el) return;
+  if (s <= 0) {
+    el.textContent = 'ENDED';
+    el.className = 'timer-big red';
+    return;
+  }
+  const m = Math.floor(s / 60), sec = s % 60;
+  const str = `${m}:${sec.toString().padStart(2,'0')}`;
+  el.textContent = str;
+  el.className = 'timer-big' + (appState.auctionPaused ? ' paused-color' : s <= 30 ? ' red' : '');
+}
+
+function startAuction() {
+  if (appState.auctionRunning && !appState.auctionPaused) return;
+  if (appState.auctionPaused) { togglePause(); return; }
+  if (appState.seconds <= 0) appState.seconds = 150;
+  appState.auctionRunning = true;
+  appState.auctionPaused = false;
+  appState.snipePhase = false;
+  document.getElementById('auctionState').textContent = 'LIVE';
+  document.getElementById('auctionState').className = 'auction-state live';
+  document.getElementById('startBtn').disabled = true;
+  document.getElementById('pauseBtn').disabled = false;
+  document.getElementById('stopBtn').disabled = false;
+  // Hide restart btn if visible
+  const restartBtn = document.getElementById('restartBtn');
+  if (restartBtn) restartBtn.style.display = 'none';
+  appState.timerInterval = setInterval(() => {
+    if (!appState.auctionPaused) {
+      appState.seconds--;
+      renderTimerDisplay();
+      if (appState.seconds <= 0 && !appState.snipePhase) {
+        // Main timer done — start snipe phase if enabled
+        const snipeDelay = appState.settings.snipe;
+        if (snipeDelay > 0) {
+          appState.snipePhase = true;
+          appState.seconds = snipeDelay;
+          startSnipePhase(snipeDelay);
+        } else {
+          endAuction();
+        }
+      } else if (appState.seconds <= 0 && appState.snipePhase) {
+        // Snipe phase done — end auction for real
+        endAuction();
+      }
+    }
+  }, 1000);
+  toast('▶','Auction Started!','Timer is running — go LIVE!');
+  if (appState.tiktokConnected || appState.liveConnected) startSimulation();
+  updateMidAuctionControls();
+}
+
+function startSnipePhase(delay) {
+  // Show snipe zone on board
+  const zone = document.getElementById('bdSnipeZone');
+  const fill = document.getElementById('bdSnipeFill');
+  const timerEl = document.getElementById('bdSnipeTimer');
+  const label = document.getElementById('bdTimerLabel');
+  if (zone) { zone.style.display = 'block'; zone.classList.add('active'); }
+  if (fill) fill.style.width = '100%';
+  if (timerEl) timerEl.textContent = delay;
+  if (label) label.textContent = '⚡ SNIPE WINDOW OPEN';
+  toast('⚡', 'Snipe Delay!', 'Last chance — ' + delay + 's to beat the leader!');
+  // Update snipe countdown each second in sync with main interval
+  if (snipeInterval) clearInterval(snipeInterval);
+  snipeInterval = setInterval(() => {
+    const s = appState.seconds;
+    if (timerEl) timerEl.textContent = s;
+    if (fill) fill.style.width = ((s / delay) * 100) + '%';
+    if (s <= 0) {
+      clearInterval(snipeInterval);
+      if (zone) { zone.style.display = 'none'; zone.classList.remove('active'); }
+    }
+  }, 1000);
+}
+
+function togglePause() {
+  if (!appState.auctionRunning) return;
+  appState.auctionPaused = !appState.auctionPaused;
+  const btn = document.getElementById('pauseBtn');
+  const stateEl = document.getElementById('auctionState');
+  if (appState.auctionPaused) {
+    btn.textContent = '▶ RESUME';
+    btn.className = 'ss-btn start';
+    stateEl.textContent = 'PAUSED';
+    stateEl.className = 'auction-state paused';
+    toast('⏸','Auction Paused','Timer is on hold');
+  } else {
+    btn.textContent = '⏸ PAUSE';
+    btn.className = 'ss-btn pause';
+    stateEl.textContent = 'LIVE';
+    stateEl.className = 'auction-state live';
+    toast('▶','Auction Resumed','Timer is running again!');
+  }
+  renderTimerDisplay();
+}
+
+function stopAuction() {
+  clearInterval(appState.timerInterval);
+  clearInterval(snipeInterval);
+  appState.auctionRunning = false;
+  appState.auctionPaused = false;
+  appState.snipePhase = false;
+  snipeActive = false;
+  const zone = document.getElementById('bdSnipeZone');
+  if (zone) { zone.style.display = 'none'; zone.classList.remove('active'); }
+  document.getElementById('auctionState').textContent = 'IDLE';
+  document.getElementById('auctionState').className = 'auction-state idle';
+  document.getElementById('startBtn').disabled = false;
+  document.getElementById('pauseBtn').disabled = true;
+  document.getElementById('pauseBtn').textContent = '⏸ PAUSE';
+  document.getElementById('pauseBtn').className = 'ss-btn pause';
+  document.getElementById('stopBtn').disabled = true;
+  toast('⏹','Auction Stopped','Board has been reset');
+  appState.seconds = 150;
+  renderTimerDisplay();
+  updateMidAuctionControls();
+}
+
+function endAuction() {
+  clearInterval(appState.timerInterval);
+  clearInterval(snipeInterval);
+  appState.auctionRunning = false;
+  appState.snipePhase = false;
+  snipeActive = false;
+  const zone = document.getElementById('bdSnipeZone');
+  if (zone) { zone.style.display = 'none'; zone.classList.remove('active'); }
+  document.getElementById('auctionState').textContent = 'ENDED';
+  document.getElementById('auctionState').className = 'auction-state ended';
+  document.getElementById('startBtn').disabled = true;
+  document.getElementById('pauseBtn').disabled = true;
+  document.getElementById('stopBtn').disabled = true;
+  // Show restart button on dashboard
+  const restartBtn = document.getElementById('restartBtn');
+  if (restartBtn) restartBtn.style.display = 'flex';
+  updateMidAuctionControls();
+  showWinnerPopup();
+}
+
+function showWinnerPopup() {
+  const winner = appState.board.ranks[0];
+  if (!winner || !winner.name) {
+    toast('🏁', 'Auction Ended', 'No bids were placed');
+    return;
+  }
+
+  // Check for tie at 1st place — only show to streamer (authed)
+  const second = appState.board.ranks[1];
+  const hasTie = second && second.name && second.coins > 0 && second.coins === winner.coins;
+  if (hasTie && appState.authed) {
+    showTiePopup();
+    return;
+  }
+
+  document.getElementById('winnerAv').style.background = winner.bg || 'linear-gradient(135deg,#FF6B6B,#FF8E53)';
+  document.getElementById('winnerAv').textContent = winner.emoji || '🏆';
+  document.getElementById('winnerName').textContent = winner.name;
+  document.getElementById('winnerHandle').textContent = winner.handle || '';
+  document.getElementById('winnerCoins').textContent = (winner.coins || 0).toLocaleString();
+  const starsEl = document.getElementById('winnerStars');
+  starsEl.innerHTML = '';
+  const starEmojis = ['⭐','✨','🌟','💫','⭐','✨'];
+  starEmojis.forEach((s, i) => {
+    const star = document.createElement('div');
+    star.className = 'wstar';
+    star.textContent = s;
+    star.style.left = (5 + Math.random() * 90) + '%';
+    star.style.top = (5 + Math.random() * 90) + '%';
+    star.style.animationDelay = (i * 0.3) + 's';
+    star.style.animationDuration = (1.5 + Math.random()) + 's';
+    starsEl.appendChild(star);
+  });
+  document.getElementById('winnerOverlay').classList.add('show');
+  spawnWinnerCoins();
+}
+
+function showTiePopup() {
+  const tiedPlayers = appState.board.ranks.filter(r => r && r.name && r.coins === appState.board.ranks[0].coins);
+  const subtitle = `${tiedPlayers.length} players tied at ${appState.board.ranks[0].coins.toLocaleString()} coins`;
+  document.getElementById('tieSubtitle').textContent = subtitle;
+
+  const playersEl = document.getElementById('tiePlayers');
+  playersEl.innerHTML = '';
+  tiedPlayers.forEach(p => {
+    const row = document.createElement('div');
+    row.style.cssText = 'display:flex;align-items:center;gap:10px;background:rgba(255,165,0,.06);border:1px solid rgba(255,165,0,.2);border-radius:12px;padding:10px 14px';
+    row.innerHTML = `
+      <div style="width:36px;height:36px;border-radius:50%;background:${p.bg};display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0">${p.emoji}</div>
+      <div style="flex:1">
+        <div style="font-size:.82rem;font-weight:700;color:#fff">${p.name}</div>
+        <div style="font-size:.62rem;color:rgba(255,255,255,.4)">${p.handle}</div>
+      </div>
+      <div style="font-family:'Orbitron',sans-serif;font-size:.75rem;font-weight:900;color:#FFA500">${p.coins.toLocaleString()} 🪙</div>`;
+    playersEl.appendChild(row);
+  });
+
+  document.getElementById('tieOverlay').classList.add('show');
+}
+
+function addTieTime(seconds) {
+  document.getElementById('tieOverlay').classList.remove('show');
+  appState.seconds = seconds;
+  appState.snipePhase = false;
+  startAuction();
+  toast('⏱', `+${seconds}s added!`, 'Tiebreaker round started — break the tie!');
+}
+
+function closeTieAndContinue() {
+  document.getElementById('tieOverlay').classList.remove('show');
+  // Show winner popup without tie check this time
+  const winner = appState.board.ranks[0];
+  document.getElementById('winnerAv').style.background = winner.bg || 'linear-gradient(135deg,#FF6B6B,#FF8E53)';
+  document.getElementById('winnerAv').textContent = winner.emoji || '🏆';
+  document.getElementById('winnerName').textContent = winner.name + ' & tied';
+  document.getElementById('winnerHandle').textContent = winner.handle || '';
+  document.getElementById('winnerCoins').textContent = (winner.coins || 0).toLocaleString();
+  document.getElementById('winnerOverlay').classList.add('show');
+  spawnWinnerCoins();
+}
+
+function closeTieAndRestart() {
+  document.getElementById('tieOverlay').classList.remove('show');
+  restartAuction();
+}
+
+function spawnWinnerCoins() {
+  for (let i = 0; i < 12; i++) {
+    setTimeout(() => {
+      const el = document.createElement('div');
+      el.className = 'fcoin';
+      el.textContent = ['🪙','🏆','⭐','💎','🎉'][Math.floor(Math.random()*5)];
+      el.style.left = (5 + Math.random() * 90) + 'vw';
+      el.style.bottom = (10 + Math.random() * 30) + 'vh';
+      el.style.fontSize = (1 + Math.random()) + 'rem';
+      document.body.appendChild(el);
+      setTimeout(() => el.remove(), 2200);
+    }, i * 150);
+  }
+}
+
+function closeWinner() {
+  document.getElementById('winnerOverlay').classList.remove('show');
+  goPage('board');
+}
+
+// ══ DEMO BOARD (no login required) ══
+function viewDemoBoard() {
+  appState.demoMode = true;
+  // Reset demo board data
+  appState.board.ranks = [
+    { name: 'DragonSlayer', handle: '@dragonslayer99', emoji: '🐉', coins: 847, bg: 'linear-gradient(135deg,#FF6B6B,#FF8E53)' },
+    { name: 'StarGazer', handle: '@stargazer_x', emoji: '🦋', coins: 523, bg: 'linear-gradient(135deg,#4776E6,#8E54E9)' },
+    { name: 'FlameKing', handle: '@flamekinggg', emoji: '🔥', coins: 312, bg: 'linear-gradient(135deg,#f7971e,#ffd200)' }
+  ];
+  appState.board.participants = 47;
+  appState.board.pool = 1682;
+  appState.board.viewers = 2400;
+  appState.seconds = 150;
+
+  // Navigate to board page directly (bypasses auth)
+  document.querySelectorAll('.page').forEach(p => {
+    p.classList.remove('active');
+    p.style.display = 'none';
+    p.style.opacity = '0';
+  });
+  const pg = document.getElementById('page-board');
+  pg.style.display = 'block';
+  setTimeout(() => {
+    pg.style.opacity = '1';
+    pg.classList.add('active');
+  }, 10);
+  document.getElementById('bottomNav').style.display = 'none';
+  // Back button → landing
+  const links = document.getElementById('boardNavLinks');
+  if (links) links.innerHTML = '<button class="nav-btn" onclick="goPage(\'landing\')">← Back to Home</button><button class="nav-btn primary" onclick="goPage(\'pricing\')" style="font-size:.65rem">Get Access</button>';
+  // Show lock overlay if not paid
+  const lockEl = document.getElementById('boardLockOverlay');
+  if (lockEl) lockEl.classList.toggle('hidden', appState.paid || appState.authed);
+  renderBoard();
+  runDemoSim();
+}
+
+let demoSimTimeout = null;
+function runDemoSim() {
+  if (demoSimTimeout) clearTimeout(demoSimTimeout);
+  const step = () => {
+    if (!document.getElementById('page-board').classList.contains('active')) return;
+    const user = fakeUsers[Math.floor(Math.random() * fakeUsers.length)];
+    const amount = Math.floor(Math.random() * 200) + 10;
+    let idx = appState.board.ranks.findIndex(r => r && r.handle === user.handle);
+    if (idx >= 0) {
+      appState.board.ranks[idx].coins += amount;
+    } else {
+      const empty = appState.board.ranks.findIndex(r => !r || !r.name);
+      if (empty >= 0) appState.board.ranks[empty] = {...user, coins: amount};
+      else if (amount > (appState.board.ranks[2]?.coins || 0)) appState.board.ranks[2] = {...user, coins: amount};
+    }
+    appState.board.ranks.sort((a,b) => (b?.coins||0)-(a?.coins||0));
+    appState.board.pool += amount;
+    appState.board.participants = Math.max(appState.board.participants || 0, 3 + Math.floor(Math.random()*8));
+    const newRankIdx = appState.board.ranks.findIndex(r => r && r.handle === user.handle);
+    renderBoard();
+    if (newRankIdx >= 0) setTimeout(() => showCoinPop(newRankIdx, amount), 50);
+    toast('🪙', `${user.name} sent coins!`, `+${amount} coins`);
+    spawnCoins();
+    demoSimTimeout = setTimeout(step, 2000 + Math.random() * 3000);
+  };
+  setTimeout(step, 1000);
+}
+
+// ══ SNIPE DELAY ══
+let snipeActive = false;
+let snipeInterval = null;
+let snipeSecondsLeft = 0;
+
+function restartAuction() {
+  // Clear snipe + intervals
+  clearInterval(appState.timerInterval);
+  clearInterval(snipeInterval);
+  snipeActive = false;
+  appState.snipePhase = false;
+  // Reset board data
+  appState.board.ranks = [{ name: null }, { name: null }, { name: null }];
+  appState.board.participants = 0;
+  appState.board.pool = 0;
+  // Reset timer to last used preset (or 150s default)
+  appState.seconds = appState.lastPresetSeconds || 150;
+  appState.auctionRunning = false;
+  appState.auctionPaused = false;
+  // Reset UI
+  document.getElementById('auctionState').textContent = 'IDLE';
+  document.getElementById('auctionState').className = 'auction-state idle';
+  document.getElementById('startBtn').disabled = false;
+  document.getElementById('pauseBtn').disabled = true;
+  document.getElementById('pauseBtn').textContent = '⏸ PAUSE';
+  document.getElementById('pauseBtn').className = 'ss-btn pause';
+  document.getElementById('stopBtn').disabled = true;
+  const restartBtn = document.getElementById('restartBtn');
+  if (restartBtn) restartBtn.style.display = 'none';
+  const zone = document.getElementById('bdSnipeZone');
+  if (zone) { zone.style.display = 'none'; zone.classList.remove('active'); }
+  document.getElementById('statPart').textContent = '0';
+  document.getElementById('statPool').textContent = '0';
+  renderTimerDisplay();
+  renderBoard();
+  updateMidAuctionControls();
+  toast('🔄', 'Board Reset!', 'Ready for a new auction');
+}
+
+function triggerSnipeDelay() {
+  // No-op: snipe delay is now handled as a phase after main timer ends
+  // (kept for backward compat in case called elsewhere)
+}
+
+function setSnipePreset(val, btn) {
+  appState.settings.snipe = val;
+  updateSnipeDisplay();
+  document.querySelectorAll('#page-dashboard .preset-btn').forEach(b => {
+    if (b.closest('[style*="grid-template-columns: repeat(5"]') || b.parentElement?.style?.gridTemplateColumns?.includes('repeat(5')) b.classList.remove('sel');
+  });
+  if (btn) btn.classList.add('sel');
+  toast('⚡', val === 0 ? 'Snipe Delay OFF' : `Snipe Delay: ${val}s`, val > 0 ? 'Timer resets if bid in last ' + val + 's' : 'No snipe protection');
+}
+
+function setSnipeCustom() {
+  const val = parseInt(document.getElementById('snipeCustom').value) || 0;
+  appState.settings.snipe = Math.max(0, Math.min(300, val));
+  document.getElementById('snipeCustom').value = '';
+  updateSnipeDisplay();
+  toast('⚡', `Snipe Delay: ${appState.settings.snipe}s`, 'Custom snipe delay set');
+}
+
+function updateSnipeDisplay() {
+  const v = appState.settings.snipe;
+  const el = document.getElementById('snipeDisplayVal');
+  const h1 = document.getElementById('snipeHintVal');
+  const h2 = document.getElementById('snipeHintVal2');
+  const bSnipe = document.getElementById('bSnipe');
+  const setSnipeInput = document.getElementById('setSnipe');
+  if (el) el.textContent = v === 0 ? 'OFF' : v + 's';
+  if (h1) h1.textContent = v + 's';
+  if (h2) h2.textContent = v + 's';
+  if (bSnipe) bSnipe.textContent = v === 0 ? 'OFF' : v + 's';
+  if (setSnipeInput) setSnipeInput.value = v;
+}
+
+function adjustTime(delta) {
+  appState.seconds = Math.max(0, appState.seconds + delta);
+  renderTimerDisplay();
+  const d = document.getElementById('timerDisplay');
+  d.style.transform = 'scale(1.2)';
+  setTimeout(() => d.style.transform = 'scale(1)', 300);
+  toast(delta > 0 ? '⏱' : '⏳', `${delta > 0 ? '+' : ''}${delta}s`, 'Timer adjusted');
+}
+
+function setPreset(secs, btn) {
+  appState.seconds = secs;
+  appState.lastPresetSeconds = secs;
+  renderTimerDisplay();
+  document.querySelectorAll('.preset-btn').forEach(b => b.classList.remove('sel'));
+  if (btn) btn.classList.add('sel');
+  const m = Math.floor(secs / 60), s = secs % 60;
+  toast('⚙️','Duration Set', `${m}m${s ? ' ' + s + 's' : ''}`);
+}
+
+function setCustomTime() {
+  const m = parseInt(document.getElementById('cMin').value) || 0;
+  const s = parseInt(document.getElementById('cSec').value) || 0;
+  const total = m * 60 + s;
+  if (total <= 0) { toast('❌','Invalid','Enter a valid duration'); return; }
+  appState.seconds = total;
+  renderTimerDisplay();
+  document.querySelectorAll('.preset-btn').forEach(b => b.classList.remove('sel'));
+  document.getElementById('cMin').value = '';
+  document.getElementById('cSec').value = '';
+  toast('✅','Custom Time Set', `${m}m ${s}s`);
+}
+
+// ══════════════════════════════════════════════
+// BOARD RENDERING
+// ══════════════════════════════════════════════
+function setTheme(theme, btn) {
+  appState.currentTheme = theme;
+  const bd = document.getElementById('boardDisplay');
+  if (bd) {
+    bd.className = 'board-display theme-' + theme;
+    renderBoard();
+  }
+  if (btn) {
+    document.querySelectorAll('.btab').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+  }
+}
+
+const demoRanks = [
+  { name: 'DragonSlayer', handle: '@dragonslayer99', emoji: '🐉', coins: 847, bg: 'linear-gradient(135deg,#FF6B6B,#FF8E53)' },
+  { name: 'StarGazer', handle: '@stargazer_x', emoji: '🦋', coins: 523, bg: 'linear-gradient(135deg,#4776E6,#8E54E9)' },
+  { name: 'FlameKing', handle: '@flamekinggg', emoji: '🔥', coins: 312, bg: 'linear-gradient(135deg,#f7971e,#ffd200)' }
+];
+
+function renderBoard() {
+  const ranksEl = document.getElementById('bdRanks');
+  if (!ranksEl) return;
+
+  const hasRealData = appState.board.ranks.some(r => r && r.name && r.coins > 0);
+  // Only use demo ranks when explicitly in demo mode (not during a real auction)
+  const ranks = (hasRealData || appState.auctionRunning || appState.auctionEnded)
+    ? appState.board.ranks
+    : (appState.demoMode ? demoRanks : appState.board.ranks);
+
+  // ── Timer display ──
+  const timerBig = document.getElementById('bdTimerBig');
+  const timerLabel = document.getElementById('bdTimerLabel');
+  if (timerBig) {
+    const s = appState.seconds;
+    if (s <= 0) {
+      timerBig.textContent = 'ENDED';
+      timerBig.className = 'bd-timer-big ended';
+      if (timerLabel) timerLabel.textContent = 'AUCTION ENDED';
+    } else if (appState.snipePhase) {
+      const m = Math.floor(s / 60), sec = s % 60;
+      timerBig.textContent = `${m}:${sec.toString().padStart(2,'0')}`;
+      timerBig.className = 'bd-timer-big red';
+      if (timerLabel) timerLabel.textContent = '⚡ SNIPE WINDOW';
+    } else {
+      const m = Math.floor(s / 60), sec = s % 60;
+      timerBig.textContent = `${m}:${sec.toString().padStart(2,'0')}`;
+      timerBig.className = 'bd-timer-big' + (appState.auctionPaused ? ' paused-color' : s <= 30 ? ' red' : '');
+      if (timerLabel) timerLabel.textContent = appState.auctionPaused ? 'PAUSED' : 'TIME REMAINING';
+    }
+  }
+
+  // Also sync dashboard timer display
+  const dashTimer = document.getElementById('timerDisplay');
+  if (dashTimer && appState.seconds > 0) {
+    const m = Math.floor(appState.seconds / 60), sec = appState.seconds % 60;
+    dashTimer.textContent = `${m}:${sec.toString().padStart(2,'0')}`;
+    dashTimer.className = 'timer-big' + (appState.auctionPaused ? ' paused-color' : appState.seconds <= 30 ? ' red' : '');
+  }
+
+  // ── Meta chips ──
+  const bdMin = document.getElementById('bdMetaMin');
+  const bdSnipe = document.getElementById('bdMetaSnipe');
+  const bdViewers = document.getElementById('bdMetaViewers');
+  if (bdMin) bdMin.textContent = appState.settings.min;
+  if (bdSnipe) bdSnipe.textContent = appState.settings.snipe > 0 ? appState.settings.snipe + 's' : 'OFF';
+  if (bdViewers) bdViewers.textContent = appState.board.viewers ? appState.board.viewers.toLocaleString() : '—';
+
+  // ── Prize banner ──
+  const prizeTitle = document.getElementById('bdPrizeTitle');
+  if (prizeTitle) prizeTitle.textContent = appState.settings.title || 'TBD';
+
+  // ── Footer ──
+  const footPart = document.getElementById('bdFootPart');
+  const footPool = document.getElementById('bdFootPool');
+  const footStatus = document.getElementById('bdFootStatus');
+  if (footPart) footPart.textContent = appState.board.participants || 0;
+  if (footPool) footPool.textContent = (appState.board.pool || 0).toLocaleString();
+  if (footStatus) {
+    if (appState.auctionRunning && !appState.auctionPaused) {
+      footStatus.textContent = '● LIVE';
+      footStatus.className = 'bd-live-badge';
+    } else if (appState.auctionPaused) {
+      footStatus.textContent = '⏸ PAUSED';
+      footStatus.className = 'bd-idle-badge';
+    } else {
+      footStatus.textContent = '◼ IDLE';
+      footStatus.className = 'bd-idle-badge';
+    }
+  }
+
+  // ── Rank rows ──
+  ranksEl.innerHTML = '';
+  const posLabels = ['1ST','2ND','3RD'];
+  const posClasses = ['p1','p2','p3'];
+  const numClasses = ['bd-rn1','bd-rn2','bd-rn3'];
+
+  for (let i = 0; i < 3; i++) {
+    const r = ranks[i];
+    const div = document.createElement('div');
+
+    // Check if this rank ties with the next rank
+    const nextR = ranks[i+1];
+    const isTied = r && r.name && nextR && nextR.name && r.coins > 0 && r.coins === nextR.coins;
+
+    if (!r || !r.name) {
+      div.className = 'bd-rank-row empty';
+      div.innerHTML = `
+        <div class="bd-rank-num bd-rn-empty">${i+1}</div>
+        <div class="bd-user-av" style="background:rgba(255,255,255,.04);font-size:.9rem">🪙</div>
+        <div class="bd-user-info">
+          <div class="bd-user-name">Waiting for coins...</div>
+          <div class="bd-user-handle">${posLabels[i]} place open</div>
+        </div>
+        <div class="bd-coin-col">
+          <div class="bd-coin-num" style="color:rgba(255,255,255,.1)">—</div>
+          <div class="bd-coin-lbl">coins</div>
+        </div>`;
+    } else {
+      div.className = `bd-rank-row ${posClasses[i]}`;
+      if (i === 0 && !isTied) div.innerHTML += `<div class="bd-crown">👑</div>`;
+      const tieBadge = isTied ? `<span style="background:rgba(255,165,0,.2);color:#FFA500;border:1px solid rgba(255,165,0,.4);border-radius:20px;padding:2px 8px;font-size:.55rem;font-weight:900;letter-spacing:1px;margin-left:6px">TIE</span>` : '';
+      div.innerHTML += `
+        <div class="bd-rank-num ${numClasses[i]}">${i+1}</div>
+        <div class="bd-user-av" style="background:${r.bg}">${r.emoji}</div>
+        <div class="bd-user-info">
+          <div class="bd-user-name" style="display:flex;align-items:center;gap:4px">${r.name}${tieBadge}</div>
+          <div class="bd-user-handle">${r.handle} · ${isTied ? 'TIED for '+posLabels[i] : posLabels[i]+' place'}</div>
+        </div>
+        <div class="bd-coin-col">
+          <div class="bd-coin-num">${(r.coins||0).toLocaleString()}</div>
+          <div class="bd-coin-lbl">coins</div>
+        </div>`;
+    }
+    ranksEl.appendChild(div);
+  }
+
+  // ── Old IDs used elsewhere (backward compat) ──
+  const bSnipe = document.getElementById('bSnipe');
+  const bMin = document.getElementById('bMin');
+  if (bSnipe) bSnipe.textContent = appState.settings.snipe + 's';
+  if (bMin) bMin.textContent = appState.settings.min;
+}
+
+// Show a coin pop-in notification on a rank row when coins come in
+function showCoinPop(rankIndex, amount) {
+  const rows = document.querySelectorAll('.bd-rank-row:not(.empty)');
+  if (!rows[rankIndex]) return;
+  const existing = rows[rankIndex].querySelector('.bd-coin-pop');
+  if (existing) existing.remove();
+  const pop = document.createElement('div');
+  pop.className = 'bd-coin-pop';
+  pop.textContent = '+' + amount.toLocaleString() + ' 🪙';
+  rows[rankIndex].appendChild(pop);
+  setTimeout(() => pop.remove(), 900);
+}
+
+// Show owner's current rank as a floating toast on the board
+let ownerRankPopTimeout = null;
+function showOwnerRank() {
+  if (!appState.authed || !appState.tiktokUsername) return;
+  const name = appState.tiktokUsername.replace('@','');
+  const idx = appState.board.ranks.findIndex(r => r && r.name && r.name.toLowerCase() === name.toLowerCase());
+  if (idx < 0) return;
+  const labels = ['🥇 1ST PLACE','🥈 2ND PLACE','🥉 3RD PLACE'];
+  // Remove old one
+  const old = document.querySelector('.owner-rank-pop');
+  if (old) old.remove();
+  if (ownerRankPopTimeout) clearTimeout(ownerRankPopTimeout);
+  const el = document.createElement('div');
+  el.className = 'owner-rank-pop';
+  el.innerHTML = `<div class="owner-rank-emoji">${['🥇','🥈','🥉'][idx]}</div><div class="owner-rank-text">You are in <span>${labels[idx]}</span></div>`;
+  document.body.appendChild(el);
+  ownerRankPopTimeout = setTimeout(() => el.remove(), 3500);
+}
+
+// ══════════════════════════════════════════════
+// SIMULATION (when TikTok connected)
+// ══════════════════════════════════════════════
+const fakeUsers = [
+  {name:'NitroKid',handle:'@nitrokid',emoji:'🚀',bg:'linear-gradient(135deg,#FF0050,#FF6B6B)'},
+  {name:'CosmicX',handle:'@cosmicx',emoji:'🪐',bg:'linear-gradient(135deg,#7B2FBE,#A855F7)'},
+  {name:'GoldCard',handle:'@goldcard',emoji:'💎',bg:'linear-gradient(135deg,#FFD700,#FF8C00)'},
+  {name:'NeonQueen',handle:'@neonqueen',emoji:'🦄',bg:'linear-gradient(135deg,#FF00FF,#FF69B4)'},
+  {name:'ZoomZoom',handle:'@zoomzoom',emoji:'💨',bg:'linear-gradient(135deg,#00F2EA,#0080FF)'},
+  {name:'StarDust',handle:'@stardust',emoji:'✨',bg:'linear-gradient(135deg,#4776E6,#8E54E9)'},
+  {name:'FlameKing',handle:'@flamekinggg',emoji:'🔥',bg:'linear-gradient(135deg,#f7971e,#ffd200)'},
+  {name:'CyberBabe',handle:'@cyberbabe',emoji:'🤖',bg:'linear-gradient(135deg,#00FFFF,#0080FF)'}
+];
+let simTimeout = null;
+
+function startSimulation() {
+  if (simTimeout) clearTimeout(simTimeout);
+  simStep();
+}
+
+function simStep() {
+  if (!appState.auctionRunning || appState.auctionPaused) { simTimeout = setTimeout(simStep, 2000); return; }
+  const user = fakeUsers[Math.floor(Math.random() * fakeUsers.length)];
+  const amount = Math.floor(Math.random() * 300) + appState.settings.min;
+
+  // Find if user already in ranks
+  let idx = appState.board.ranks.findIndex(r => r.handle === user.handle);
+  if (idx >= 0) {
+    appState.board.ranks[idx].coins += amount;
+  } else {
+    // Try to enter leaderboard
+    const emptySlot = appState.board.ranks.findIndex(r => !r.name);
+    if (emptySlot >= 0) {
+      appState.board.ranks[emptySlot] = { ...user, coins: amount };
+    } else {
+      // Beat last place?
+      const last = appState.board.ranks[2];
+      if (amount > last.coins) appState.board.ranks[2] = { ...user, coins: amount };
+    }
+  }
+
+  // Re-sort and find new rank of this user
+  appState.board.ranks.sort((a, b) => (b?.coins || 0) - (a?.coins || 0));
+  appState.board.pool += amount;
+  appState.board.participants = Math.max(appState.board.participants, appState.board.ranks.filter(r => r.name).length + Math.floor(Math.random() * 5));
+
+  document.getElementById('statPart').textContent = appState.board.participants;
+  document.getElementById('statPool').textContent = appState.board.pool.toLocaleString();
+
+  // Find which rank slot this user ended up in
+  const newRankIdx = appState.board.ranks.findIndex(r => r && r.handle === user.handle);
+
+  // Render board if on that page + show coin pop
+  if (document.getElementById('page-board').classList.contains('active')) {
+    renderBoard();
+    if (newRankIdx >= 0) setTimeout(() => showCoinPop(newRankIdx, amount), 50);
+    showOwnerRank();
+  }
+
+  toast('🪙', `${user.name} sent coins!`, `+${amount.toLocaleString()} coins`);
+  spawnCoins();
+
+  simTimeout = setTimeout(simStep, 2500 + Math.random() * 4000);
+}
+
+function spawnCoins() {
+  const count = Math.floor(Math.random() * 3) + 1;
+  for (let i = 0; i < count; i++) {
+    setTimeout(() => {
+      const el = document.createElement('div');
+      el.className = 'fcoin';
+      el.textContent = '🪙';
+      el.style.left = (15 + Math.random() * 70) + 'vw';
+      el.style.bottom = '15vh';
+      document.body.appendChild(el);
+      setTimeout(() => el.remove(), 2100);
+    }, i * 180);
+  }
+}
+
+// ══════════════════════════════════════════════
+// SETTINGS
+// ══════════════════════════════════════════════
+function saveSettings() {
+  appState.settings.min = parseInt(document.getElementById('setMin').value) || 1;
+  appState.settings.snipe = parseInt(document.getElementById('setSnipe').value) || 20;
+  appState.settings.title = document.getElementById('setTitle').value || '';
+  toast('💾','Settings Saved','Changes applied to your board');
+  renderBoard();
+}
+
+// ══════════════════════════════════════════════
+// TOAST
+// ══════════════════════════════════════════════
+function toast(emoji, title, sub) {
+  const wrap = document.getElementById('toastWrap');
+  const el = document.createElement('div');
+  el.className = 'toast';
+  el.innerHTML = `<div class="toast-e">${emoji}</div><div><div class="toast-t">${title}</div><div class="toast-s">${sub}</div></div>`;
+  wrap.appendChild(el);
+  setTimeout(() => el.remove(), 3600);
+  while (wrap.children.length > 3) wrap.removeChild(wrap.firstChild);
+}
+
+// ══════════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════════
+renderTimerDisplay();
+renderPriceCard('landing-price-card');
+renderBoard();
+updateSnipeDisplay();
+
+// Board page accessible without auth (demo visible, but board locked for non-paid)
+const boardIdx = PROTECTED.indexOf("board");
+if (boardIdx > -1) PROTECTED.splice(boardIdx, 1);
+
+// ── STRIPE PAYMENT SUCCESS HANDLER ──
+// When Stripe redirects back with ?payment=success, auto-show the board link screen
+(function() {
+  const params = new URLSearchParams(window.location.search);
+  const stripeSession = params.get('session_id'); // Stripe checkout session ID
+  const paymentStatus = params.get('payment');
+
+  if (paymentStatus === 'success' || stripeSession) {
+    window.history.replaceState({}, document.title, '/');
+
+    if (!stripeSession || (!stripeSession.startsWith('cs_live_') && !stripeSession.startsWith('cs_test_'))) {
+      // No valid session ID — could be someone manually typing the URL
+      toast('❌', 'Invalid session', 'Please complete payment through the checkout');
+      return;
+    }
+
+    // Show verifying state
+    toast('🔄', 'Verifying payment...', 'Just a moment');
+
+    // Verify the session against Stripe API via our webhook
+    fetch('/api/webhook?verify=' + encodeURIComponent(stripeSession))
+      .then(r => r.json())
+      .then(data => {
+        if (!data.valid) {
+          toast('❌', 'Payment not verified', 'Please complete payment or contact support');
+          return;
+        }
+        // Payment is real — grant access
+        const savedEmail = localStorage.getItem('pendingEmail') || data.email || '';
+        localStorage.removeItem('pendingEmail');
+        const name = data.name || (savedEmail ? savedEmail.split('@')[0] : 'CoinDrop User');
+        const link = generateBoardLink(stripeSession);
+
+        const fbUser = firebase.auth().currentUser;
+        if (fbUser) {
+          localStorage.setItem('boardLink_' + fbUser.uid, link);
+          // Save permanently to Firestore
+          savePurchaseToFirestore(fbUser.uid, link, data.email || fbUser.email || '', 'stripe');
+        } else {
+          localStorage.setItem('pendingBoardLink', link);
+          localStorage.setItem('pendingBoardEmail', data.email || '');
+        }
+
+        showBoardLinkScreen(link, name);
+        const inputEl = document.getElementById('boardLinkInput');
+        if (inputEl) inputEl.value = link;
+        toast('🎉', 'Payment verified!', 'Your board link is ready');
+      })
+      .catch(() => {
+        toast('❌', 'Verification error', 'Please contact support with your order ID');
+      });
+  }
+})();
+</script>
+<!-- Firebase SDKs -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<script>
+  const firebaseConfig = {
+    apiKey: "AIzaSyDMbRsKsDTOZrE6AESzJtj_UEVS-q0T50k",
+    authDomain: "tiktok-auction-board.firebaseapp.com",
+    projectId: "tiktok-auction-board",
+    storageBucket: "tiktok-auction-board.firebasestorage.app",
+    messagingSenderId: "473006848103",
+    appId: "1:473006848103:web:1f1eb3bbe8d49089e2fcc2",
+    measurementId: "G-467PJR84J6"
+  };
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.firestore();
+
+  // Save purchase to Firestore permanently
+  async function savePurchaseToFirestore(uid, boardLink, email, plan) {
+    try {
+      await db.collection('users').doc(uid).set({
+        boardLink: boardLink,
+        email: email || '',
+        plan: plan || 'lifetime',
+        purchasedAt: firebase.firestore.FieldValue.serverTimestamp(),
+        paid: true
+      }, { merge: true });
+    } catch(e) {
+      console.error('Firestore save error:', e);
+    }
+  }
+
+  // Load purchase from Firestore
+  async function loadPurchaseFromFirestore(uid) {
+    try {
+      const doc = await db.collection('users').doc(uid).get();
+      if (doc.exists && doc.data().paid) {
+        return doc.data().boardLink || null;
+      }
+    } catch(e) {
+      console.error('Firestore load error:', e);
+    }
+    return null;
+  }
+
+  firebase.auth().onAuthStateChanged(async user => {
+    if (user) {
+      // Check for pending board link from just-completed payment
+      const pendingLink = localStorage.getItem('pendingBoardLink');
+      const pendingEmail = localStorage.getItem('pendingBoardEmail') || user.email || '';
+
+      if (pendingLink) {
+        // Save to Firestore permanently
+        await savePurchaseToFirestore(user.uid, pendingLink, pendingEmail, 'stripe');
+        localStorage.removeItem('pendingBoardLink');
+        localStorage.removeItem('pendingBoardEmail');
+        localStorage.setItem('boardLink_' + user.uid, pendingLink);
+      }
+
+      // Try to load board link — first from Firestore, then localStorage fallback
+      let boardLink = await loadPurchaseFromFirestore(user.uid);
+      if (!boardLink) {
+        boardLink = localStorage.getItem('boardLink_' + user.uid);
+      }
+
+      if (boardLink) {
+        // Sync Firestore link back to localStorage
+        localStorage.setItem('boardLink_' + user.uid, boardLink);
+        appState.paid = true;
+        appState.generatedBoardLink = boardLink;
+        const inputEl = document.getElementById('boardLinkInput');
+        if (inputEl) inputEl.value = boardLink;
+      }
+
+      onFirebaseUserSignedIn(user, false);
+    }
+  });
+</script>
+</body>
+</html>

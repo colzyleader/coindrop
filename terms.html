@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Terms of Service — CoinDrop</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #0a0a0f;
+      color: #e0e0e0;
+      line-height: 1.8;
+      font-size: 15px;
+    }
+
+    .header {
+      background: linear-gradient(135deg, #0d0d1a, #1a0d2e);
+      border-bottom: 1px solid rgba(255, 0, 110, 0.15);
+      padding: 24px 0;
+    }
+
+    .header-inner {
+      max-width: 780px;
+      margin: 0 auto;
+      padding: 0 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .logo {
+      font-family: 'Orbitron', 'Courier New', monospace;
+      font-weight: 900;
+      font-size: 1.3rem;
+      background: linear-gradient(135deg, #FF006E, #FFD700);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      letter-spacing: 3px;
+    }
+
+    .back-link {
+      font-size: .8rem;
+      color: rgba(0, 242, 234, 0.7);
+      text-decoration: none;
+      letter-spacing: 1px;
+    }
+
+    .back-link:hover { color: #00F2EA; }
+
+    .wrap {
+      max-width: 780px;
+      margin: 0 auto;
+      padding: 48px 24px 80px;
+    }
+
+    .page-title {
+      font-size: 2rem;
+      font-weight: 800;
+      margin-bottom: 6px;
+      color: #fff;
+    }
+
+    .page-title span {
+      background: linear-gradient(135deg, #FF006E, #FF8C00);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .meta {
+      font-size: .8rem;
+      color: rgba(255,255,255,.35);
+      margin-bottom: 40px;
+      letter-spacing: .5px;
+    }
+
+    .toc {
+      background: rgba(255, 0, 110, 0.04);
+      border: 1px solid rgba(255, 0, 110, 0.12);
+      border-radius: 14px;
+      padding: 20px 24px;
+      margin-bottom: 40px;
+    }
+
+    .toc-title {
+      font-size: .7rem;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: rgba(255, 0, 110, 0.7);
+      font-weight: 700;
+      margin-bottom: 12px;
+    }
+
+    .toc ol { padding-left: 20px; }
+    .toc li { margin-bottom: 6px; }
+    .toc a {
+      color: rgba(255, 100, 150, 0.85);
+      text-decoration: none;
+      font-size: .85rem;
+    }
+    .toc a:hover { color: #FF006E; text-decoration: underline; }
+
+    section {
+      margin-bottom: 40px;
+      padding-bottom: 40px;
+      border-bottom: 1px solid rgba(255,255,255,.06);
+    }
+
+    section:last-of-type { border-bottom: none; }
+
+    h2 {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 14px;
+      padding-top: 4px;
+    }
+
+    h2 .num {
+      display: inline-block;
+      background: linear-gradient(135deg, #FF006E, #FF8C00);
+      color: #fff;
+      font-size: .65rem;
+      font-weight: 900;
+      letter-spacing: 1px;
+      padding: 3px 8px;
+      border-radius: 6px;
+      margin-right: 10px;
+      vertical-align: middle;
+      font-family: 'Courier New', monospace;
+    }
+
+    p { color: rgba(255,255,255,.7); margin-bottom: 14px; }
+    ul, ol { padding-left: 22px; margin-bottom: 14px; }
+    li { color: rgba(255,255,255,.7); margin-bottom: 8px; }
+    strong { color: rgba(255,255,255,.9); }
+
+    .highlight-box {
+      background: rgba(0, 255, 136, 0.05);
+      border: 1px solid rgba(0, 255, 136, 0.15);
+      border-radius: 10px;
+      padding: 14px 18px;
+      margin-bottom: 16px;
+      font-size: .85rem;
+      color: rgba(0, 255, 136, 0.8);
+    }
+
+    .warning-box {
+      background: rgba(255, 0, 110, 0.05);
+      border: 1px solid rgba(255, 0, 110, 0.2);
+      border-radius: 10px;
+      padding: 14px 18px;
+      margin-bottom: 16px;
+      font-size: .85rem;
+      color: rgba(255, 120, 150, 0.9);
+    }
+
+    .contact-box {
+      background: rgba(0, 242, 234, 0.05);
+      border: 1px solid rgba(0, 242, 234, 0.15);
+      border-radius: 14px;
+      padding: 20px 24px;
+    }
+
+    .contact-box p { margin-bottom: 8px; }
+    .contact-box a { color: #00F2EA; text-decoration: none; }
+    .contact-box a:hover { text-decoration: underline; }
+
+    .footer {
+      text-align: center;
+      padding: 32px 24px;
+      border-top: 1px solid rgba(255,255,255,.06);
+      font-size: .75rem;
+      color: rgba(255,255,255,.25);
+      letter-spacing: .5px;
+    }
+
+    .footer a { color: rgba(0,242,234,.5); text-decoration: none; }
+
+    @media (max-width: 600px) {
+      .page-title { font-size: 1.5rem; }
+      .wrap { padding: 32px 16px 60px; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="header">
+    <div class="header-inner">
+      <div class="logo">COINDROP</div>
+      <a class="back-link" href="/">← Back to App</a>
+    </div>
+  </div>
+
+  <div class="wrap">
+
+    <div class="page-title">Terms of <span>Service</span></div>
+    <div class="meta">Last updated: March 10, 2025 &nbsp;·&nbsp; Effective: March 10, 2025</div>
+
+    <div class="highlight-box">
+      ✅ <strong>Plain English summary:</strong> CoinDrop is a tool for TikTok LIVE streamers to run coin auctions. By using it you agree to these terms. Don't misuse the service, don't try to cheat the system, and don't use it for anything illegal. We offer a one-time $10 lifetime access fee with no refunds after your board link is generated.
+    </div>
+
+    <div class="toc">
+      <div class="toc-title">Table of Contents</div>
+      <ol>
+        <li><a href="#s1">Acceptance of Terms</a></li>
+        <li><a href="#s2">Description of Service</a></li>
+        <li><a href="#s3">Eligibility</a></li>
+        <li><a href="#s4">Account & Board Link</a></li>
+        <li><a href="#s5">Payment & Refund Policy</a></li>
+        <li><a href="#s6">Acceptable Use</a></li>
+        <li><a href="#s7">TikTok Platform Compliance</a></li>
+        <li><a href="#s8">Intellectual Property</a></li>
+        <li><a href="#s9">Disclaimer of Warranties</a></li>
+        <li><a href="#s10">Limitation of Liability</a></li>
+        <li><a href="#s11">Termination</a></li>
+        <li><a href="#s12">Changes to Terms</a></li>
+        <li><a href="#s13">Contact Us</a></li>
+      </ol>
+    </div>
+
+    <!-- 1 -->
+    <section id="s1">
+      <h2><span class="num">01</span> Acceptance of Terms</h2>
+      <p>By accessing or using CoinDrop ("the Service") at <strong>auctiontiktok.vercel.app</strong> or any associated domains, you agree to be bound by these Terms of Service ("Terms"). If you do not agree to these Terms, do not use the Service.</p>
+      <p>These Terms apply to all users of CoinDrop, including streamers who purchase access and viewers who interact with the auction board during a live stream.</p>
+    </section>
+
+    <!-- 2 -->
+    <section id="s2">
+      <h2><span class="num">02</span> Description of Service</h2>
+      <p>CoinDrop is a web-based auction board tool designed for TikTok LIVE streamers. It allows streamers to:</p>
+      <ul>
+        <li>Display a real-time leaderboard of top coin gifters during a TikTok LIVE stream</li>
+        <li>Run timed coin auctions with customizable settings including prize name, timer duration, minimum coins, and snipe delay window</li>
+        <li>Connect to TikTok LIVE via TikTok's official API to receive gift events in real time</li>
+      </ul>
+      <p>CoinDrop is a display and management tool only. We do not handle, process, or distribute TikTok coins or any monetary value associated with coins. All gifting transactions occur directly between viewers and TikTok through TikTok's own platform.</p>
+    </section>
+
+    <!-- 3 -->
+    <section id="s3">
+      <h2><span class="num">03</span> Eligibility</h2>
+      <p>To use CoinDrop you must:</p>
+      <ul>
+        <li>Be at least 18 years of age, or the minimum age to use TikTok in your country, whichever is greater</li>
+        <li>Have a valid TikTok account in good standing</li>
+        <li>Comply with TikTok's own Terms of Service and Community Guidelines</li>
+        <li>Have the legal capacity to enter into a binding agreement</li>
+      </ul>
+      <p>By using CoinDrop you represent and warrant that you meet all of the above eligibility requirements.</p>
+    </section>
+
+    <!-- 4 -->
+    <section id="s4">
+      <h2><span class="num">04</span> Account & Board Link</h2>
+      <p>Upon purchase, you will receive a unique board link tied to your account. This board link:</p>
+      <ul>
+        <li>Is personal to you and may not be shared, sold, or transferred to another person</li>
+        <li>Grants you access to one active auction board at a time</li>
+        <li>Is displayed on screen immediately after purchase — it is your responsibility to copy and save it</li>
+        <li>Can be deactivated by us if we detect misuse or violation of these Terms</li>
+      </ul>
+      <p>You are responsible for keeping your board link secure. Do not share it publicly or with people you do not trust, as anyone with the link can access your board controls.</p>
+    </section>
+
+    <!-- 5 -->
+    <section id="s5">
+      <h2><span class="num">05</span> Payment & Refund Policy</h2>
+      <p>CoinDrop charges a one-time fee of <strong>$10.00 USD</strong> for lifetime access to the Service.</p>
+      <p><strong>Refund policy:</strong></p>
+      <ul>
+        <li>Once your board link has been generated and displayed on screen, your purchase is considered fulfilled and <strong>no refunds will be issued</strong></li>
+        <li>If you experience a technical issue that prevents you from accessing your board link at the time of purchase, contact us within 24 hours and we will resolve it</li>
+        <li>Chargebacks or payment disputes filed after a board link has been issued may result in immediate termination of your access</li>
+      </ul>
+      <p>All payments are processed securely by Stripe. CoinDrop does not store your payment card information.</p>
+    </section>
+
+    <!-- 6 -->
+    <section id="s6">
+      <h2><span class="num">06</span> Acceptable Use</h2>
+      <p>You agree to use CoinDrop only for its intended purpose. You may <strong>not</strong>:</p>
+      <ul>
+        <li>Use the Service to deceive, defraud, or mislead your viewers or TikTok</li>
+        <li>Manipulate auction results or fake coin totals</li>
+        <li>Attempt to reverse engineer, hack, or exploit the Service or its APIs</li>
+        <li>Use the Service in connection with any illegal activity</li>
+        <li>Share, resell, or sublicense your board link to other streamers</li>
+        <li>Use automated bots or scripts to interact with the Service</li>
+        <li>Violate any applicable law or regulation in your use of the Service</li>
+        <li>Harass, abuse, or harm viewers or other users in connection with the Service</li>
+      </ul>
+      <div class="warning-box">
+        ⚠️ Violation of these acceptable use rules may result in immediate termination of your access without refund.
+      </div>
+    </section>
+
+    <!-- 7 -->
+    <section id="s7">
+      <h2><span class="num">07</span> TikTok Platform Compliance</h2>
+      <p>CoinDrop operates using TikTok's official LIVE Gifting API and is designed to comply with TikTok's Platform Policy and Developer Terms of Service.</p>
+      <p>As a user of CoinDrop, you are also responsible for complying with TikTok's own Terms of Service and Community Guidelines when running auctions on your stream. CoinDrop is not affiliated with, endorsed by, or sponsored by TikTok or ByteDance Ltd.</p>
+      <p>You acknowledge that:</p>
+      <ul>
+        <li>TikTok may change its API, policies, or platform at any time, which could affect the functionality of CoinDrop</li>
+        <li>CoinDrop is not responsible for any actions TikTok takes against your account</li>
+        <li>It is your responsibility to ensure your use of CoinDrop complies with TikTok's current rules for your region</li>
+      </ul>
+    </section>
+
+    <!-- 8 -->
+    <section id="s8">
+      <h2><span class="num">08</span> Intellectual Property</h2>
+      <p>All content, design, code, graphics, and features of CoinDrop are owned by CoinDrop and protected by applicable intellectual property laws.</p>
+      <p>You are granted a limited, non-exclusive, non-transferable license to use the Service for its intended purpose. You may not copy, reproduce, distribute, or create derivative works from any part of the Service without our express written permission.</p>
+      <p>You retain ownership of any content you create using the Service, such as your prize names and auction settings.</p>
+    </section>
+
+    <!-- 9 -->
+    <section id="s9">
+      <h2><span class="num">09</span> Disclaimer of Warranties</h2>
+      <p>THE SERVICE IS PROVIDED "AS IS" AND "AS AVAILABLE" WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED.</p>
+      <p>We do not warrant that:</p>
+      <ul>
+        <li>The Service will be uninterrupted, error-free, or available at all times</li>
+        <li>The Service will be compatible with all devices or browsers</li>
+        <li>Data displayed on the auction board will be 100% accurate at all times</li>
+        <li>The Service will remain compatible with TikTok's platform indefinitely</li>
+      </ul>
+      <p>Your use of the Service is at your own risk.</p>
+    </section>
+
+    <!-- 10 -->
+    <section id="s10">
+      <h2><span class="num">10</span> Limitation of Liability</h2>
+      <p>TO THE FULLEST EXTENT PERMITTED BY LAW, COINDROP SHALL NOT BE LIABLE FOR ANY INDIRECT, INCIDENTAL, SPECIAL, CONSEQUENTIAL, OR PUNITIVE DAMAGES ARISING FROM YOUR USE OF THE SERVICE.</p>
+      <p>This includes but is not limited to:</p>
+      <ul>
+        <li>Loss of revenue or earnings from your TikTok stream</li>
+        <li>Any issues arising from TikTok platform changes or outages</li>
+        <li>Technical errors or downtime of the Service</li>
+        <li>Any disputes between you and your viewers regarding auction outcomes</li>
+      </ul>
+      <p>Our total liability to you for any claim shall not exceed the amount you paid for access to the Service ($10.00 USD).</p>
+    </section>
+
+    <!-- 11 -->
+    <section id="s11">
+      <h2><span class="num">11</span> Termination</h2>
+      <p>We reserve the right to suspend or terminate your access to CoinDrop at any time if we determine, in our sole discretion, that you have violated these Terms.</p>
+      <p>You may stop using the Service at any time. Given the one-time payment structure, there is no subscription to cancel.</p>
+      <p>Upon termination, your board link will be deactivated and you will lose access to the Service. No refund will be issued for terminations resulting from violations of these Terms.</p>
+    </section>
+
+    <!-- 12 -->
+    <section id="s12">
+      <h2><span class="num">12</span> Changes to Terms</h2>
+      <p>We may update these Terms from time to time. When we do, we will update the "Last updated" date at the top of this page.</p>
+      <p>Your continued use of CoinDrop after updated Terms are posted constitutes your acceptance of the new Terms. If you do not agree with updated Terms, you should stop using the Service.</p>
+      <p>We will make reasonable efforts to notify users of material changes via a notice displayed in the app.</p>
+    </section>
+
+    <!-- 13 -->
+    <section id="s13">
+      <h2><span class="num">13</span> Contact Us</h2>
+      <p>If you have any questions about these Terms of Service, please contact us:</p>
+      <div class="contact-box">
+        <p><strong>CoinDrop</strong></p>
+        <p>📧 Email: <a href="mailto:support@coindrop.app">support@coindrop.app</a></p>
+        <p>🌐 Website: <a href="https://auctiontiktok.vercel.app">auctiontiktok.vercel.app</a></p>
+        <p style="margin-top:12px;font-size:.8rem;color:rgba(255,255,255,.4)">We aim to respond to all inquiries within 5 business days.</p>
+      </div>
+    </section>
+
+  </div>
+
+  <div class="footer">
+    © 2025 CoinDrop &nbsp;·&nbsp;
+    <a href="/privacy">Privacy Policy</a> &nbsp;·&nbsp;
+    <a href="/">Back to App</a>
+  </div>
+
+</body>
+</html>

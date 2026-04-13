@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Privacy Policy — CoinDrop</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #0a0a0f;
+      color: #e0e0e0;
+      line-height: 1.8;
+      font-size: 15px;
+    }
+
+    .header {
+      background: linear-gradient(135deg, #0d0d1a, #1a0d2e);
+      border-bottom: 1px solid rgba(0, 242, 234, 0.15);
+      padding: 24px 0;
+    }
+
+    .header-inner {
+      max-width: 780px;
+      margin: 0 auto;
+      padding: 0 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .logo {
+      font-family: 'Orbitron', 'Courier New', monospace;
+      font-weight: 900;
+      font-size: 1.3rem;
+      background: linear-gradient(135deg, #FF006E, #FFD700);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      letter-spacing: 3px;
+    }
+
+    .back-link {
+      font-size: .8rem;
+      color: rgba(0, 242, 234, 0.7);
+      text-decoration: none;
+      letter-spacing: 1px;
+    }
+
+    .back-link:hover { color: #00F2EA; }
+
+    .wrap {
+      max-width: 780px;
+      margin: 0 auto;
+      padding: 48px 24px 80px;
+    }
+
+    .page-title {
+      font-size: 2rem;
+      font-weight: 800;
+      margin-bottom: 6px;
+      color: #fff;
+    }
+
+    .page-title span {
+      background: linear-gradient(135deg, #00F2EA, #0080FF);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .meta {
+      font-size: .8rem;
+      color: rgba(255,255,255,.35);
+      margin-bottom: 40px;
+      letter-spacing: .5px;
+    }
+
+    .toc {
+      background: rgba(0, 242, 234, 0.04);
+      border: 1px solid rgba(0, 242, 234, 0.12);
+      border-radius: 14px;
+      padding: 20px 24px;
+      margin-bottom: 40px;
+    }
+
+    .toc-title {
+      font-size: .7rem;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: rgba(0, 242, 234, 0.6);
+      font-weight: 700;
+      margin-bottom: 12px;
+    }
+
+    .toc ol {
+      padding-left: 20px;
+    }
+
+    .toc li {
+      margin-bottom: 6px;
+    }
+
+    .toc a {
+      color: rgba(0, 242, 234, 0.8);
+      text-decoration: none;
+      font-size: .85rem;
+    }
+
+    .toc a:hover { color: #00F2EA; text-decoration: underline; }
+
+    section {
+      margin-bottom: 40px;
+      padding-bottom: 40px;
+      border-bottom: 1px solid rgba(255,255,255,.06);
+    }
+
+    section:last-of-type {
+      border-bottom: none;
+    }
+
+    h2 {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 14px;
+      padding-top: 4px;
+    }
+
+    h2 .num {
+      display: inline-block;
+      background: linear-gradient(135deg, #FF006E, #FF8C00);
+      color: #fff;
+      font-size: .65rem;
+      font-weight: 900;
+      letter-spacing: 1px;
+      padding: 3px 8px;
+      border-radius: 6px;
+      margin-right: 10px;
+      vertical-align: middle;
+      font-family: 'Courier New', monospace;
+    }
+
+    p {
+      color: rgba(255,255,255,.7);
+      margin-bottom: 14px;
+    }
+
+    ul, ol {
+      padding-left: 22px;
+      margin-bottom: 14px;
+    }
+
+    li {
+      color: rgba(255,255,255,.7);
+      margin-bottom: 8px;
+    }
+
+    strong {
+      color: rgba(255,255,255,.9);
+    }
+
+    .highlight-box {
+      background: rgba(0, 255, 136, 0.05);
+      border: 1px solid rgba(0, 255, 136, 0.15);
+      border-radius: 10px;
+      padding: 14px 18px;
+      margin-bottom: 16px;
+      font-size: .85rem;
+      color: rgba(0, 255, 136, 0.8);
+    }
+
+    .warning-box {
+      background: rgba(255, 215, 0, 0.05);
+      border: 1px solid rgba(255, 215, 0, 0.15);
+      border-radius: 10px;
+      padding: 14px 18px;
+      margin-bottom: 16px;
+      font-size: .85rem;
+      color: rgba(255, 215, 0, 0.8);
+    }
+
+    .contact-box {
+      background: rgba(0, 242, 234, 0.05);
+      border: 1px solid rgba(0, 242, 234, 0.15);
+      border-radius: 14px;
+      padding: 20px 24px;
+    }
+
+    .contact-box p { margin-bottom: 8px; }
+
+    .contact-box a {
+      color: #00F2EA;
+      text-decoration: none;
+    }
+
+    .contact-box a:hover { text-decoration: underline; }
+
+    .footer {
+      text-align: center;
+      padding: 32px 24px;
+      border-top: 1px solid rgba(255,255,255,.06);
+      font-size: .75rem;
+      color: rgba(255,255,255,.25);
+      letter-spacing: .5px;
+    }
+
+    @media (max-width: 600px) {
+      .page-title { font-size: 1.5rem; }
+      .wrap { padding: 32px 16px 60px; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="header">
+    <div class="header-inner">
+      <div class="logo">COINDROP</div>
+      <a class="back-link" href="/">← Back to App</a>
+    </div>
+  </div>
+
+  <div class="wrap">
+
+    <div class="page-title">Privacy <span>Policy</span></div>
+    <div class="meta">Last updated: March 10, 2025 &nbsp;·&nbsp; Effective: March 10, 2025</div>
+
+    <div class="toc">
+      <div class="toc-title">Table of Contents</div>
+      <ol>
+        <li><a href="#s1">Who We Are</a></li>
+        <li><a href="#s2">Information We Collect</a></li>
+        <li><a href="#s3">How We Use Your Information</a></li>
+        <li><a href="#s4">TikTok Data & API Usage</a></li>
+        <li><a href="#s5">How We Share Your Information</a></li>
+        <li><a href="#s6">Data Retention</a></li>
+        <li><a href="#s7">Your Rights & Choices</a></li>
+        <li><a href="#s8">Cookies & Tracking</a></li>
+        <li><a href="#s9">Children's Privacy</a></li>
+        <li><a href="#s10">Security</a></li>
+        <li><a href="#s11">Changes to This Policy</a></li>
+        <li><a href="#s12">Contact Us</a></li>
+      </ol>
+    </div>
+
+    <div class="highlight-box">
+      ✅ <strong>Plain English summary:</strong> CoinDrop helps TikTok LIVE streamers run coin-based auctions. We only collect what we need to provide the service. We do not sell your data. We use TikTok's official API only to read live gift events during your stream — we do not post on your behalf or access your private account data.
+    </div>
+
+    <!-- 1 -->
+    <section id="s1">
+      <h2><span class="num">01</span> Who We Are</h2>
+      <p>CoinDrop ("we," "us," or "our") is a web-based tool that allows TikTok LIVE streamers to run real-time coin auctions with a live leaderboard display. Our service is accessible at <strong>auctiontiktok.vercel.app</strong> and any associated domains.</p>
+      <p>By using CoinDrop, you agree to the collection and use of information as described in this Privacy Policy.</p>
+    </section>
+
+    <!-- 2 -->
+    <section id="s2">
+      <h2><span class="num">02</span> Information We Collect</h2>
+      <p>We collect the following categories of information:</p>
+
+      <p><strong>Information you provide directly:</strong></p>
+      <ul>
+        <li>Email address or order ID used to verify your purchase</li>
+        <li>TikTok username you enter to connect your stream</li>
+        <li>Auction settings you configure (prize name, timer duration, minimum coins, snipe delay)</li>
+      </ul>
+
+      <p><strong>Information from TikTok (via TikTok API):</strong></p>
+      <ul>
+        <li>Public display names and TikTok usernames of viewers who send gifts during your live stream</li>
+        <li>Gift/coin amounts sent by viewers during your active live auction session</li>
+        <li>Viewer count of your live stream (public data)</li>
+      </ul>
+
+      <p><strong>Information collected automatically:</strong></p>
+      <ul>
+        <li>Basic usage data such as pages visited and features used</li>
+        <li>Browser type, device type, and approximate geographic region</li>
+        <li>IP address (used for security and abuse prevention only)</li>
+      </ul>
+
+      <p>We do <strong>not</strong> collect TikTok passwords, private messages, follower lists, financial information, or any data beyond what is necessary to operate the auction board.</p>
+    </section>
+
+    <!-- 3 -->
+    <section id="s3">
+      <h2><span class="num">03</span> How We Use Your Information</h2>
+      <p>We use the information we collect solely to:</p>
+      <ul>
+        <li>Provide and operate the CoinDrop auction board service</li>
+        <li>Verify your purchase and activate your unique board link</li>
+        <li>Display real-time gift leaderboard data during your live stream</li>
+        <li>Send you your board link immediately after purchase (displayed on screen)</li>
+        <li>Improve the reliability and performance of our service</li>
+        <li>Detect and prevent fraud or abuse</li>
+        <li>Respond to your support requests</li>
+      </ul>
+      <p>We do <strong>not</strong> use your data for advertising, profiling, or any purpose unrelated to operating CoinDrop.</p>
+    </section>
+
+    <!-- 4 -->
+    <section id="s4">
+      <h2><span class="num">04</span> TikTok Data & API Usage</h2>
+
+      <div class="highlight-box">
+        ✅ CoinDrop uses TikTok's official LIVE Gifting API. We are compliant with TikTok's Platform Policy and Developer Terms of Service.
+      </div>
+
+      <p><strong>What we access via TikTok API:</strong></p>
+      <ul>
+        <li>Live gift events (who sent coins and how many) during your active stream session</li>
+        <li>Public viewer count of your stream</li>
+        <li>Your public TikTok username to identify and connect your stream</li>
+      </ul>
+
+      <p><strong>What we do NOT access:</strong></p>
+      <ul>
+        <li>Your TikTok password or login credentials</li>
+        <li>Private messages or comments</li>
+        <li>Your followers, following list, or account analytics</li>
+        <li>Your TikTok financial account or earnings data</li>
+        <li>Any data from streams you are not actively running through CoinDrop</li>
+      </ul>
+
+      <p><strong>How TikTok data is handled:</strong></p>
+      <ul>
+        <li>Gift event data (viewer names and coin amounts) is processed in real time to display the leaderboard and is not stored after your session ends</li>
+        <li>We do not share TikTok user data (your viewers' information) with any third parties</li>
+        <li>We do not post, comment, follow, or take any action on TikTok on your behalf</li>
+      </ul>
+
+      <div class="warning-box">
+        ⚠️ <strong>Viewer data notice:</strong> When viewers send coins during your stream, their public TikTok display name and coin amount appears on your auction board. This is public information visible to anyone watching your stream. CoinDrop displays this data in real time and does not store it after the session.
+      </div>
+    </section>
+
+    <!-- 5 -->
+    <section id="s5">
+      <h2><span class="num">05</span> How We Share Your Information</h2>
+      <p>We do not sell, rent, or trade your personal information. We may share limited information only in these circumstances:</p>
+      <ul>
+        <li><strong>Payment processing:</strong> When you purchase access, your payment is processed by Stripe. We receive confirmation of payment but do not store your full payment card details. Stripe's privacy policy applies to payment data.</li>
+        <li><strong>Service providers:</strong> We use Vercel for hosting. These providers only process data as needed to deliver the service and are bound by data processing agreements.</li>
+        <li><strong>Legal requirements:</strong> We may disclose information if required by law, court order, or to protect the rights and safety of our users or the public.</li>
+      </ul>
+      <p>We do not share your TikTok data, auction history, or personal information with advertisers or data brokers.</p>
+    </section>
+
+    <!-- 6 -->
+    <section id="s6">
+      <h2><span class="num">06</span> Data Retention</h2>
+      <ul>
+        <li><strong>Live session data</strong> (viewer names, coin counts during a stream) — processed in real time only, not stored after the session ends</li>
+        <li><strong>Account information</strong> (email, TikTok username, board link) — retained for as long as you have an active account or until you request deletion</li>
+        <li><strong>Payment records</strong> — retained as required by law and Stripe's data retention policies</li>
+        <li><strong>Usage logs</strong> — retained for up to 90 days for security and debugging purposes, then deleted</li>
+      </ul>
+      <p>You may request deletion of your account and associated data at any time by contacting us (see Section 12).</p>
+    </section>
+
+    <!-- 7 -->
+    <section id="s7">
+      <h2><span class="num">07</span> Your Rights & Choices</h2>
+      <p>Depending on your location, you may have the following rights regarding your personal data:</p>
+      <ul>
+        <li><strong>Access:</strong> Request a copy of the personal data we hold about you</li>
+        <li><strong>Correction:</strong> Request correction of inaccurate data</li>
+        <li><strong>Deletion:</strong> Request deletion of your account and personal data</li>
+        <li><strong>Portability:</strong> Request your data in a portable format</li>
+        <li><strong>Objection:</strong> Object to processing of your data in certain circumstances</li>
+      </ul>
+      <p>To exercise any of these rights, contact us at the email listed in Section 12. We will respond within 30 days.</p>
+      <p>If you are located in the European Economic Area (EEA) or California, additional rights under GDPR or CCPA may apply.</p>
+    </section>
+
+    <!-- 8 -->
+    <section id="s8">
+      <h2><span class="num">08</span> Cookies & Tracking</h2>
+      <p>CoinDrop uses minimal cookies and local browser storage strictly necessary to operate the service:</p>
+      <ul>
+        <li><strong>Session storage:</strong> Used to maintain your login state and auction settings during your browser session</li>
+        <li><strong>No advertising cookies:</strong> We do not use any third-party advertising or tracking cookies</li>
+        <li><strong>No analytics services:</strong> We do not use Google Analytics, Facebook Pixel, or similar tracking tools</li>
+      </ul>
+      <p>You can clear cookies and site data at any time through your browser settings. Doing so will log you out of the service.</p>
+    </section>
+
+    <!-- 9 -->
+    <section id="s9">
+      <h2><span class="num">09</span> Children's Privacy</h2>
+      <p>CoinDrop is intended for use by individuals aged 18 and older, or the minimum age required to use TikTok in your country, whichever is greater.</p>
+      <p>We do not knowingly collect personal information from children under 13. If you believe a child under 13 has provided us with personal information, please contact us immediately and we will delete it.</p>
+    </section>
+
+    <!-- 10 -->
+    <section id="s10">
+      <h2><span class="num">10</span> Security</h2>
+      <p>We take reasonable technical and organizational measures to protect your information, including:</p>
+      <ul>
+        <li>HTTPS encryption for all data in transit</li>
+        <li>Unique board link tokens generated per user to prevent unauthorized access</li>
+        <li>No storage of payment card data (handled entirely by Stripe)</li>
+        <li>Regular review of our security practices</li>
+      </ul>
+      <p>No method of transmission over the internet is 100% secure. While we strive to protect your data, we cannot guarantee absolute security. If you believe your account has been compromised, contact us immediately.</p>
+    </section>
+
+    <!-- 11 -->
+    <section id="s11">
+      <h2><span class="num">11</span> Changes to This Policy</h2>
+      <p>We may update this Privacy Policy from time to time. When we do, we will update the "Last updated" date at the top of this page.</p>
+      <p>If we make material changes that affect how we use your personal data, we will make reasonable efforts to notify you — for example by displaying a notice in the app. Your continued use of CoinDrop after changes are posted constitutes your acceptance of the updated policy.</p>
+    </section>
+
+    <!-- 12 -->
+    <section id="s12">
+      <h2><span class="num">12</span> Contact Us</h2>
+      <p>If you have any questions, concerns, or requests regarding this Privacy Policy or your personal data, please contact us:</p>
+      <div class="contact-box">
+        <p><strong>CoinDrop</strong></p>
+        <p>📧 Email: <a href="mailto:privacy@coindrop.app">privacy@coindrop.app</a></p>
+        <p>🌐 Website: <a href="https://auctiontiktok.vercel.app">auctiontiktok.vercel.app</a></p>
+        <p style="margin-top:12px;font-size:.8rem;color:rgba(255,255,255,.4)">We aim to respond to all privacy-related inquiries within 5 business days.</p>
+      </div>
+    </section>
+
+  </div>
+
+  <div class="footer">
+    © 2025 CoinDrop · <a href="/" style="color:rgba(0,242,234,.5);text-decoration:none">Back to App</a>
+  </div>
+
+</body>
+</html>
