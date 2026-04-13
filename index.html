@@ -689,7 +689,7 @@ input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none}
 <div class="page active" id="page-landing">
   <div class="nav">
     <div class="nav-logo">COINDROP</div>
-    <div class="nav-links">
+    <div class="nav-links" id="landingNavLinks">
       <button class="nav-btn" onclick="goPage('auth')">Sign In</button>
       <button class="nav-btn primary" onclick="goPage('pricing')">Get Access</button>
     </div>
@@ -773,6 +773,25 @@ input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none}
       </div>
 
       <div id="landing-price-card" style="display:none"></div>
+
+      <!-- Promo code -->
+      <div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:14px 16px;margin-top:12px">
+        <div style="font-size:.6rem;letter-spacing:2px;color:var(--muted);text-transform:uppercase;font-weight:700;margin-bottom:10px">🎟 Have a promo code?</div>
+        <div style="display:flex;gap:8px">
+          <input id="landingPromoInput" type="text" placeholder="Enter promo code..." class="key-input" style="flex:1;font-family:'Exo 2',sans-serif;letter-spacing:2px;font-size:.8rem;text-transform:uppercase" oninput="this.value=this.value.toUpperCase()" />
+          <button onclick="applyLandingPromo()" style="padding:10px 16px;border-radius:10px;border:none;background:linear-gradient(135deg,var(--cyan),#0080FF);color:#000;font-family:'Orbitron',sans-serif;font-size:.62rem;font-weight:900;cursor:pointer;letter-spacing:1px;white-space:nowrap">APPLY</button>
+        </div>
+      </div>
+
+      <!-- Footer -->
+      <div style="text-align:center;padding:24px 0 8px;border-top:1px solid rgba(255,255,255,.05);margin-top:24px">
+        <div style="font-size:.65rem;color:rgba(255,255,255,.2);margin-bottom:10px">© 2025 CoinDrop. All rights reserved.</div>
+        <div style="display:flex;justify-content:center;gap:20px;flex-wrap:wrap">
+          <a href="/privacy" style="font-size:.68rem;color:rgba(0,242,234,.6);text-decoration:none;font-weight:600">Privacy Policy</a>
+          <a href="/terms" style="font-size:.68rem;color:rgba(0,242,234,.6);text-decoration:none;font-weight:600">Terms of Service</a>
+          <a href="mailto:support@coindrop.app" style="font-size:.68rem;color:rgba(0,242,234,.6);text-decoration:none;font-weight:600">Contact</a>
+        </div>
+      </div>
     </div>
   </div>
 </div>
@@ -1284,10 +1303,16 @@ let appState = {
 // PAGE ROUTING
 // ══════════════════════════════════════════════
 const PROTECTED = ['dashboard','board','settings','account'];
+const PAID_ONLY = ['dashboard','settings'];
 const DASH_PAGES = ['dashboard','board','settings','account'];
 
 function goPage(id) {
   if (PROTECTED.includes(id) && !appState.authed) { goPage('auth'); return; }
+  if (PAID_ONLY.includes(id) && !appState.paid) {
+    toast('🔒', 'Purchase required', 'Get access to use the dashboard');
+    goPage('pricing');
+    return;
+  }
   document.querySelectorAll('.page').forEach(p => {
     p.classList.remove('active');
     p.style.display = 'none';
@@ -1485,27 +1510,71 @@ function closeStripe() {
 
 function handleLandingPlanClick(e, plan) {
   e.preventDefault();
-  const email = document.getElementById('landing-buy-email').value.trim();
-  if (!email || !email.includes('@')) {
-    toast('⚠️', 'Enter your email first', 'The field is just above the pricing cards');
-    document.getElementById('landing-buy-email').focus();
+  if (!appState.authed) {
+    toast('👤', 'Sign in first', 'Sign in with Google before purchasing');
+    localStorage.setItem('pendingPlan', plan);
+    setTimeout(() => goPage('auth'), 400);
     return;
   }
-  localStorage.setItem('pendingEmail', email);
-  const successUrl = encodeURIComponent('https://auctiontiktok.vercel.app/?payment=success');
-  const emailParam = encodeURIComponent(email);
+  const successBase = 'https://coindrop-mauve.vercel.app/?payment=success&session_id={CHECKOUT_SESSION_ID}';
   let stripeUrl;
   if (plan === 'monthly') {
-    stripeUrl = 'https://buy.stripe.com/00wcN45Zqcq38bydbA9R605?prefilled_email=' + emailParam + '&success_url=' + successUrl;
+    stripeUrl = 'https://buy.stripe.com/00wcN45Zqcq38bydbA9R605?success_url=' + encodeURIComponent(successBase);
   } else {
-    stripeUrl = 'https://buy.stripe.com/REPLACE_WITH_60_DOLLAR_LINK?prefilled_email=' + emailParam + '&success_url=' + successUrl;
+    stripeUrl = 'https://buy.stripe.com/7sY8wOfA0eyb63q2wW9R60a?success_url=' + encodeURIComponent(successBase);
   }
   window.open(stripeUrl, '_blank');
   toast('💳', 'Opening Stripe...', 'Come back here after paying — your link will appear');
 }
 
-function handlePlanClick(e, plan) {
-  handleLandingPlanClick(e, plan);
+function handlePlanClick(e, plan) { handleLandingPlanClick(e, plan); }
+function handleBuyPageClick(e) { handleLandingPlanClick(e, 'lifetime'); }
+
+function applyLandingPromo() {
+  const input = document.getElementById('landingPromoInput');
+  if (!input) return;
+  const code = input.value.trim().toUpperCase();
+  if (!code) { toast('⚠️', 'Enter a promo code', ''); return; }
+  if (code === 'THRU10' || code === 'TACO' || code === 'PRINCEXVX3') {
+    if (!appState.authed) {
+      toast('👤', 'Sign in first', 'Sign in with Google to claim free access');
+      localStorage.setItem('pendingPromo', code);
+      setTimeout(() => goPage('auth'), 400);
+      return;
+    }
+    grantFreeAccess(code);
+  } else {
+    toast('❌', 'Invalid code', 'Check your promo code and try again');
+    input.style.borderColor = 'rgba(255,0,80,.5)';
+    setTimeout(() => input.style.borderColor = '', 1500);
+  }
+}
+
+function grantFreeAccess(code) {
+  const link = generateBoardLink(code + '_' + Date.now());
+  appState.paid = true;
+  appState.generatedBoardLink = link;
+  const fbUser = firebase.auth().currentUser;
+  if (fbUser) {
+    localStorage.setItem('boardLink_' + fbUser.uid, link);
+  } else {
+    localStorage.setItem('pendingBoardLink', link);
+  }
+  const inputEl = document.getElementById('boardLinkInput');
+  if (inputEl) inputEl.value = link;
+  showBoardLinkScreen(link, appState.user ? appState.user.name : 'CoinDrop User');
+  toast('🎉', 'Promo applied!', 'Free lifetime access granted!');
+  setTimeout(() => {
+    const step2 = document.getElementById('stripeStep2');
+    if (step2 && !document.getElementById('promoDashBtn')) {
+      const btn = document.createElement('button');
+      btn.id = 'promoDashBtn';
+      btn.textContent = '🎛️ Go to Dashboard';
+      btn.onclick = function() { closeStripe(); goPage('dashboard'); };
+      btn.style.cssText = 'width:100%;margin-top:10px;padding:13px;border-radius:12px;border:none;background:linear-gradient(135deg,#00F2EA,#0080FF);color:#000;font-family:Orbitron,sans-serif;font-weight:900;font-size:.78rem;letter-spacing:2px;cursor:pointer';
+      step2.appendChild(btn);
+    }
+  }, 300);
 }
 
 function handleBuyPageClick(e) {
@@ -1546,7 +1615,7 @@ function handleGoogleSignIn() {
   firebase.auth().signInWithPopup(provider)
     .then(result => {
       const user = result.user;
-      onFirebaseUserSignedIn(user);
+      onFirebaseUserSignedIn(user, true);
     })
     .catch(err => {
       btn.style.display = 'flex';
@@ -1555,7 +1624,7 @@ function handleGoogleSignIn() {
     });
 }
 
-function onFirebaseUserSignedIn(user) {
+function onFirebaseUserSignedIn(user, freshLogin = false) {
   appState.authed = true;
   appState.user = {
     name: user.displayName || 'User',
@@ -1564,7 +1633,7 @@ function onFirebaseUserSignedIn(user) {
     uid: user.uid
   };
 
-  // Update UI
+  // Update UI avatars
   const avatarEl = document.getElementById('userAvatar');
   const bigAv = document.getElementById('bigAvatar');
   if (user.photoURL) {
@@ -1577,34 +1646,54 @@ function onFirebaseUserSignedIn(user) {
   document.getElementById('accName').textContent = user.displayName || 'User';
   document.getElementById('accEmail').textContent = user.email || '';
 
-  // Check if there's a pending board link from a just-completed payment
+  // Update landing page nav to show profile pic
+  const landingNav = document.getElementById('landingNavLinks');
+  if (landingNav) {
+    if (user.photoURL) {
+      landingNav.innerHTML = `<img src="${user.photoURL}" onclick="goPage('account')" style="width:34px;height:34px;border-radius:50%;object-fit:cover;cursor:pointer;border:2px solid rgba(255,215,0,.4)" /><button class="nav-btn primary" onclick="goPage('pricing')">Get Access</button>`;
+    } else {
+      landingNav.innerHTML = `<div class="nav-avatar" onclick="goPage('account')" style="cursor:pointer">👤</div><button class="nav-btn primary" onclick="goPage('pricing')">Get Access</button>`;
+    }
+  }
+
+  // Handle pending board link from payment
   const pendingLink = localStorage.getItem('pendingBoardLink');
   if (pendingLink) {
     localStorage.setItem('boardLink_' + user.uid, pendingLink);
     localStorage.removeItem('pendingBoardLink');
   }
 
-  // Check if they have a saved board link — means they already paid
+  // Check if already paid
   const savedLink = localStorage.getItem('boardLink_' + user.uid);
   if (savedLink) {
     appState.paid = true;
     appState.generatedBoardLink = savedLink;
     const inputEl = document.getElementById('boardLinkInput');
     if (inputEl) inputEl.value = savedLink;
-    toast('👋', 'Welcome back!', user.displayName || 'User');
-    setTimeout(() => goPage('dashboard'), 500);
-  } else {
-    // Only send to buy page if they came from the sign in page manually
-    // Don't interrupt if they're already on a page
-    const currentPage = document.querySelector('.page.active');
-    const currentId = currentPage ? currentPage.id : '';
-    if (currentId === 'page-auth') {
-      toast('👋', 'Signed in!', 'Now get access to launch your board');
-      setTimeout(() => goPage('pricing'), 600);
-    } else {
-      // Already somewhere in the app — just update nav, don't redirect
-      toast('👋', 'Signed in!', user.displayName || 'User');
+    if (freshLogin) {
+      toast('👋', 'Welcome back!', user.displayName || 'User');
+      setTimeout(() => goPage('dashboard'), 500);
     }
+  } else if (freshLogin) {
+    // Check for pending promo code
+    const pendingPromo = localStorage.getItem('pendingPromo');
+    if (pendingPromo) {
+      localStorage.removeItem('pendingPromo');
+      setTimeout(() => grantFreeAccess(pendingPromo), 500);
+      return;
+    }
+    // Check for pending plan
+    const pendingPlan = localStorage.getItem('pendingPlan');
+    if (pendingPlan) {
+      localStorage.removeItem('pendingPlan');
+      setTimeout(() => {
+        const fakeEvent = { preventDefault: () => {} };
+        handleLandingPlanClick(fakeEvent, pendingPlan);
+      }, 500);
+      return;
+    }
+    // Just stay on landing — show signed in toast only
+    toast('✅', 'Signed in!', 'Pick a plan or enter a promo code to get started');
   }
 }
 
