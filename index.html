@@ -1639,14 +1639,27 @@ function handleGoogleSignIn() {
   const spinner = document.getElementById('authSpinner');
   btn.style.display = 'none';
   spinner.style.display = 'block';
-  spinner.textContent = 'Redirecting to Google...';
+  spinner.textContent = 'Signing in...';
 
   const provider = new firebase.auth.GoogleAuthProvider();
-  firebase.auth().signInWithRedirect(provider).catch(err => {
-    btn.style.display = 'flex';
-    spinner.style.display = 'none';
-    toast('❌', 'Sign in failed', err.message || 'Try again');
-  });
+  provider.setCustomParameters({ prompt: 'select_account' });
+
+  firebase.auth().signInWithPopup(provider)
+    .then(result => {
+      onFirebaseUserSignedIn(result.user, true);
+    })
+    .catch(err => {
+      btn.style.display = 'flex';
+      spinner.style.display = 'none';
+      spinner.textContent = 'Signing you in...';
+      if (err.code === 'auth/popup-blocked') {
+        toast('⚠️', 'Popup blocked', 'Please allow popups for this site in your browser');
+      } else if (err.code === 'auth/popup-closed-by-user') {
+        toast('ℹ️', 'Sign in cancelled', 'Click the button to try again');
+      } else {
+        toast('❌', 'Sign in failed', err.message || 'Try again');
+      }
+    });
 }
 
 function onFirebaseUserSignedIn(user, freshLogin = false) {
@@ -2718,15 +2731,6 @@ if (boardIdx > -1) PROTECTED.splice(boardIdx, 1);
   };
   firebase.initializeApp(firebaseConfig);
   const db = firebase.firestore();
-
-  // Handle redirect result from Google sign in
-  firebase.auth().getRedirectResult().then(result => {
-    if (result && result.user) {
-      onFirebaseUserSignedIn(result.user, true);
-    }
-  }).catch(err => {
-    console.error('Redirect sign in error:', err);
-  });
 
   // Save purchase to Firestore permanently
   async function savePurchaseToFirestore(uid, boardLink, email, plan) {
