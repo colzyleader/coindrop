@@ -967,12 +967,11 @@ input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none}
         <div class="auction-state idle" id="auctionState">IDLE</div>
       </div>
 
-      <!-- Start / Stop / Pause -->
+      <!-- Start / Pause / Restart -->
       <div class="start-stop-row">
         <button class="ss-btn start" id="startBtn" onclick="startAuction()">▶ START</button>
         <button class="ss-btn pause" id="pauseBtn" onclick="togglePause()" disabled>⏸ PAUSE</button>
-        <button class="ss-btn stop" id="stopBtn" onclick="stopAuction()" disabled>⏹ STOP</button>
-        <button class="ss-btn start" id="restartBtn" onclick="restartAuction()" style="display:none">🔄 RESTART</button>
+        <button class="ss-btn stop" id="restartBtn" onclick="restartAuction()" disabled>🔄 RESTART</button>
       </div>
 
       <!-- Timer -->
@@ -1910,11 +1909,7 @@ function startAuction() {
   document.getElementById('auctionState').className = 'auction-state live';
   document.getElementById('startBtn').disabled = true;
   document.getElementById('pauseBtn').disabled = false;
-  document.getElementById('stopBtn').disabled = false;
-  document.getElementById('stopBtn').style.display = '';
-  // Hide restart btn if visible
-  const restartBtn = document.getElementById('restartBtn');
-  if (restartBtn) restartBtn.style.display = 'none';
+  document.getElementById('restartBtn').disabled = false;
   appState.timerInterval = setInterval(() => {
     if (!appState.auctionPaused) {
       appState.seconds--;
@@ -2002,7 +1997,7 @@ function stopAuction() {
   document.getElementById('pauseBtn').disabled = true;
   document.getElementById('pauseBtn').textContent = '⏸ PAUSE';
   document.getElementById('pauseBtn').className = 'ss-btn pause';
-  document.getElementById('stopBtn').disabled = true;
+  document.getElementById('restartBtn').disabled = true;
   toast('⏹','Auction Stopped','Board has been reset');
   appState.seconds = 150;
   renderTimerDisplay();
@@ -2021,11 +2016,7 @@ function endAuction() {
   document.getElementById('auctionState').className = 'auction-state ended';
   document.getElementById('startBtn').disabled = true;
   document.getElementById('pauseBtn').disabled = true;
-  // Hide stop button, show restart button in its place
-  const stopBtn = document.getElementById('stopBtn');
-  stopBtn.style.display = 'none';
-  const restartBtn = document.getElementById('restartBtn');
-  if (restartBtn) restartBtn.style.display = '';
+  document.getElementById('restartBtn').disabled = false;
   updateMidAuctionControls();
   showWinnerPopup();
 }
@@ -2170,14 +2161,7 @@ function restartAuction() {
   document.getElementById('pauseBtn').disabled = true;
   document.getElementById('pauseBtn').textContent = '⏸ PAUSE';
   document.getElementById('pauseBtn').className = 'ss-btn pause';
-  const stopBtn2 = document.getElementById('stopBtn');
-  stopBtn2.textContent = '⏹ STOP';
-  stopBtn2.className = 'ss-btn stop';
-  stopBtn2.disabled = true;
-  stopBtn2.style.display = '';
-  stopBtn2.onclick = stopAuction;
-  const restartBtn = document.getElementById('restartBtn');
-  if (restartBtn) restartBtn.style.display = 'none';
+  document.getElementById('restartBtn').disabled = true;
   const zone = document.getElementById('bdSnipeZone');
   if (zone) { zone.style.display = 'none'; zone.classList.remove('active'); }
   document.getElementById('statPart').textContent = '0';
