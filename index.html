@@ -791,7 +791,7 @@ input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none}
         <div style="display:flex;justify-content:center;gap:20px;flex-wrap:wrap">
           <a href="/privacy" style="font-size:.68rem;color:rgba(0,242,234,.6);text-decoration:none;font-weight:600" onmouseover="this.style.color='#00F2EA'" onmouseout="this.style.color='rgba(0,242,234,.6)'">Privacy Policy</a>
           <a href="/terms" style="font-size:.68rem;color:rgba(0,242,234,.6);text-decoration:none;font-weight:600" onmouseover="this.style.color='#00F2EA'" onmouseout="this.style.color='rgba(0,242,234,.6)'">Terms of Service</a>
-          <a href="mailto:support@coindrop.app" style="font-size:.68rem;color:rgba(0,242,234,.6);text-decoration:none;font-weight:600" onmouseover="this.style.color='#00F2EA'" onmouseout="this.style.color='rgba(0,242,234,.6)'">Contact</a>
+          <a href="/cdn-cgi/l/email-protection#f685838686998482b695999f9892849986d8978686" style="font-size:.68rem;color:rgba(0,242,234,.6);text-decoration:none;font-weight:600" onmouseover="this.style.color='#00F2EA'" onmouseout="this.style.color='rgba(0,242,234,.6)'">Contact</a>
         </div>
       </div>
     </div>
@@ -1275,7 +1275,7 @@ input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none}
   </div>
 </div>
 
-<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
 // ══════════════════════════════════════════════
 // STATE
 // ══════════════════════════════════════════════
@@ -1520,7 +1520,7 @@ function handleLandingPlanClick(e, plan) {
     setTimeout(() => goPage('auth'), 400);
     return;
   }
-  const successBase = 'https://auctiontiktok.vercel.app/?payment=success&session_id={CHECKOUT_SESSION_ID}';
+  const successBase = 'https://coindrop-mauve.vercel.app/?payment=success&session_id={CHECKOUT_SESSION_ID}';
   let stripeUrl;
   if (plan === 'monthly') {
     stripeUrl = 'https://buy.stripe.com/00wcN45Zqcq38bydbA9R605?success_url=' + encodeURIComponent(successBase);
@@ -2776,13 +2776,4 @@ if (boardIdx > -1) PROTECTED.splice(boardIdx, 1);
         localStorage.setItem('boardLink_' + user.uid, boardLink);
         appState.paid = true;
         appState.generatedBoardLink = boardLink;
-        const inputEl = document.getElementById('boardLinkInput');
-        if (inputEl) inputEl.value = boardLink;
-      }
-
-      onFirebaseUserSignedIn(user, false);
-    }
-  });
-</script>
-</body>
-</html>
+        const inputEl = document.getElementById('board
