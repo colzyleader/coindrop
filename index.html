@@ -4,6 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>CoinDrop – TikTok Live Auctions</title>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script>firebase.initializeApp({apiKey:"AIzaSyDMbRsKsDTOZrE6AESzJtj_UEVS-q0T50k",authDomain:"tiktok-auction-board.firebaseapp.com",projectId:"tiktok-auction-board",storageBucket:"tiktok-auction-board.firebasestorage.app",messagingSenderId:"473006848103",appId:"1:473006848103:web:1f1eb3bbe8d49089e2fcc2"});</script>
 <link href="https://fonts.googleapis.com/css2?family=Russo+One&family=Exo+2:wght@400;600;700;900&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
 <style>
 :root {
@@ -676,7 +679,7 @@ input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none}
 <div class="page active" id="page-landing">
   <div class="nav">
     <div class="nav-logo">COINDROP</div>
-    <div class="nav-links">
+    <div class="nav-links" id="landingNavLinks">
       <button class="nav-btn" onclick="goPage('auth')">Sign In</button>
       <button class="nav-btn primary" onclick="goPage('pricing')">Get Access</button>
     </div>
@@ -754,25 +757,6 @@ input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none}
       </div>
 
       <div id="landing-price-card" style="display:none"></div>
-
-      <!-- Promo code -->
-      <div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:14px 16px;margin-top:12px">
-        <div style="font-size:.6rem;letter-spacing:2px;color:var(--muted);text-transform:uppercase;font-weight:700;margin-bottom:10px">🎟 Have a promo code?</div>
-        <div style="display:flex;gap:8px">
-          <input id="landingPromoInput" type="text" placeholder="Enter promo code..." class="key-input" style="flex:1;font-family:'Exo 2',sans-serif;letter-spacing:2px;font-size:.8rem;text-transform:uppercase" oninput="this.value=this.value.toUpperCase()" />
-          <button onclick="applyLandingPromo()" style="padding:10px 16px;border-radius:10px;border:none;background:linear-gradient(135deg,var(--cyan),#0080FF);color:#000;font-family:'Orbitron',sans-serif;font-size:.62rem;font-weight:900;cursor:pointer;letter-spacing:1px;white-space:nowrap">APPLY</button>
-        </div>
-      </div>
-
-      <!-- Footer -->
-      <div style="text-align:center;padding:24px 0 8px;border-top:1px solid rgba(255,255,255,.05);margin-top:24px">
-        <div style="font-size:.65rem;color:rgba(255,255,255,.2);margin-bottom:10px">© 2025 CoinDrop. All rights reserved.</div>
-        <div style="display:flex;justify-content:center;gap:20px;flex-wrap:wrap">
-          <a href="/privacy" style="font-size:.68rem;color:rgba(0,242,234,.6);text-decoration:none;font-weight:600">Privacy Policy</a>
-          <a href="/terms" style="font-size:.68rem;color:rgba(0,242,234,.6);text-decoration:none;font-weight:600">Terms of Service</a>
-          <a href="mailto:support@coindrop.app" style="font-size:.68rem;color:rgba(0,242,234,.6);text-decoration:none;font-weight:600">Contact</a>
-        </div>
-      </div>
     </div>
   </div>
 </div>
@@ -794,6 +778,12 @@ input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none}
       <div style="font-size:.7rem;letter-spacing:4px;color:var(--cyan);text-transform:uppercase;font-weight:700;margin-bottom:12px">Choose Your Plan</div>
       <h1 style="font-family:'Russo One',sans-serif;font-size:2rem;color:#fff;margin-bottom:10px">Get Full Access to <span style="background:linear-gradient(135deg,var(--pink),var(--gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">CoinDrop</span></h1>
       <p style="color:var(--muted);font-size:.9rem">Everything you need to run pro coin auctions on TikTok LIVE</p>
+    </div>
+
+    <!-- Email input shared between both plans -->
+    <div style="max-width:460px;margin:0 auto 20px">
+      <input id="buyPageEmail" type="email" placeholder="Enter your email first..." class="key-input" style="width:100%;font-family:'Exo 2',sans-serif;letter-spacing:0;font-size:.85rem;padding:14px 16px;border-radius:12px" />
+      <div style="font-size:.6rem;color:var(--muted);margin-top:5px;text-align:center">Your board link will be tied to this email — required before checkout</div>
     </div>
 
     <!-- Two plan cards -->
@@ -1100,6 +1090,8 @@ input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none}
       <!-- ① SNIPE DELAY — shown AFTER main timer ends, giving a window to snipe -->
       <div class="bd-snipe-zone" id="bdSnipeZone" style="display:none"><div id="bdSnipeTimer" style="display:none"></div><div id="bdSnipeFill" style="display:none"></div></div>
 
+      
+
       <!-- ② AUCTION TIMER — big countdown below snipe zone -->
       <div class="bd-timer-zone">
         <div class="bd-timer-label" id="bdTimerLabel">TIME REMAINING</div>
@@ -1269,10 +1261,12 @@ let appState = {
 // PAGE ROUTING
 // ══════════════════════════════════════════════
 const PROTECTED = ['dashboard','board','settings','account'];
+const PAID_ONLY = ['dashboard','settings'];
 const DASH_PAGES = ['dashboard','board','settings','account'];
 
 function goPage(id) {
   if (PROTECTED.includes(id) && !appState.authed) { goPage('auth'); return; }
+  if (PAID_ONLY.includes(id) && !appState.paid) { toast('🔒','Purchase required','Get access first'); goPage('pricing'); return; }
   document.querySelectorAll('.page').forEach(p => {
     p.classList.remove('active');
     p.style.display = 'none';
@@ -1534,6 +1528,10 @@ function grantFreeAccess(code) {
   }, 300);
 }
 
+function handlePlanClick(e, plan) {
+  handleLandingPlanClick(e, plan);
+}
+
 function handleBuyPageClick(e) {
   handleLandingPlanClick(e, 'lifetime');
 }
@@ -1581,56 +1579,40 @@ function handleGoogleSignIn() {
     });
 }
 
-function onFirebaseUserSignedIn(user) {
+function onFirebaseUserSignedIn(user, freshLogin = false) {
   appState.authed = true;
-  appState.user = {
-    name: user.displayName || 'User',
-    email: user.email || '',
-    avatar: user.photoURL || '👤',
-    uid: user.uid
-  };
-
-  // Update UI
+  appState.user = { name: user.displayName || 'User', email: user.email || '', avatar: user.photoURL || '👤', uid: user.uid };
   const avatarEl = document.getElementById('userAvatar');
   const bigAv = document.getElementById('bigAvatar');
   if (user.photoURL) {
     avatarEl.innerHTML = `<img src="${user.photoURL}" style="width:32px;height:32px;border-radius:50%;object-fit:cover">`;
     bigAv.innerHTML = `<img src="${user.photoURL}" style="width:64px;height:64px;border-radius:50%;object-fit:cover">`;
-  } else {
-    avatarEl.textContent = '👤';
-    bigAv.textContent = '👤';
-  }
+  } else { avatarEl.textContent = '👤'; bigAv.textContent = '👤'; }
   document.getElementById('accName').textContent = user.displayName || 'User';
   document.getElementById('accEmail').textContent = user.email || '';
-
-  // Check if there's a pending board link from a just-completed payment
-  const pendingLink = localStorage.getItem('pendingBoardLink');
-  if (pendingLink) {
-    localStorage.setItem('boardLink_' + user.uid, pendingLink);
-    localStorage.removeItem('pendingBoardLink');
+  const landingNav = document.getElementById('landingNavLinks');
+  if (landingNav) {
+    if (user.photoURL) {
+      landingNav.innerHTML = `<img src="${user.photoURL}" onclick="goPage('account')" style="width:34px;height:34px;border-radius:50%;object-fit:cover;cursor:pointer;border:2px solid rgba(255,215,0,.4)" /><button class="nav-btn primary" onclick="goPage('pricing')">Get Access</button>`;
+    } else {
+      landingNav.innerHTML = `<div onclick="goPage('account')" style="cursor:pointer;color:#fff">👤</div><button class="nav-btn primary" onclick="goPage('pricing')">Get Access</button>`;
+    }
   }
-
-  // Check if they have a saved board link — means they already paid
+  const pendingLink = localStorage.getItem('pendingBoardLink');
+  if (pendingLink) { localStorage.setItem('boardLink_' + user.uid, pendingLink); localStorage.removeItem('pendingBoardLink'); }
   const savedLink = localStorage.getItem('boardLink_' + user.uid);
   if (savedLink) {
     appState.paid = true;
     appState.generatedBoardLink = savedLink;
     const inputEl = document.getElementById('boardLinkInput');
     if (inputEl) inputEl.value = savedLink;
-    toast('👋', 'Welcome back!', user.displayName || 'User');
-    setTimeout(() => goPage('dashboard'), 500);
-  } else {
-    // Only send to buy page if they came from the sign in page manually
-    // Don't interrupt if they're already on a page
-    const currentPage = document.querySelector('.page.active');
-    const currentId = currentPage ? currentPage.id : '';
-    if (currentId === 'page-auth') {
-      toast('👋', 'Signed in!', 'Now get access to launch your board');
-      setTimeout(() => goPage('pricing'), 600);
-    } else {
-      // Already somewhere in the app — just update nav, don't redirect
-      toast('👋', 'Signed in!', user.displayName || 'User');
-    }
+    if (freshLogin) { toast('👋', 'Welcome back!', user.displayName || 'User'); setTimeout(() => goPage('dashboard'), 500); }
+  } else if (freshLogin) {
+    const pendingPromo = localStorage.getItem('pendingPromo');
+    if (pendingPromo) { localStorage.removeItem('pendingPromo'); setTimeout(() => grantFreeAccess(pendingPromo), 500); return; }
+    const pendingPlan = localStorage.getItem('pendingPlan');
+    if (pendingPlan) { localStorage.removeItem('pendingPlan'); setTimeout(() => { handleLandingPlanClick({preventDefault:()=>{}}, pendingPlan); }, 500); return; }
+    toast('✅', 'Signed in!', 'Pick a plan or enter a promo code to get started');
   }
 }
 
@@ -1860,14 +1842,19 @@ function renderTimerDisplay() {
     return;
   }
   if (!el) return;
+  if (appState.snipePhase) {
+    const m = Math.floor(s / 60), sec = s % 60;
+    el.textContent = `${m}:${sec.toString().padStart(2,'0')}`;
+    el.className = 'timer-big red';
+    return;
+  }
   if (s <= 0) {
     el.textContent = 'ENDED';
     el.className = 'timer-big red';
     return;
   }
   const m = Math.floor(s / 60), sec = s % 60;
-  const str = `${m}:${sec.toString().padStart(2,'0')}`;
-  el.textContent = str;
+  el.textContent = `${m}:${sec.toString().padStart(2,'0')}`;
   el.className = 'timer-big' + (appState.auctionPaused ? ' paused-color' : s <= 30 ? ' red' : '');
 }
 
@@ -1889,20 +1876,22 @@ function startAuction() {
   appState.timerInterval = setInterval(() => {
     if (!appState.auctionPaused) {
       appState.seconds--;
-      renderTimerDisplay();
       if (appState.seconds <= 0 && !appState.snipePhase) {
-        // Main timer done — start snipe phase if enabled
         const snipeDelay = appState.settings.snipe;
         if (snipeDelay > 0) {
           appState.snipePhase = true;
           appState.seconds = snipeDelay;
+          renderTimerDisplay();
           startSnipePhase(snipeDelay);
         } else {
+          renderTimerDisplay();
           endAuction();
         }
       } else if (appState.seconds <= 0 && appState.snipePhase) {
-        // Snipe phase done — end auction for real
+        renderTimerDisplay();
         endAuction();
+      } else {
+        renderTimerDisplay();
       }
     }
   }, 1000);
@@ -1990,12 +1979,13 @@ function endAuction() {
   document.getElementById('auctionState').className = 'auction-state ended';
   document.getElementById('startBtn').disabled = true;
   document.getElementById('pauseBtn').disabled = true;
-  document.getElementById('stopBtn').disabled = true;
-  // Hide start/stop row, show restart button
-  const startStopRow = document.querySelector('.start-stop-row');
-  if (startStopRow) startStopRow.style.display = 'none';
+  const stopBtn = document.getElementById('stopBtn');
+  stopBtn.textContent = '🔄 NEW AUCTION';
+  stopBtn.className = 'ss-btn start';
+  stopBtn.disabled = false;
+  stopBtn.onclick = restartAuction;
   const restartBtn = document.getElementById('restartBtn');
-  if (restartBtn) restartBtn.style.display = 'flex';
+  if (restartBtn) restartBtn.style.display = 'none';
   updateMidAuctionControls();
   showWinnerPopup();
 }
@@ -2140,11 +2130,13 @@ function restartAuction() {
   document.getElementById('pauseBtn').disabled = true;
   document.getElementById('pauseBtn').textContent = '⏸ PAUSE';
   document.getElementById('pauseBtn').className = 'ss-btn pause';
-  document.getElementById('stopBtn').disabled = true;
+  const stopBtn2 = document.getElementById('stopBtn');
+  stopBtn2.textContent = '⏹ STOP';
+  stopBtn2.className = 'ss-btn stop';
+  stopBtn2.disabled = true;
+  stopBtn2.onclick = stopAuction;
   const restartBtn = document.getElementById('restartBtn');
   if (restartBtn) restartBtn.style.display = 'none';
-  const startStopRow = document.querySelector('.start-stop-row');
-  if (startStopRow) startStopRow.style.display = 'flex';
   const zone = document.getElementById('bdSnipeZone');
   if (zone) { zone.style.display = 'none'; zone.classList.remove('active'); }
   document.getElementById('statPart').textContent = '0';
@@ -2262,14 +2254,19 @@ function renderBoard() {
   if (timerBig) {
     const s = appState.seconds;
     if (appState.snipePhase) {
-      const m = Math.floor(s / 60), sec = s % 60;
-      timerBig.textContent = `${m}:${sec.toString().padStart(2,'0')}`;
+      const mm = Math.floor(s/60), ss2 = s%60;
+      timerBig.textContent = mm+':'+ss2.toString().padStart(2,'0');
       timerBig.className = 'bd-timer-big red';
       if (timerLabel) timerLabel.textContent = '⚡ SNIPE WINDOW';
     } else if (s <= 0) {
       timerBig.textContent = 'ENDED';
       timerBig.className = 'bd-timer-big ended';
       if (timerLabel) timerLabel.textContent = 'AUCTION ENDED';
+    } else if (false) {
+      const m = Math.floor(s / 60), sec = s % 60;
+      timerBig.textContent = `${m}:${sec.toString().padStart(2,'0')}`;
+      timerBig.className = 'bd-timer-big red';
+      if (timerLabel) timerLabel.textContent = '⚡ SNIPE WINDOW';
     } else {
       const m = Math.floor(s / 60), sec = s % 60;
       timerBig.textContent = `${m}:${sec.toString().padStart(2,'0')}`;
@@ -2566,32 +2563,12 @@ if (boardIdx > -1) PROTECTED.splice(boardIdx, 1);
   }
 })();
 </script>
-<!-- Firebase SDKs -->
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 <script>
-  // Firebase config
-  const firebaseConfig = {
-    apiKey: "AIzaSyDMbRsKsDTOZrE6AESzJtj_UEVS-q0T50k",
-    authDomain: "tiktok-auction-board.firebaseapp.com",
-    projectId: "tiktok-auction-board",
-    storageBucket: "tiktok-auction-board.firebasestorage.app",
-    messagingSenderId: "473006848103",
-    appId: "1:473006848103:web:1f1eb3bbe8d49089e2fcc2",
-    measurementId: "G-467PJR84J6"
-  };
-  firebase.initializeApp(firebaseConfig);
-
-  // Listen for auth state — auto sign in if they have a session
   firebase.auth().onAuthStateChanged(user => {
     if (user) {
-      // Check if there's a pending board link from a just-completed payment
       const pendingLink = localStorage.getItem('pendingBoardLink');
-      if (pendingLink) {
-        localStorage.setItem('boardLink_' + user.uid, pendingLink);
-        localStorage.removeItem('pendingBoardLink');
-      }
-      onFirebaseUserSignedIn(user);
+      if (pendingLink) { localStorage.setItem('boardLink_' + user.uid, pendingLink); localStorage.removeItem('pendingBoardLink'); }
+      onFirebaseUserSignedIn(user, false);
     }
   });
 </script>
