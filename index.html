@@ -5,6 +5,19 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>CoinDrop – TikTok Live Auctions</title>
 <link href="https://fonts.googleapis.com/css2?family=Russo+One&family=Exo+2:wght@400;600;700;900&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+<!-- Firebase MUST load before main script -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script>
+  firebase.initializeApp({
+    apiKey: "AIzaSyDMbRsKsDTOZrE6AESzJtj_UEVS-q0T50k",
+    authDomain: "tiktok-auction-board.firebaseapp.com",
+    projectId: "tiktok-auction-board",
+    storageBucket: "tiktok-auction-board.firebasestorage.app",
+    messagingSenderId: "473006848103",
+    appId: "1:473006848103:web:1f1eb3bbe8d49089e2fcc2"
+  });
+</script>
 <style>
 :root {
   --gold:#FFD700;--gold2:#FFA500;--silver:#C0C0C0;--bronze:#CD7F32;
@@ -576,9 +589,6 @@ input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none}
 ::-webkit-scrollbar{width:3px;height:3px}
 ::-webkit-scrollbar-thumb{background:rgba(255,255,255,.08);border-radius:2px}
 </style>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 </head>
 <body>
 
@@ -604,27 +614,6 @@ input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none}
     </div>
     <button class="winner-close" onclick="closeWinner()" style="margin-bottom:8px">🎉 Close & View Board</button>
     <button onclick="closeWinner();restartAuction()" style="width:100%;padding:11px;border-radius:14px;border:1px solid rgba(0,242,234,.3);background:rgba(0,242,234,.08);color:var(--cyan);font-family:'Orbitron',sans-serif;font-weight:700;font-size:.72rem;letter-spacing:2px;cursor:pointer;transition:all .2s" onmouseover="this.style.background='rgba(0,242,234,.18)'" onmouseout="this.style.background='rgba(0,242,234,.08)'">🔄 New Auction</button>
-  </div>
-</div>
-
-<!-- TIE POPUP — shown to streamer when auction ends in a tie -->
-<div class="winner-overlay" id="tieOverlay">
-  <div class="winner-popup" style="max-width:340px">
-    <div style="font-size:2rem;text-align:center;margin-bottom:8px">🤝</div>
-    <div class="winner-title" style="color:#FFA500">It's a Tie!</div>
-    <div class="winner-subtitle" id="tieSubtitle">Two players are tied for 1st place</div>
-    <div id="tiePlayers" style="width:100%;margin:16px 0;display:flex;flex-direction:column;gap:8px"></div>
-    <div style="font-size:.7rem;color:rgba(255,255,255,.4);text-align:center;margin-bottom:16px;line-height:1.6">Add time so they can break the tie,<br>or end the auction and split the prize.</div>
-    <div style="display:flex;flex-direction:column;gap:8px;width:100%">
-      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px">
-        <button onclick="addTieTime(30)" style="padding:10px 0;border-radius:10px;border:1px solid rgba(0,242,234,.3);background:rgba(0,242,234,.08);color:#00F2EA;font-family:'Orbitron',sans-serif;font-size:.6rem;font-weight:900;cursor:pointer">+30s</button>
-        <button onclick="addTieTime(60)" style="padding:10px 0;border-radius:10px;border:1px solid rgba(0,242,234,.3);background:rgba(0,242,234,.08);color:#00F2EA;font-family:'Orbitron',sans-serif;font-size:.6rem;font-weight:900;cursor:pointer">+1m</button>
-        <button onclick="addTieTime(120)" style="padding:10px 0;border-radius:10px;border:1px solid rgba(0,242,234,.3);background:rgba(0,242,234,.08);color:#00F2EA;font-family:'Orbitron',sans-serif;font-size:.6rem;font-weight:900;cursor:pointer">+2m</button>
-        <button onclick="addTieTime(300)" style="padding:10px 0;border-radius:10px;border:1px solid rgba(0,242,234,.3);background:rgba(0,242,234,.08);color:#00F2EA;font-family:'Orbitron',sans-serif;font-size:.6rem;font-weight:900;cursor:pointer">+5m</button>
-      </div>
-      <button onclick="closeTieAndContinue()" style="width:100%;padding:13px;border-radius:12px;border:none;background:linear-gradient(135deg,#FF006E,#FF8C00);color:#fff;font-family:'Orbitron',sans-serif;font-weight:900;font-size:.72rem;letter-spacing:2px;cursor:pointer">🏆 End & Show Winner</button>
-      <button onclick="closeTieAndRestart()" style="width:100%;padding:11px;border-radius:12px;border:1px solid rgba(0,242,234,.3);background:rgba(0,242,234,.08);color:var(--cyan);font-family:'Orbitron',sans-serif;font-weight:700;font-size:.68rem;letter-spacing:2px;cursor:pointer">🔄 New Auction</button>
-    </div>
   </div>
 </div>
 
@@ -700,7 +689,7 @@ input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none}
 <div class="page active" id="page-landing">
   <div class="nav">
     <div class="nav-logo">COINDROP</div>
-    <div class="nav-links" id="landingNavLinks">
+    <div class="nav-links">
       <button class="nav-btn" onclick="goPage('auth')">Sign In</button>
       <button class="nav-btn primary" onclick="goPage('pricing')">Get Access</button>
     </div>
@@ -730,6 +719,12 @@ input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none}
 
     <div class="pricing-section">
       <div class="section-lbl">Pricing</div>
+
+      <!-- Email input -->
+      <div style="margin-bottom:16px">
+        <input id="landing-buy-email" type="email" placeholder="Enter your email to get started..." class="key-input" style="width:100%;font-family:'Exo 2',sans-serif;letter-spacing:0;font-size:.85rem;padding:14px 16px;border-radius:12px;box-sizing:border-box" />
+        <div style="font-size:.6rem;color:var(--muted);margin-top:5px;text-align:center">Required before checkout — your board link will be tied to this</div>
+      </div>
 
       <!-- Monthly card -->
       <div style="background:var(--bg2);border:1px solid rgba(0,242,234,.2);border-radius:20px;overflow:hidden;margin-bottom:14px">
@@ -778,25 +773,6 @@ input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none}
       </div>
 
       <div id="landing-price-card" style="display:none"></div>
-
-      <!-- Promo code -->
-      <div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:14px 16px;margin-top:4px">
-        <div style="font-size:.6rem;letter-spacing:2px;color:var(--muted);text-transform:uppercase;font-weight:700;margin-bottom:10px">🎟 Have a promo code?</div>
-        <div style="display:flex;gap:8px">
-          <input id="landingPromoInput" type="text" placeholder="Enter promo code..." class="key-input" style="flex:1;font-family:'Exo 2',sans-serif;letter-spacing:2px;font-size:.8rem;text-transform:uppercase" oninput="this.value=this.value.toUpperCase()" />
-          <button onclick="applyLandingPromo()" style="padding:10px 16px;border-radius:10px;border:none;background:linear-gradient(135deg,var(--cyan),#0080FF);color:#000;font-family:'Orbitron',sans-serif;font-size:.62rem;font-weight:900;cursor:pointer;letter-spacing:1px;white-space:nowrap">APPLY</button>
-        </div>
-      </div>
-
-      <!-- Footer links — required for TikTok compliance -->
-      <div style="text-align:center;padding:24px 0 8px;border-top:1px solid rgba(255,255,255,.05);margin-top:24px">
-        <div style="font-size:.65rem;color:rgba(255,255,255,.2);margin-bottom:10px">© 2025 CoinDrop. All rights reserved.</div>
-        <div style="display:flex;justify-content:center;gap:20px;flex-wrap:wrap">
-          <a href="/privacy" style="font-size:.68rem;color:rgba(0,242,234,.6);text-decoration:none;font-weight:600" onmouseover="this.style.color='#00F2EA'" onmouseout="this.style.color='rgba(0,242,234,.6)'">Privacy Policy</a>
-          <a href="/terms" style="font-size:.68rem;color:rgba(0,242,234,.6);text-decoration:none;font-weight:600" onmouseover="this.style.color='#00F2EA'" onmouseout="this.style.color='rgba(0,242,234,.6)'">Terms of Service</a>
-          <a href="/cdn-cgi/l/email-protection#f685838686998482b695999f9892849986d8978686" style="font-size:.68rem;color:rgba(0,242,234,.6);text-decoration:none;font-weight:600" onmouseover="this.style.color='#00F2EA'" onmouseout="this.style.color='rgba(0,242,234,.6)'">Contact</a>
-        </div>
-      </div>
     </div>
   </div>
 </div>
@@ -879,20 +855,11 @@ input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none}
     </div>
 
     <!-- Trust badges -->
-    <div style="max-width:460px;margin:20px auto 12px;display:flex;justify-content:center;gap:20px;flex-wrap:wrap">
+    <div style="max-width:460px;margin:20px auto 0;display:flex;justify-content:center;gap:20px;flex-wrap:wrap">
       <div style="font-size:.68rem;color:rgba(255,255,255,.3);display:flex;align-items:center;gap:5px">🔒 SSL Secured</div>
       <div style="font-size:.68rem;color:rgba(255,255,255,.3);display:flex;align-items:center;gap:5px">✅ TikTok Compliant</div>
       <div style="font-size:.68rem;color:rgba(255,255,255,.3);display:flex;align-items:center;gap:5px">⚡ Instant Access</div>
       <div style="font-size:.68rem;color:rgba(255,255,255,.3);display:flex;align-items:center;gap:5px">🏆 Cancel Anytime</div>
-    </div>
-
-    <!-- Promo code -->
-    <div style="max-width:460px;margin:0 auto;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:14px 16px">
-      <div style="font-size:.6rem;letter-spacing:2px;color:var(--muted);text-transform:uppercase;font-weight:700;margin-bottom:10px">🎟 Have a promo code?</div>
-      <div style="display:flex;gap:8px">
-        <input id="pricingPromoInput" type="text" placeholder="Enter promo code..." class="key-input" style="flex:1;font-family:'Exo 2',sans-serif;letter-spacing:2px;font-size:.8rem;text-transform:uppercase" oninput="this.value=this.value.toUpperCase()" />
-        <button onclick="applyPricingPromo()" style="padding:10px 16px;border-radius:10px;border:none;background:linear-gradient(135deg,var(--cyan),#0080FF);color:#000;font-family:'Orbitron',sans-serif;font-size:.62rem;font-weight:900;cursor:pointer;letter-spacing:1px;white-space:nowrap">APPLY</button>
-      </div>
     </div>
 
   </div>
@@ -1138,6 +1105,14 @@ input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none}
 
       <!-- ① SNIPE DELAY — shown AFTER main timer ends, giving a window to snipe -->
       <div class="bd-snipe-zone" id="bdSnipeZone" style="display:none">
+        <div class="bd-snipe-header">
+          <span class="bd-snipe-flash">⚡</span>
+          <span class="bd-snipe-title">SNIPE WINDOW — SEND NOW!</span>
+          <span class="bd-snipe-flash">⚡</span>
+        </div>
+        <div class="bd-snipe-timer" id="bdSnipeTimer">20</div>
+        <div class="bd-snipe-sub">seconds left to steal 1st place</div>
+        <div class="bd-snipe-track"><div class="bd-snipe-fill" id="bdSnipeFill" style="width:100%"></div></div>
       </div>
 
       <!-- ② AUCTION TIMER — big countdown below snipe zone -->
@@ -1270,15 +1245,15 @@ input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none}
       <div style="display:inline-flex;align-items:center;gap:6px;background:rgba(255,215,0,.1);border:1px solid rgba(255,215,0,.2);border-radius:20px;padding:4px 14px;font-size:.65rem;font-weight:700;letter-spacing:2px;color:var(--gold);text-transform:uppercase;margin-top:12px" id="accBadge">✦ Full Access</div>
     </div>
     <div style="background:var(--bg2);border:1px solid var(--border);border-radius:20px;overflow:hidden;margin-bottom:16px">
-      <div onclick="appState.paid ? goPage('dashboard') : (toast('🔒','Purchase required','Get access first'), goPage('pricing'))" style="padding:16px 18px;display:flex;align-items:center;gap:12px;cursor:pointer;border-bottom:1px solid var(--border);transition:background .2s" onmouseover="this.style.background='rgba(255,255,255,.04)'" onmouseout="this.style.background='transparent'"><span style="font-size:1.1rem">🎛️</span><span style="font-size:.85rem;font-weight:600">Auction Control</span><span style="margin-left:auto;color:var(--muted)">→</span></div>
-      <div onclick="appState.paid ? goPage('settings') : (toast('🔒','Purchase required','Get access first'), goPage('pricing'))" style="padding:16px 18px;display:flex;align-items:center;gap:12px;cursor:pointer;border-bottom:1px solid var(--border);transition:background .2s" onmouseover="this.style.background='rgba(255,255,255,.04)'" onmouseout="this.style.background='transparent'"><span style="font-size:1.1rem">⚙️</span><span style="font-size:.85rem;font-weight:600">Settings</span><span style="margin-left:auto;color:var(--muted)">→</span></div>
+      <div onclick="goPage('dashboard')" style="padding:16px 18px;display:flex;align-items:center;gap:12px;cursor:pointer;border-bottom:1px solid var(--border);transition:background .2s" onmouseover="this.style.background='rgba(255,255,255,.04)'" onmouseout="this.style.background='transparent'"><span style="font-size:1.1rem">🎛️</span><span style="font-size:.85rem;font-weight:600">Auction Control</span><span style="margin-left:auto;color:var(--muted)">→</span></div>
+      <div onclick="goPage('settings')" style="padding:16px 18px;display:flex;align-items:center;gap:12px;cursor:pointer;border-bottom:1px solid var(--border);transition:background .2s" onmouseover="this.style.background='rgba(255,255,255,.04)'" onmouseout="this.style.background='transparent'"><span style="font-size:1.1rem">⚙️</span><span style="font-size:.85rem;font-weight:600">Settings</span><span style="margin-left:auto;color:var(--muted)">→</span></div>
       <div onclick="goPage('board')" style="padding:16px 18px;display:flex;align-items:center;gap:12px;cursor:pointer;border-bottom:1px solid var(--border);transition:background .2s" onmouseover="this.style.background='rgba(255,255,255,.04)'" onmouseout="this.style.background='transparent'"><span style="font-size:1.1rem">🏆</span><span style="font-size:.85rem;font-weight:600">View Board</span><span style="margin-left:auto;color:var(--muted)">→</span></div>
       <div onclick="signOut()" style="padding:16px 18px;display:flex;align-items:center;gap:12px;cursor:pointer;transition:background .2s" onmouseover="this.style.background='rgba(255,0,80,.05)'" onmouseout="this.style.background='transparent'"><span style="font-size:1.1rem">🚪</span><span style="font-size:.85rem;font-weight:600;color:var(--pink)">Sign Out</span></div>
     </div>
   </div>
 </div>
 
-<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
 // ══════════════════════════════════════════════
 // STATE
 // ══════════════════════════════════════════════
@@ -1309,16 +1284,10 @@ let appState = {
 // PAGE ROUTING
 // ══════════════════════════════════════════════
 const PROTECTED = ['dashboard','board','settings','account'];
-const PAID_ONLY = ['dashboard','settings']; // these require payment
 const DASH_PAGES = ['dashboard','board','settings','account'];
 
 function goPage(id) {
   if (PROTECTED.includes(id) && !appState.authed) { goPage('auth'); return; }
-  if (PAID_ONLY.includes(id) && !appState.paid) {
-    toast('🔒', 'Purchase required', 'Get access to use the dashboard');
-    goPage('pricing');
-    return;
-  }
   document.querySelectorAll('.page').forEach(p => {
     p.classList.remove('active');
     p.style.display = 'none';
@@ -1516,19 +1485,20 @@ function closeStripe() {
 
 function handleLandingPlanClick(e, plan) {
   e.preventDefault();
-  // Must be signed in before purchasing
-  if (!appState.authed) {
-    toast('👤', 'Sign in first', 'Create a free account before purchasing');
-    localStorage.setItem('pendingPlan', plan);
-    setTimeout(() => goPage('auth'), 400);
+  const email = document.getElementById('landing-buy-email').value.trim();
+  if (!email || !email.includes('@')) {
+    toast('⚠️', 'Enter your email first', 'The field is just above the pricing cards');
+    document.getElementById('landing-buy-email').focus();
     return;
   }
-  const successBase = 'https://coindrop-mauve.vercel.app/?payment=success&session_id={CHECKOUT_SESSION_ID}';
+  localStorage.setItem('pendingEmail', email);
+  const successUrl = encodeURIComponent('https://auctiontiktok.vercel.app/?payment=success');
+  const emailParam = encodeURIComponent(email);
   let stripeUrl;
   if (plan === 'monthly') {
-    stripeUrl = 'https://buy.stripe.com/00wcN45Zqcq38bydbA9R605?success_url=' + encodeURIComponent(successBase);
+    stripeUrl = 'https://buy.stripe.com/00wcN45Zqcq38bydbA9R605?prefilled_email=' + emailParam + '&success_url=' + successUrl;
   } else {
-    stripeUrl = 'https://buy.stripe.com/7sY8wOfA0eyb63q2wW9R60a?success_url=' + encodeURIComponent(successBase);
+    stripeUrl = 'https://buy.stripe.com/REPLACE_WITH_60_DOLLAR_LINK?prefilled_email=' + emailParam + '&success_url=' + successUrl;
   }
   window.open(stripeUrl, '_blank');
   toast('💳', 'Opening Stripe...', 'Come back here after paying — your link will appear');
@@ -1538,76 +1508,8 @@ function handlePlanClick(e, plan) {
   handleLandingPlanClick(e, plan);
 }
 
-function applyLandingPromo() {
-  const code = document.getElementById('landingPromoInput').value.trim().toUpperCase();
-  if (!code) { toast('⚠️', 'Enter a promo code', ''); return; }
-
-  if (code === 'THRU10' || code === 'TACO' || code === 'PRINCEXVX3') {
-    // Must be signed in first
-    if (!appState.authed) {
-      toast('👤', 'Sign in first', 'Sign in with Google to claim your free access');
-      localStorage.setItem('pendingPromo', code);
-      setTimeout(() => goPage('auth'), 500);
-      return;
-    }
-    grantFreeAccess(code);
-  } else {
-    toast('❌', 'Invalid code', 'Check your promo code and try again');
-    document.getElementById('landingPromoInput').style.borderColor = 'rgba(255,0,80,.5)';
-    setTimeout(() => document.getElementById('landingPromoInput').style.borderColor = '', 1500);
-  }
-}
-
-function applyPricingPromo() {
-  const code = document.getElementById('pricingPromoInput').value.trim().toUpperCase();
-  if (!code) { toast('⚠️', 'Enter a promo code', ''); return; }
-  if (code === 'THRU10' || code === 'TACO' || code === 'PRINCEXVX3') {
-    if (!appState.authed) {
-      toast('👤', 'Sign in first', 'Sign in with Google to claim your free access');
-      localStorage.setItem('pendingPromo', code);
-      setTimeout(() => goPage('auth'), 500);
-      return;
-    }
-    grantFreeAccess(code);
-  } else {
-    toast('❌', 'Invalid code', 'Check your promo code and try again');
-    document.getElementById('pricingPromoInput').style.borderColor = 'rgba(255,0,80,.5)';
-    setTimeout(() => document.getElementById('pricingPromoInput').style.borderColor = '', 1500);
-  }
-}
-
 function handleBuyPageClick(e) {
   handleLandingPlanClick(e, 'lifetime');
-}
-
-function grantFreeAccess(code) {
-  const link = generateBoardLink(code + '_' + Date.now());
-  appState.paid = true;
-  appState.generatedBoardLink = link;
-  const fbUser = firebase.auth().currentUser;
-  if (fbUser) {
-    savePurchaseToFirestore(fbUser.uid, link, fbUser.email || '', 'promo_' + code);
-    localStorage.setItem('boardLink_' + fbUser.uid, link);
-  } else {
-    localStorage.setItem('pendingBoardLink', link);
-  }
-  const inputEl = document.getElementById('boardLinkInput');
-  if (inputEl) inputEl.value = link;
-  showBoardLinkScreen(link, appState.user ? appState.user.name : 'CoinDrop User');
-  toast('🎉', 'Promo applied!', 'Free lifetime access granted!');
-
-  // Add dashboard button to the board link reveal modal
-  setTimeout(() => {
-    const step2 = document.getElementById('stripeStep2');
-    if (step2 && !document.getElementById('promoDashBtn')) {
-      const btn = document.createElement('button');
-      btn.id = 'promoDashBtn';
-      btn.textContent = '🎛️ Go to Dashboard';
-      btn.onclick = function() { closeStripe(); goPage('dashboard'); };
-      btn.style.cssText = 'width:100%;margin-top:10px;padding:13px;border-radius:12px;border:none;background:linear-gradient(135deg,#00F2EA,#0080FF);color:#000;font-family:Orbitron,sans-serif;font-weight:900;font-size:.78rem;letter-spacing:2px;cursor:pointer';
-      step2.appendChild(btn);
-    }
-  }, 300);
 }
 
 function onStripeClick() {
@@ -1639,30 +1541,21 @@ function handleGoogleSignIn() {
   const spinner = document.getElementById('authSpinner');
   btn.style.display = 'none';
   spinner.style.display = 'block';
-  spinner.textContent = 'Signing in...';
 
   const provider = new firebase.auth.GoogleAuthProvider();
-  provider.setCustomParameters({ prompt: 'select_account' });
-
   firebase.auth().signInWithPopup(provider)
     .then(result => {
-      onFirebaseUserSignedIn(result.user, true);
+      const user = result.user;
+      onFirebaseUserSignedIn(user);
     })
     .catch(err => {
       btn.style.display = 'flex';
       spinner.style.display = 'none';
-      spinner.textContent = 'Signing you in...';
-      if (err.code === 'auth/popup-blocked') {
-        toast('⚠️', 'Popup blocked', 'Please allow popups for this site in your browser');
-      } else if (err.code === 'auth/popup-closed-by-user') {
-        toast('ℹ️', 'Sign in cancelled', 'Click the button to try again');
-      } else {
-        toast('❌', 'Sign in failed', err.message || 'Try again');
-      }
+      toast('❌', 'Sign in failed', err.message || 'Try again');
     });
 }
 
-function onFirebaseUserSignedIn(user, freshLogin = false) {
+function onFirebaseUserSignedIn(user) {
   appState.authed = true;
   appState.user = {
     name: user.displayName || 'User',
@@ -1684,45 +1577,33 @@ function onFirebaseUserSignedIn(user, freshLogin = false) {
   document.getElementById('accName').textContent = user.displayName || 'User';
   document.getElementById('accEmail').textContent = user.email || '';
 
-  // Update landing page nav to show avatar instead of Sign In button
-  const landingNav = document.getElementById('landingNavLinks');
-  if (landingNav) {
-    if (user.photoURL) {
-      landingNav.innerHTML = `<img src="${user.photoURL}" onclick="goPage('account')" style="width:34px;height:34px;border-radius:50%;object-fit:cover;cursor:pointer;border:2px solid rgba(255,215,0,.4)" /><button class="nav-btn primary" onclick="goPage('pricing')">Get Access</button>`;
-    } else {
-      landingNav.innerHTML = `<div class="nav-avatar" onclick="goPage('account')" style="cursor:pointer">👤</div><button class="nav-btn primary" onclick="goPage('pricing')">Get Access</button>`;
-    }
+  // Check if there's a pending board link from a just-completed payment
+  const pendingLink = localStorage.getItem('pendingBoardLink');
+  if (pendingLink) {
+    localStorage.setItem('boardLink_' + user.uid, pendingLink);
+    localStorage.removeItem('pendingBoardLink');
   }
 
-  // appState.paid and boardLink are already set by onAuthStateChanged via Firestore
-  // Just check the result here
-  const savedLink = appState.generatedBoardLink || localStorage.getItem('boardLink_' + user.uid);
-  if (savedLink || appState.paid) {
+  // Check if they have a saved board link — means they already paid
+  const savedLink = localStorage.getItem('boardLink_' + user.uid);
+  if (savedLink) {
     appState.paid = true;
-    if (savedLink) {
-      appState.generatedBoardLink = savedLink;
-      const inputEl = document.getElementById('boardLinkInput');
-      if (inputEl) inputEl.value = savedLink;
-    }
-    if (freshLogin) {
-      toast('👋', 'Welcome back!', user.displayName || 'User');
-      setTimeout(() => goPage('dashboard'), 500);
-    }
+    appState.generatedBoardLink = savedLink;
+    const inputEl = document.getElementById('boardLinkInput');
+    if (inputEl) inputEl.value = savedLink;
+    toast('👋', 'Welcome back!', user.displayName || 'User');
+    setTimeout(() => goPage('dashboard'), 500);
   } else {
-    const pendingPlan = localStorage.getItem('pendingPlan');
-    const pendingPromo = localStorage.getItem('pendingPromo');
-    if (pendingPromo && freshLogin) {
-      localStorage.removeItem('pendingPromo');
-      setTimeout(() => grantFreeAccess(pendingPromo), 500);
-    } else if (pendingPlan && freshLogin) {
-      localStorage.removeItem('pendingPlan');
-      setTimeout(() => {
-        const fakeEvent = { preventDefault: () => {} };
-        handleLandingPlanClick(fakeEvent, pendingPlan);
-      }, 500);
-    } else if (freshLogin) {
-      // Just stay on landing page — nav icon already updated above
-      toast('✅', 'Signed in!', 'Now pick a plan to get started');
+    // Only send to buy page if they came from the sign in page manually
+    // Don't interrupt if they're already on a page
+    const currentPage = document.querySelector('.page.active');
+    const currentId = currentPage ? currentPage.id : '';
+    if (currentId === 'page-auth') {
+      toast('👋', 'Signed in!', 'Now get access to launch your board');
+      setTimeout(() => goPage('pricing'), 600);
+    } else {
+      // Already somewhere in the app — just update nav, don't redirect
+      toast('👋', 'Signed in!', user.displayName || 'User');
     }
   }
 }
@@ -2097,20 +1978,12 @@ function showWinnerPopup() {
     toast('🏁', 'Auction Ended', 'No bids were placed');
     return;
   }
-
-  // Check for tie at 1st place — only show to streamer (authed)
-  const second = appState.board.ranks[1];
-  const hasTie = second && second.name && second.coins > 0 && second.coins === winner.coins;
-  if (hasTie && appState.authed) {
-    showTiePopup();
-    return;
-  }
-
   document.getElementById('winnerAv').style.background = winner.bg || 'linear-gradient(135deg,#FF6B6B,#FF8E53)';
   document.getElementById('winnerAv').textContent = winner.emoji || '🏆';
   document.getElementById('winnerName').textContent = winner.name;
   document.getElementById('winnerHandle').textContent = winner.handle || '';
   document.getElementById('winnerCoins').textContent = (winner.coins || 0).toLocaleString();
+  // Add sparkle stars
   const starsEl = document.getElementById('winnerStars');
   starsEl.innerHTML = '';
   const starEmojis = ['⭐','✨','🌟','💫','⭐','✨'];
@@ -2126,55 +1999,6 @@ function showWinnerPopup() {
   });
   document.getElementById('winnerOverlay').classList.add('show');
   spawnWinnerCoins();
-}
-
-function showTiePopup() {
-  const tiedPlayers = appState.board.ranks.filter(r => r && r.name && r.coins === appState.board.ranks[0].coins);
-  const subtitle = `${tiedPlayers.length} players tied at ${appState.board.ranks[0].coins.toLocaleString()} coins`;
-  document.getElementById('tieSubtitle').textContent = subtitle;
-
-  const playersEl = document.getElementById('tiePlayers');
-  playersEl.innerHTML = '';
-  tiedPlayers.forEach(p => {
-    const row = document.createElement('div');
-    row.style.cssText = 'display:flex;align-items:center;gap:10px;background:rgba(255,165,0,.06);border:1px solid rgba(255,165,0,.2);border-radius:12px;padding:10px 14px';
-    row.innerHTML = `
-      <div style="width:36px;height:36px;border-radius:50%;background:${p.bg};display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0">${p.emoji}</div>
-      <div style="flex:1">
-        <div style="font-size:.82rem;font-weight:700;color:#fff">${p.name}</div>
-        <div style="font-size:.62rem;color:rgba(255,255,255,.4)">${p.handle}</div>
-      </div>
-      <div style="font-family:'Orbitron',sans-serif;font-size:.75rem;font-weight:900;color:#FFA500">${p.coins.toLocaleString()} 🪙</div>`;
-    playersEl.appendChild(row);
-  });
-
-  document.getElementById('tieOverlay').classList.add('show');
-}
-
-function addTieTime(seconds) {
-  document.getElementById('tieOverlay').classList.remove('show');
-  appState.seconds = seconds;
-  appState.snipePhase = false;
-  startAuction();
-  toast('⏱', `+${seconds}s added!`, 'Tiebreaker round started — break the tie!');
-}
-
-function closeTieAndContinue() {
-  document.getElementById('tieOverlay').classList.remove('show');
-  // Show winner popup without tie check this time
-  const winner = appState.board.ranks[0];
-  document.getElementById('winnerAv').style.background = winner.bg || 'linear-gradient(135deg,#FF6B6B,#FF8E53)';
-  document.getElementById('winnerAv').textContent = winner.emoji || '🏆';
-  document.getElementById('winnerName').textContent = winner.name + ' & tied';
-  document.getElementById('winnerHandle').textContent = winner.handle || '';
-  document.getElementById('winnerCoins').textContent = (winner.coins || 0).toLocaleString();
-  document.getElementById('winnerOverlay').classList.add('show');
-  spawnWinnerCoins();
-}
-
-function closeTieAndRestart() {
-  document.getElementById('tieOverlay').classList.remove('show');
-  restartAuction();
 }
 
 function spawnWinnerCoins() {
@@ -2473,11 +2297,8 @@ function renderBoard() {
     const r = ranks[i];
     const div = document.createElement('div');
 
-    // Check if this rank ties with the next rank
-    const nextR = ranks[i+1];
-    const isTied = r && r.name && nextR && nextR.name && r.coins > 0 && r.coins === nextR.coins;
-
     if (!r || !r.name) {
+      // Empty slot - waiting for coins
       div.className = 'bd-rank-row empty';
       div.innerHTML = `
         <div class="bd-rank-num bd-rn-empty">${i+1}</div>
@@ -2492,14 +2313,13 @@ function renderBoard() {
         </div>`;
     } else {
       div.className = `bd-rank-row ${posClasses[i]}`;
-      if (i === 0 && !isTied) div.innerHTML += `<div class="bd-crown">👑</div>`;
-      const tieBadge = isTied ? `<span style="background:rgba(255,165,0,.2);color:#FFA500;border:1px solid rgba(255,165,0,.4);border-radius:20px;padding:2px 8px;font-size:.55rem;font-weight:900;letter-spacing:1px;margin-left:6px">TIE</span>` : '';
+      if (i === 0) div.innerHTML += `<div class="bd-crown">👑</div>`;
       div.innerHTML += `
         <div class="bd-rank-num ${numClasses[i]}">${i+1}</div>
         <div class="bd-user-av" style="background:${r.bg}">${r.emoji}</div>
         <div class="bd-user-info">
-          <div class="bd-user-name" style="display:flex;align-items:center;gap:4px">${r.name}${tieBadge}</div>
-          <div class="bd-user-handle">${r.handle} · ${isTied ? 'TIED for '+posLabels[i] : posLabels[i]+' place'}</div>
+          <div class="bd-user-name">${r.name}</div>
+          <div class="bd-user-handle">${r.handle} · ${posLabels[i]} place</div>
         </div>
         <div class="bd-coin-col">
           <div class="bd-coin-num">${(r.coins||0).toLocaleString()}</div>
@@ -2700,11 +2520,9 @@ if (boardIdx > -1) PROTECTED.splice(boardIdx, 1);
         const fbUser = firebase.auth().currentUser;
         if (fbUser) {
           localStorage.setItem('boardLink_' + fbUser.uid, link);
-          // Save permanently to Firestore
-          savePurchaseToFirestore(fbUser.uid, link, data.email || fbUser.email || '', 'stripe');
         } else {
           localStorage.setItem('pendingBoardLink', link);
-          localStorage.setItem('pendingBoardEmail', data.email || '');
+          localStorage.setItem('pendingBoardEmail', savedEmail);
         }
 
         showBoardLinkScreen(link, name);
@@ -2718,71 +2536,18 @@ if (boardIdx > -1) PROTECTED.splice(boardIdx, 1);
   }
 })();
 </script>
-<!-- Firebase SDKs loaded in head -->
+<!-- Firebase auth state listener (Firebase already initialized in head) -->
 <script>
-  const firebaseConfig = {
-    apiKey: "AIzaSyDMbRsKsDTOZrE6AESzJtj_UEVS-q0T50k",
-    authDomain: "tiktok-auction-board.firebaseapp.com",
-    projectId: "tiktok-auction-board",
-    storageBucket: "tiktok-auction-board.firebasestorage.app",
-    messagingSenderId: "473006848103",
-    appId: "1:473006848103:web:1f1eb3bbe8d49089e2fcc2",
-    measurementId: "G-467PJR84J6"
-  };
-  firebase.initializeApp(firebaseConfig);
-  const db = firebase.firestore();
-
-  // Save purchase to Firestore permanently
-  async function savePurchaseToFirestore(uid, boardLink, email, plan) {
-    try {
-      await db.collection('users').doc(uid).set({
-        boardLink: boardLink,
-        email: email || '',
-        plan: plan || 'lifetime',
-        purchasedAt: firebase.firestore.FieldValue.serverTimestamp(),
-        paid: true
-      }, { merge: true });
-    } catch(e) {
-      console.error('Firestore save error:', e);
-    }
-  }
-
-  // Load purchase from Firestore
-  async function loadPurchaseFromFirestore(uid) {
-    try {
-      const doc = await db.collection('users').doc(uid).get();
-      if (doc.exists && doc.data().paid) {
-        return doc.data().boardLink || null;
-      }
-    } catch(e) {
-      console.error('Firestore load error:', e);
-    }
-    return null;
-  }
-
-  firebase.auth().onAuthStateChanged(async user => {
+  firebase.auth().onAuthStateChanged(user => {
     if (user) {
-      // Check for pending board link from just-completed payment
       const pendingLink = localStorage.getItem('pendingBoardLink');
-      const pendingEmail = localStorage.getItem('pendingBoardEmail') || user.email || '';
-
       if (pendingLink) {
-        // Save to Firestore permanently
-        await savePurchaseToFirestore(user.uid, pendingLink, pendingEmail, 'stripe');
-        localStorage.removeItem('pendingBoardLink');
-        localStorage.removeItem('pendingBoardEmail');
         localStorage.setItem('boardLink_' + user.uid, pendingLink);
+        localStorage.removeItem('pendingBoardLink');
       }
-
-      // Try to load board link — first from Firestore, then localStorage fallback
-      let boardLink = await loadPurchaseFromFirestore(user.uid);
-      if (!boardLink) {
-        boardLink = localStorage.getItem('boardLink_' + user.uid);
-      }
-
-      if (boardLink) {
-        // Sync Firestore link back to localStorage
-        localStorage.setItem('boardLink_' + user.uid, boardLink);
-        appState.paid = true;
-        appState.generatedBoardLink = boardLink;
-        const inputEl = document.getElementById('board
+      onFirebaseUserSignedIn(user);
+    }
+  });
+</script>
+</body>
+</html>
