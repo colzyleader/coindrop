@@ -1991,7 +1991,9 @@ function endAuction() {
   document.getElementById('startBtn').disabled = true;
   document.getElementById('pauseBtn').disabled = true;
   document.getElementById('stopBtn').disabled = true;
-  // Show restart button on dashboard
+  // Hide start/stop row, show restart button
+  const startStopRow = document.querySelector('.start-stop-row');
+  if (startStopRow) startStopRow.style.display = 'none';
   const restartBtn = document.getElementById('restartBtn');
   if (restartBtn) restartBtn.style.display = 'flex';
   updateMidAuctionControls();
@@ -2141,6 +2143,8 @@ function restartAuction() {
   document.getElementById('stopBtn').disabled = true;
   const restartBtn = document.getElementById('restartBtn');
   if (restartBtn) restartBtn.style.display = 'none';
+  const startStopRow = document.querySelector('.start-stop-row');
+  if (startStopRow) startStopRow.style.display = 'flex';
   const zone = document.getElementById('bdSnipeZone');
   if (zone) { zone.style.display = 'none'; zone.classList.remove('active'); }
   document.getElementById('statPart').textContent = '0';
@@ -2257,15 +2261,15 @@ function renderBoard() {
   const timerLabel = document.getElementById('bdTimerLabel');
   if (timerBig) {
     const s = appState.seconds;
-    if (s <= 0) {
-      timerBig.textContent = 'ENDED';
-      timerBig.className = 'bd-timer-big ended';
-      if (timerLabel) timerLabel.textContent = 'AUCTION ENDED';
-    } else if (appState.snipePhase) {
+    if (appState.snipePhase) {
       const m = Math.floor(s / 60), sec = s % 60;
       timerBig.textContent = `${m}:${sec.toString().padStart(2,'0')}`;
       timerBig.className = 'bd-timer-big red';
       if (timerLabel) timerLabel.textContent = '⚡ SNIPE WINDOW';
+    } else if (s <= 0) {
+      timerBig.textContent = 'ENDED';
+      timerBig.className = 'bd-timer-big ended';
+      if (timerLabel) timerLabel.textContent = 'AUCTION ENDED';
     } else {
       const m = Math.floor(s / 60), sec = s % 60;
       timerBig.textContent = `${m}:${sec.toString().padStart(2,'0')}`;
